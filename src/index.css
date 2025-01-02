@@ -1,0 +1,108 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Colors */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+  --primary-foreground: 0 0% /98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222 47% 11%;
+  --border: 214.3 31.8% 91.4%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --accent: 199 89% 48%;
+}
+
+.dark {
+  --background: 222 47% 11%;
+  --foreground: 214 32% 91%;
+  --primary: 199 89% 48%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 217 32% 17%;
+  /* --secondary-foreground: 210 40% 98%; */
+  --border: 217 32% 17%;
+  --card: 222 47% 11%;
+  --card-foreground: 214 32% 91%;
+  --accent: 199 89% 48%;
+}
+
+
+
+.animate-border {
+  border-style: dashed;
+  animation: borderAnimation 6s linear infinite;
+  /* Slower animation */
+  animation-delay: 1s;
+  /* To sync with the profile image animation */
+  transform-origin: center;
+  /* Ensure it rotates around the center */
+  padding: 10px;
+  /* Moves the border outside the circular frame */
+}
+
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 5px hsl(var(--accent)), 0 0 10px hsl(var(--accent));
+  }
+
+  50% {
+    box-shadow: 0 0 20px hsl(var(--accent)), 0 0 30px hsl(var(--accent));
+  }
+
+  100% {
+    box-shadow: 0 0 5px hsl(var(--accent)), 0 0 10px hsl(var(--accent));
+  }
+}
+
+
+
+/* Glass Morphism */
+.glass {
+  @apply bg-foreground/5 backdrop-blur-lg border border-foreground/10;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-accent rounded-full;
+}
+
+
+{/*loader*/}
+@keyframes spin-slower {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.animate-spin-slower {
+    animation: spin-slower 2s linear infinite;
+}
+
+.animate-fade-in {
+    animation: fade-in 0.5s ease-in-out;
+}
+
