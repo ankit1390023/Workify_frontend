@@ -46,7 +46,7 @@ const Login = () => {
 
     const onSubmit = async (data) => {
         try {
-            const response = await axios.post(`${API_END_POINT}/user/login`, data, { headers: { "Content-Type": "application/json" }, withCredentials: true });
+            const response = await axios.post(`${API_END_POINT}/user/login`, data, { withCredentials: true });
             if (response.data.success) {
                 dispatch(setUser(response.data.data.user));
                 toast.success(response.data.message || "Login successful");
