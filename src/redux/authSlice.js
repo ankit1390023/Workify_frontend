@@ -16,6 +16,11 @@ const authSlice = createSlice({
             // console.log("Action Payload:", action.payload);
             state.user = action.payload;
         },
+        clearUser(state) {
+            // This clears the user data on logout
+            state.user = null;
+            state.loading = false; // You may choose to reset any other state here
+        },
     },
 });
 
