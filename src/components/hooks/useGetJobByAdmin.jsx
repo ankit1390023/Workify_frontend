@@ -14,14 +14,17 @@ const useGetJobByAdmin = () => {
                 const response = await axios.get(`${API_END_POINT}/job/getJobByAdmin`, { withCredentials: true });
                 // console.log("response from getJobByAdmin", response);
                 if (response?.data?.success) { // Safely access response.data.success
+                    console.log("useGetAllJObByAdmin", response.data.data);
                     dispatch(setAllAdminJobs(response.data.data)); // Dispatch jobs to Redux
                     toast.success("All admin Jobs fetched successfully!"); // Success toast
                 } else {
                     toast.error(`Failed to fetch all jobs created by admin: ${response?.data?.message || "Unknown error"}`); // Handle unexpected response structure
                 }
             } catch (error) {
-                console.error("Error fetching jobs by admin:", error);
-                toast.error("Failed to fetch jobs. Please try again.");
+                dispatch(setAllAdminJobs({}))
+                console.log("Failed to fetch all jobs created by admin", error); 
+                const errorMessage = error.response?.data?.message || error.message || "Failed to fetch all jobs created by admin";
+                toast.error(errorMessage);
             }
         };
 

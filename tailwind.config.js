@@ -73,99 +73,12 @@ export default {
     				'monospace'
     			]
     		},
-    		animation: {
-    			fadeIn: 'fadeIn 0.5s ease-in-out',
-    			slideIn: 'slideIn 0.5s ease-in-out',
-    			moveLogos: 'moveLogos 15s linear infinite',
-    			hoverZigzag: 'hoverZigzag 2s ease-in-out infinite',
-    			'spin-slow': 'spin 10s linear infinite',
-    			bounceSlow: 'bounceSlow 3s ease-in-out infinite',
-    			pulseSlow: 'pulseSlow 3s infinite',
-    			'scale-3d': 'scale3d 0.8s ease-in-out infinite',
-    			'rotate-3d': 'rotate3d 10s linear infinite',
-    			'accordion-down': 'accordion-down 0.2s ease-out',
-    			'accordion-up': 'accordion-up 0.2s ease-out'
-    		},
-    		keyframes: {
-    			fadeIn: {
-    				'0%': {
-    					opacity: '0'
-    				},
-    				'100%': {
-    					opacity: '1'
-    				}
-    			},
-    			slideIn: {
-    				'0%': {
-    					transform: 'translateX(-100%)'
-    				},
-    				'100%': {
-    					transform: 'translateX(0)'
-    				}
-    			},
-    			moveLogos: {
-    				'0%': {
-    					transform: 'translateX(100%)'
-    				},
-    				'100%': {
-    					transform: 'translateX(-100%)'
-    				}
-    			},
-    			hoverZigzag: {
-    				'0%, 100%': {
-    					transform: 'translateY(0)'
-    				},
-    				'20%': {
-    					transform: 'translateY(-10px)'
-    				},
-    				'40%': {
-    					transform: 'translateY(10px)'
-    				},
-    				'60%': {
-    					transform: 'translateY(-10px)'
-    				},
-    				'80%': {
-    					transform: 'translateY(10px)'
-    				}
-    			},
-    			bounceSlow: {
-    				'0%, 100%': {
-    					transform: 'translateY(0)'
-    				},
-    				'50%': {
-    					transform: 'translateY(-15px)'
-    				}
-    			},
-    			pulseSlow: {
-    				'0%': {
-    					opacity: 1
-    				},
-    				'50%': {
-    					opacity: 0.7
-    				},
-    				'100%': {
-    					opacity: 1
-    				}
-    			},
-    			scale3d: {
-    				'0%': {
-    					transform: 'scale(1)'
-    				},
-    				'50%': {
-    					transform: 'scale(1.05)'
-    				},
-    				'100%': {
-    					transform: 'scale(1)'
-    				}
-    			},
-    			rotate3d: {
-    				'0%': {
-    					transform: 'rotateY(0deg)'
-    				},
-    				'100%': {
-    					transform: 'rotateY(360deg)'
-    				}
-    			},
+    		
+			keyframes: {		
+				shine: {
+					'0%': { 'background-position': '100%' },
+					'100%': { 'background-position': '-100%' },
+				},
     			'accordion-down': {
     				from: {
     					height: '0'

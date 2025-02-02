@@ -46,7 +46,7 @@ const Login = () => {
 
     const onSubmit = async (data) => {
         try {
-            const response = await axios.post(`${API_END_POINT}/user/login`, data, { withCredentials: true });
+            const response = await axios.post(`${API_END_POINT}/user/login`, data, { headers: { "Content-Type": "application/json" }, withCredentials: true });
             if (response.data.success) {
                 dispatch(setUser(response.data.data.user));
                 toast.success(response.data.message || "Login successful");
@@ -65,7 +65,7 @@ const Login = () => {
             <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-xl rounded-lg p-8 sm:p-10 transition-transform transform hover:scale-105 hover:shadow-2xl">
                 {isSubmitting && <Loader message="Submitting..." />}
 
-                
+
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200 text-center mb-6 transform transition-all duration-500 ease-in-out hover:text-indigo-600">

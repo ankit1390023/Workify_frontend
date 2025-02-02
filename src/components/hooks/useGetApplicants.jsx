@@ -23,8 +23,10 @@ const useGetAllApplicants = (jobId) => {
                     toast.error(`Failed to fetch applicants: ${response.data.message}`); // Handle unexpected response structure
                 }
             } catch (error) {
-                console.error("Error fetching applicants:", error);
-                toast.error("Failed to fetch applicants. Please try again.");
+                dispatch(setAllApplicants({}));
+                console.log("Failed to fetch applicants. Please try again.", error); 
+                const errorMessage = error.response?.data?.message || error.message || "Failed to fetch applicants. Please try again.";
+                                toast.error(errorMessage);
             }
         };
 

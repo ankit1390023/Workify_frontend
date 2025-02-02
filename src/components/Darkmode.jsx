@@ -1,27 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import { Moon, Sun } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { Button } from './ui/button';
 
-function Darkmode() {
-    const [isDarkMode, setDarkMode] = useState(false);
-
+const Darkmode = ({ darkMode, setDarkMode }) => {
     const toggleDarkMode = () => {
-        setDarkMode(!isDarkMode);
-    };
+        const newDarkMode = !darkMode;
+        setDarkMode(newDarkMode);
+        localStorage.setItem('darkMode', newDarkMode ? 'enabled' : 'disabled');
 
-    useEffect(() => {
-        if (isDarkMode) {
+        if (newDarkMode) {
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
         }
-    }, [isDarkMode]);
+    };
+
+    useEffect(() => {
+        // Check for dark mode preference in local storage on component mount
+        const savedMode = localStorage.getItem('darkMode');
+        if (savedMode === 'enabled') {
+            setDarkMode(true);
+            document.documentElement.classList.add('dark');
+        } else {
+            setDarkMode(false);
+            document.documentElement.classList.remove('dark');
+        }
+    }, [setDarkMode]);
 
     return (
-        <div className='min-h-screen bg-white dark:bg-gray-800'>
-            <button onClick={toggleDarkMode}   className='dark:text-white text-blue-500'>
-                Toggle Dark Mode
-            </button>
-        </div>
+     
+         <Button
+            variant="ghost"
+            aria-label="Toggle Dark Mode"
+            onClick={toggleDarkMode}
+            className="text-gray-700 dark:text-gray-300"
+          >
+            {darkMode ? <Sun size={24} /> : <Moon size={24} />}
+          </Button>
     );
-}
+};
 
 export default Darkmode;

@@ -10,22 +10,17 @@ import { Button } from './ui/button';
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { setSearchQuery } from "@/redux/jobSlice";
+import { Card, CardContent } from "./ui/card";
 
 const category = [
     "Software Development",
     "Data Science",
     "Web Development",
-    "Mobile Development",
-    "Design",
     "DevOps",
-    "Management",
-    "Marketing",
     "React native",
-    "Customer Support",
-    "Mern Stack development",
+    "MernStack development",
     "Cloud Computing",
-    "Product",
-    "All",
+   
 ];
 
 const CategoryCarousel = () => {
@@ -39,28 +34,30 @@ const CategoryCarousel = () => {
     };
 
     return (
-        <div className="dark:bg-gray-800 p-5">
-            <Carousel className="w-full max-w-4xl mx-auto">
-                <CarouselContent className="flex-shrink">
+        <div className="max-w-xs sm:max-w-2xl mx-auto px-4 md:px-8 lg:px-16">
+            <Carousel className="w-full my-10">
+                <CarouselContent className="-ml-1 ">
                     {category.map((cat, index) => {
                         return (
                             <CarouselItem
                                 key={index}
-                                className="flex-shrink-0 w-full md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
+                                className="pl-1 basis-1/2 sm:basis-1/3 mx-6"
                             >
-                                <Button
-                                    onClick={() => searchJobHandler(cat)}
-                                    variant="outline"
-                                    className="rounded-full border-2 border-blue-500 text-blue-500 font-semibold hover:bg-blue-500 hover:text-white transition-all dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-400 dark:hover:text-white"
-                                >
-                                    {cat}
-                                </Button>
+                                <div className="p-1 mx-6">
+                                            <Button
+                                                onClick={() => searchJobHandler(cat)}
+                                               
+                                            className="text-center max-w-fit  border-2 border-blue-500 text-blue-500 font-semibold hover:bg-blue-500 hover:text-white transition-all p-4 rounded-2xl "
+                                            >
+                                                {cat}
+                                            </Button>
+                                </div>
                             </CarouselItem>
                         );
                     })}
                 </CarouselContent>
-                <CarouselPrevious className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10" />
-                <CarouselNext className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10" />
+                <CarouselPrevious />
+                <CarouselNext />
             </Carousel>
         </div>
     );

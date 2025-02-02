@@ -15,7 +15,9 @@ const LatestJobCard = ({ job }) => {
     };
 
     return (
-        <div className="relative max-w-lg mx-auto bg-gradient-to-tr from-white to-gray-50 shadow-md rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+        <div
+            onClick={() => naviagate(`/jobDescription/${_id}`)}
+            className="relative max-w-lg mx-autoz bg-gradient-to-tr from-white to-gray-50 shadow-md rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
             {/* Decorative Ribbon */}
             <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-thin px-4 py-1 rounded-bl-lg shadow-md">
                 <p className="text-xs font-medium text-white">
@@ -69,14 +71,7 @@ const LatestJobCard = ({ job }) => {
                 </div>
             </div>
 
-            {/* Footer */}
-            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md transition-all">
-                    Apply Now
-                </Button>
-                {/* View Details Button */}
-                <Button  variant="ghost" onClick={() => naviagate(`/jobDescription/${_id}`)} className="text-blue-600 hover:text-blue-700 text-sm font-medium">  View Details</Button>
-            </div>
+           
         </div>
     );
 };

@@ -22,7 +22,7 @@ const Companies = () => {
       <div className='flex  justify-center'>
         <Input
           type='text'
-          placeholder='google, facebook,microsoft'
+          placeholder='Search your registered companies..'
           className='w-[80%] p-2 border-2 border-gray-300'
           autoFocus={true}
           required={true}

@@ -11,43 +11,33 @@ import { API_END_POINT } from "@/utils/constant";
 import axios from "axios";
 import { setUser } from "@/redux/authSlice";
 import { setSearchQuery } from "@/redux/jobSlice";
+import Darkmode from "../Darkmode";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
- 
-  const [query, setQuery] = useState("");
-  // Search company by text
-  const searchJobHandler = () => {
-    console.log("searchJobHandler");
-    dispatch(setSearchQuery(query));
-    navigate("/browse");
-  };
 
- 
-  // Set dark mode from localStorage
+  const [query, setQuery] = useState("");
+  const [darkMode, setDarkMode] = useState(false);
+
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
+    // Check the dark mode setting from local storage
+    const savedMode = localStorage.getItem('darkMode');
+    if (savedMode === 'enabled') {
       setDarkMode(true);
-      document.documentElement.classList.add("dark");
+      document.documentElement.classList.add('dark');
+    } else {
+      setDarkMode(false);
+      document.documentElement.classList.remove('dark');
     }
   }, []);
 
-  // Toggle dark mode
-  const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    if (newMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
+  // Search company by text
+  const searchJobHandler = () => {
+    dispatch(setSearchQuery(query));
+    navigate("/browse");
   };
 
   // Handle user logout
@@ -73,23 +63,21 @@ const Header = () => {
 
   return (
     <header className="bg-white dark:bg-black shadow-md sticky top-0 z-50 font-sans">
-      <div className="flex justify-between items-center px-6 py-3 md:px-10 space-x-4">
-        {/* Logo */}
-        <Link to="/" className="text-2xl font-bold text-blue-600 dark:text-yellow-400">
-          <span className="text-yellow-500 dark:text-blue-300">Work</span>ify
-        </Link>
+      <div className="flex justify-between items-center px-2 py-3 md:px-10 space-x-4">
+        <div className="flex">
+          <Button
+            aria-label="Menu"
+            variant="ghost"
+            className="block md:hidden"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            <Menu size={24} className="text-gray-700 dark:text-gray-300" />
+          </Button>
+          <Link to="/" className="text-2xl font-bold text-blue-600 dark:text-yellow-400">
+            <span className="text-yellow-500 dark:text-blue-300">Work</span>ify
+          </Link>
+        </div>
 
-        {/* Hamburger Menu */}
-        <Button
-          aria-label="Menu"
-          variant="ghost"
-          className="block md:hidden"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          <Menu size={24} className="text-gray-700 dark:text-gray-300" />
-        </Button>
-
-        {/* Search Bar */}
         <div className="hidden md:flex items-center w-1/3">
           <Input
             onChange={(e) => setQuery(e.target.value)}
@@ -98,7 +86,7 @@ const Header = () => {
             className="w-full pl-4 border border-gray-300 dark:border-gray-600 focus:border-blue-600 rounded-md dark:bg-gray-700 dark:text-gray-300"
           />
           <Button
-         onClick={searchJobHandler}
+            onClick={searchJobHandler}
             variant="default"
             className="ml-2 px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
           >
@@ -106,7 +94,6 @@ const Header = () => {
           </Button>
         </div>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-6 text-lg">
           {user && user.role === "student"
             ? ["Home", "Contact", "Jobs", "Browse"].map((link) => (
@@ -124,6 +111,7 @@ const Header = () => {
               </NavLink>
             ))
             : [
+              { name: "Home", path: "/home" },
               { name: "Companies", path: "/admin/companies" },
               { name: "Jobs", path: "/admin/jobs" },
             ].map(({ name, path }) => (
@@ -142,27 +130,9 @@ const Header = () => {
             ))}
         </nav>
 
-        {/* Right Section */}
         <div className="flex items-center space-x-4">
-          {/* Dark Mode Toggle */}
-          <Button
-            variant="ghost"
-            aria-label="Toggle Dark Mode"
-            onClick={toggleDarkMode}
-            className="text-gray-700 dark:text-gray-300"
-          >
-            {darkMode ? <Sun size={24} /> : <Moon size={24} />}
-          </Button>
+          <Darkmode darkMode={darkMode} setDarkMode={setDarkMode} />
 
-          {/* Notification Bell */}
-          <Button variant="ghost" aria-label="Notifications" className="relative">
-            <Bell size={24} className="text-gray-700 dark:text-gray-300" />
-            <span className="absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-              3
-            </span>
-          </Button>
-
-          {/* Profile / Login */}
           {!user ? (
             <Link to="/login">
               <Button className="bg-blue-600 text-white hover:bg-blue-700 rounded-md">
@@ -188,24 +158,14 @@ const Header = () => {
                   </h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400">{user?.email}</p>
 
-                  {/* Profile Details */}
                   <div className="w-full mt-4 space-y-2 text-sm text-gray-800 dark:text-gray-300">
                     <div className="flex justify-between">
                       <span className="font-medium">Role:</span>
                       <span>{user.role}</span>
                     </div>
-                    {/* Add other details dynamically */}
                   </div>
 
-                  {/* Buttons */}
                   <div className="mt-4 w-full flex flex-col gap-2">
-                    {user.role === "recruiter" && (
-                      <Link to="/admin/dashboard">
-                        <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 rounded-md">
-                          Admin Dashboard
-                        </Button>
-                      </Link>
-                    )}
                     <Link to="/profile">
                       <Button variant="outline" className="w-full">
                         See Profile
@@ -226,7 +186,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {menuOpen && (
         <nav className="md:hidden bg-white dark:bg-gray-800 p-4 shadow-lg space-y-2">
           {["Home", "Contact", "Jobs", "Browse"].map((link) => (

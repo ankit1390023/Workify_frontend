@@ -4,6 +4,7 @@ import Header from './components/shared/Header'
 import Footer from './components/shared/Footer'
 import useGetAllJobs from './components/hooks/useGetAllJobs'
 import { useSelector } from 'react-redux'
+import Chat from './components/ai/Chat'
 
 
 const Layout = () => {
@@ -20,7 +21,8 @@ const Layout = () => {
   return (
     <>
       <Header />
-      <Outlet />{/*jha bhi outlet doge vha chize change hogi i.e header footer same rhngi bich ka changehogi*/}
+      <Outlet />
+      <Chat />  
       <Footer />
     </>
   )

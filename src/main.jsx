@@ -24,8 +24,9 @@ import PostJobs from './components/admin/PostJobs';
 import JobDetailsUpdate from './components/admin/JobDetailsUpdate';
 import Applicants from './components/admin/Applicants';
 import ApplicantsCards from './components/admin/ApplicantCard';
+import ProtectedRoute from './components/admin/ProtectedRoute';
 
-
+import { Auth0Provider } from '@auth0/auth0-react';
 
 
 const appRouter = createBrowserRouter(
@@ -42,30 +43,46 @@ const appRouter = createBrowserRouter(
       <Route path="login" element={<Login />} />
       <Route path="signUp" element={<SignUp />} />
 
-      {/* Protected Routes */}
       <Route path="profile" element={<Profile />} />
       <Route path="jobDescription/:id" element={<JobDescription />} />
 
       {/*for recruiter starts from here */}
-      <Route path="/admin/companies" element={<Companies />} />
-      <Route path="/admin/companies/create" element={<CompaniesCreate />} />
-      <Route path="/admin/companies/:id" element={<CompanyDetailsUpdate />} />
-      <Route path="/admin/jobs" element={<AdminJobs />} />
-      <Route path="/admin/postJobs" element={<PostJobs />} />
-      <Route path="/admin/companyUpdateDetails/:id" element={<JobDetailsUpdate />} />
-      <Route path="/admin/jobs/:id/applicants" element={<Applicants />} />
-      <Route path="/admin/jobs/view-applicantion/:id" element={<ApplicantsCards />} />
+      <Route path="/admin/companies" element={<ProtectedRoute><Companies /></ProtectedRoute>} />
+      <Route path="/admin/companies/create" element={<ProtectedRoute><CompaniesCreate /></ProtectedRoute>
+       } />
+      <Route path="/admin/companies/:id" element={<ProtectedRoute><CompanyDetailsUpdate /></ProtectedRoute>} />
+      <Route path="/admin/jobs" element={
+        <ProtectedRoute>
+        <AdminJobs />
+      </ProtectedRoute>} />
+      <Route path="/admin/postJobs" element={<ProtectedRoute><PostJobs /></ProtectedRoute>} />
+      <Route path="/admin/companyUpdateDetails/:id" element={<ProtectedRoute>
+        <JobDetailsUpdate />
+      </ProtectedRoute>} />
+      <Route path="/admin/jobs/:id/applicants" element={
+        <ProtectedRoute>
+        <Applicants />
+      </ProtectedRoute>} />
+      <Route path="/admin/jobs/view-applicantion/:id" element={<ProtectedRoute><ApplicantsCards /></ProtectedRoute>} />
     </Route>
   )
 );
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <Provider store={store}>  {/* Wrap the app with Provider */}
-      <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
-        <RouterProvider router={appRouter} />
-        <Toaster />
-      </PersistGate>
-    </Provider>
+    <Auth0Provider
+      domain="{yourDomain}"
+      clientId="{yourClientId}"
+      authorizationParams={{
+        redirect_uri: window.location.origin
+      }}
+    >
+      <Provider store={store}>  {/* Wrap the app with Provider */}
+        <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
+          <RouterProvider router={appRouter} />
+          <Toaster />
+        </PersistGate>
+      </Provider>
+    </Auth0Provider>,
   </React.StrictMode>
 );
