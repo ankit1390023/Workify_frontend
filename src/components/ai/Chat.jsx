@@ -21,6 +21,8 @@ if (typeof window !== "undefined" && (window.SpeechRecognition || window.webkitS
     recognition.continuous = false; // Change to false to avoid looping
     recognition.interimResults = false;
     recognition.lang = "en-US";
+} else {
+    console.error("Speech Recognition is not supported in this browser.");
 }
 
 const Chat = () => {
@@ -46,7 +48,11 @@ const Chat = () => {
             const response = await axios.post(
                 `${API_END_POINT}/user/ai`,
                 { message: userMessage },
-                { withCredentials: true }
+                {
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+                    }
+                }
             );
             const fullReply = response.data.reply || "No response from bot.";
             const botMessage = { sender: "bot", text: fullReply };
@@ -73,6 +79,7 @@ const Chat = () => {
 
     const toggleListening = () => {
         if (!recognition) return;
+
         if (listening) {
             recognition.stop();
             setListening(false);
@@ -95,6 +102,7 @@ const Chat = () => {
         recognition.onerror = (event) => {
             console.error("Speech recognition error:", event.error);
             setListening(false);
+            alert("There was an error with speech recognition. Please try again.");
         };
 
         recognition.onend = () => {

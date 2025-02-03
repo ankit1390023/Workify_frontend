@@ -50,7 +50,7 @@ const SignUp = () => {
 
     
     const onSubmit = async (data) => {
-        // console.log("data from signup is",data);
+        console.log("data from signup is",data);
         try {
             const formData = new FormData();
             formData.append("fullName", data.fullName);
