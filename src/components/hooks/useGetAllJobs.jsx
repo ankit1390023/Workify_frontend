@@ -22,7 +22,6 @@ const useGetAllJobs = () => {
             }
 
         };
-
         fetchAllJobs();
     }, [dispatch]); // Ensure no stale dispatch
 };

@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { API_END_POINT } from "@/utils/constant";
 import axios from "axios";
-import { clearUser, setUser } from "@/redux/authSlice";
+import {  setUser } from "@/redux/authSlice";
 import { setSearchQuery } from "@/redux/jobSlice";
 import Darkmode from "../Darkmode";
 
@@ -43,8 +43,6 @@ const Header = () => {
   // Handle user logout
   const handleLogout = async () => {
     try {
-      // clear user
-      dispatch(clearUser());
       const response = await axios.post(
         `${API_END_POINT}/user/logout`,
         {},
@@ -57,16 +55,10 @@ const Header = () => {
       } else {
         toast.error("Failed to log out");
       }
-
-
-     
     } catch (error) {
       console.error("Logout error:", error.response?.data || error.message);
       toast.error("Error logging out");
     }
-    
-
-    
   };
 
   return (
