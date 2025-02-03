@@ -48,9 +48,9 @@ const JobPost = () => {
     
      const response = await axios.post(`${API_END_POINT}/job/post`, data, {
        headers: {
-         'Content-Type': 'application/json',
+         "Content-Type": "application/json",
+         "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
        },
-       withCredentials: true,
      });
      console.log("response from JOB POSTING", data);
      if (response.data.success) {

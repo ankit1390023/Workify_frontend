@@ -11,7 +11,12 @@ const useGetAllCompany = () => {
     useEffect(() => {
         const fetchAllCompany = async () => {
 
-            const response = await axios.get(`${API_END_POINT}/company/get`, { withCredentials: true });
+            const response = await axios.get(`${API_END_POINT}/company/get`, {
+                withCredentials: true,
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+                }
+             });
             // console.log("response from customHooks is", response);
             if (response.data.success) {
                 dispatch(setAllCompanies(response.data.data)); // Dispatch jobs to Redux

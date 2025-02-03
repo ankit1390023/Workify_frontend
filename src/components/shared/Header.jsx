@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { API_END_POINT } from "@/utils/constant";
 import axios from "axios";
-import {  setUser } from "@/redux/authSlice";
+import { setUser } from "@/redux/authSlice";
 import { setSearchQuery } from "@/redux/jobSlice";
 import Darkmode from "../Darkmode";
 
@@ -46,9 +46,16 @@ const Header = () => {
       const response = await axios.post(
         `${API_END_POINT}/user/logout`,
         {},
-        { withCredentials: true }
+        {
+          withCredentials: true, // Ensure cookies are sent
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem('acessToken') }`
+          }
+        }
       );
+
       if (response?.data?.success) {
+        localStorage.removeItem('acessToken')
         toast.success("Logged out successfully");
         dispatch(setUser(null));
         navigate("/login");
@@ -60,6 +67,7 @@ const Header = () => {
       toast.error("Error logging out");
     }
   };
+
 
   return (
     <header className="bg-white dark:bg-black shadow-md sticky top-0 z-50 font-sans">

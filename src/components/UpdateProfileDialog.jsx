@@ -71,8 +71,10 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
                 `${API_END_POINT}/user/update-account`,
                 formData,
                 {
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                    withCredentials: true,
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+                    },
                 }
             );
 

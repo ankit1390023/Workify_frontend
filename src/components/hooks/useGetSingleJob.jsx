@@ -12,7 +12,12 @@ const useGetSingleJobs = (jobId) => {
         const fetchSingleJobs = async () => {
 
             const response = await axios.get(`${API_END_POINT}//job/getJobById/${jobId}`,
-                { withCredentials: true });
+                {
+                    withCredentials: true,
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+                    }
+                 });
             // console.log("response from customHooks is", response);
             if (response.data.success) {
                 dispatch(setSingleJob(response.data.data)); // Dispatch jobs to Redux

@@ -46,9 +46,11 @@ const Login = () => {
 
     const onSubmit = async (data) => {
         try {
-            const response = await axios.post(`${API_END_POINT}/user/login`, data, { withCredentials: true });
+            const response = await axios.post(`${API_END_POINT}/user/login`, data);
             if (response.data.success) {
                 dispatch(setUser(response.data.data.user));
+                localStorage.setItem("acessToken", response.data.data.accessToken)
+                localStorage.setItem("refreshToken", response.data.data.refreshToken)
                 toast.success(response.data.message || "Login successful");
                 navigate("/");
             } else {

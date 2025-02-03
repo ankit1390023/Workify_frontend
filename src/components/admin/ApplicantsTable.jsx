@@ -36,8 +36,8 @@ const ApplicantsTable = () => {
                 {
                     headers: {
                         "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
                     },
-                    withCredentials: true,
                 }
             );
 

@@ -24,7 +24,11 @@ const AppliedJobsTable = () => {
             try {
                 const response = await axios.get(
                     `${API_END_POINT}/application/getAppliedJobs`,
-                    { withCredentials: true }
+                    {
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+                        },
+                    }
                 );
                 console.log("response.data from appliedJobTable", response.data.data);
                 if (response.data.success) {

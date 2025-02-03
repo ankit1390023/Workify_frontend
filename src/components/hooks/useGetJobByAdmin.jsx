@@ -11,7 +11,12 @@ const useGetJobByAdmin = () => {
     useEffect(() => {
         const fetchGetAdminJobs = async () => {
             try {
-                const response = await axios.get(`${API_END_POINT}/job/getJobByAdmin`, { withCredentials: true });
+                const response = await axios.get(`${API_END_POINT}/job/getJobByAdmin`, {
+                    withCredentials: true,
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+                    }
+                 });
                 // console.log("response from getJobByAdmin", response);
                 if (response?.data?.success) { // Safely access response.data.success
                     console.log("useGetAllJObByAdmin", response.data.data);
