@@ -45,12 +45,14 @@ const Chat = () => {
     const handleBotResponse = async (userMessage) => {
         try {
             setLoading(true);
+            const chatToken = localStorage.getItem("acessToken");
+            console.log("chat Tokewn", chatToken);
             const response = await axios.post(
                 `${API_END_POINT}/user/ai`,
                 { message: userMessage },
                 {
                     headers: {
-                        "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+                        "Authorization": `Bearer ${localStorage.getItem("acessToken")}` // Ensure token is correctly retrieved
                     }
                 }
             );

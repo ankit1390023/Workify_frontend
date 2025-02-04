@@ -43,19 +43,21 @@ const Header = () => {
   // Handle user logout
   const handleLogout = async () => {
     try {
+      const accessToken = localStorage.getItem("acessToken"); // Retrieve access token
+
       const response = await axios.post(
         `${API_END_POINT}/user/logout`,
         {},
         {
           withCredentials: true, // Ensure cookies are sent
           headers: {
-            "Authorization": `Bearer ${localStorage.getItem('acessToken') }`
-          }
+            Authorization: `Bearer ${accessToken}`, // Send token in headers
+          },
         }
       );
 
       if (response?.data?.success) {
-        localStorage.removeItem('acessToken')
+        localStorage.removeItem("acessToken");
         toast.success("Logged out successfully");
         dispatch(setUser(null));
         navigate("/login");
