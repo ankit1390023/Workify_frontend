@@ -72,7 +72,12 @@ const JobDescription = () => {
         const fetchSingleJob = async () => {
             setLoading(true);
             try {
-                const res = await axios.get(`${API_END_POINT}/job/getJobById/${jobId}`, { withCredentials: true });
+                const res = await axios.get(`${API_END_POINT}/job/getJobById/${jobId}`,
+                    { 
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+                        }
+                    });
                 if (res.data.success) {
                     dispatch(setSingleJob(res.data.data));
                     setIsApplied(res?.data?.data?.applications.some(application=>application?.applicant===user?._id));
