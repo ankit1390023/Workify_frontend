@@ -11,9 +11,9 @@ const Layout = () => {
 
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  useGetAllJobs(); // ✅ Automatically fetches jobs when the page loads
-
+  useGetAllJobs()
   useEffect(() => {
+
     // Navigate to admin/companies if user is a recruiter
     if (user && user?.role == 'recruiter') {
      navigate('admin/companies');
