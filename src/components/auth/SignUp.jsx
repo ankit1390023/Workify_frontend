@@ -141,7 +141,7 @@ const SignUp = () => {
 
             {/* SignUp Section */}
             <motion.div
-                className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-between bg-white dark:bg-gray-800 rounded-lg px-6 py-6 md:px-8 md:py-8 shadow-lg"
+                className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-between bg-white dark:bg-gray-800 rounded-lg px-6 py-6 md:px-8 md:py-8"
                 variants={itemVariants}
             >
                 <motion.div className="w-full md:w-1/2 p-6" variants={itemVariants}>
