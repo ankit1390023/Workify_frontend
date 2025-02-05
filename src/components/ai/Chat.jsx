@@ -52,7 +52,7 @@ const Chat = () => {
                 { message: userMessage },
                 {
                     headers: {
-                        "Authorization": `Bearer ${localStorage.getItem("acessToken")}` // Ensure token is correctly retrieved
+                        "Authorization": `Bearer ${localStorage.getItem("accessToken")}` // Ensure token is correctly retrieved
                     }
                 }
             );
