@@ -40,8 +40,6 @@ const HeroSection = () => {
                         muted
                     />
                 </div>
-
-               
             </div>
         </section>
     );

@@ -47,7 +47,7 @@ const CategoryCarousel = () => {
                                             <Button
                                                 onClick={() => searchJobHandler(cat)}
                                                
-                                            className="text-center max-w-fit  border-2 border-blue-500 text-blue-500 font-semibold hover:bg-blue-500 hover:text-white transition-all p-4 rounded-2xl "
+                                            className="text-center max-w-fit border rounded-2xl border-spacing-2  cursor-pointer hover:bg-blue-600 bg-blue-400"
                                             >
                                                 {cat}
                                             </Button>

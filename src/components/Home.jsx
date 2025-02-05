@@ -3,12 +3,12 @@ import {  useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Header from './shared/Header';
 import HeroSection from './HeroSection';
-import CategoryCarousel from './CategoryCarousel';
 import LatestJobs from './LatestJobs';
 import { Accordion } from './ui/accordion';
 import useGetAllJobs from './hooks/useGetAllJobs';
 import Chat from './ai/Chat';
 import Footer from './shared/Footer';
+import MyAccordion from './MyAccordion';
 
 const Home = () => {
   useGetAllJobs();
@@ -25,9 +25,9 @@ const Home = () => {
     <>
       <Header/>
       <HeroSection />
-      <CategoryCarousel />
+      <MyAccordion/>
+      
       <LatestJobs />
-      <Accordion/>
       <Chat />
       <Footer />
     </>
