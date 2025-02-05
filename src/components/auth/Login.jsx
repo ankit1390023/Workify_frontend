@@ -6,15 +6,16 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { FcGoogle } from "react-icons/fc";
-import { GrLinkedin } from "react-icons/gr";
-import { FaGithub } from "react-icons/fa6";
 import axios from "axios";
 import Loader from "../ui/Loader";
 import { API_END_POINT } from "@/utils/constant";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/authSlice";
+import { motion } from "framer-motion";
+import { FcGoogle } from "react-icons/fc";
+import { GrLinkedin } from "react-icons/gr";
+import { FaGithub } from "react-icons/fa6";
 
 const formSchema = z.object({
     identifier: z
@@ -39,20 +40,17 @@ const Login = () => {
         resolver: zodResolver(formSchema),
     });
     const dispatch = useDispatch();
-
-
-    const navigate = useNavigate();
     const { loginWithRedirect } = useAuth0();
-
+    const navigate = useNavigate();
     const onSubmit = async (data) => {
         try {
             const response = await axios.post(`${API_END_POINT}/user/login`, data);
             if (response.data.success) {
                 dispatch(setUser(response.data.data.user));
-                localStorage.setItem("acessToken", response.data.data.accessToken)
-                localStorage.setItem("refreshToken", response.data.data.refreshToken)
+                localStorage.setItem("accessToken", response.data.data.accessToken);
+                localStorage.setItem("refreshToken", response.data.data.refreshToken);
+                navigate('/')
                 toast.success(response.data.message || "Login successful");
-                navigate("/");
             } else {
                 toast.error(response.data.message || "Invalid credentials");
             }
@@ -61,112 +59,147 @@ const Login = () => {
         }
     };
 
-
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900 py-6 transition-all duration-500">
-            <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-xl rounded-lg p-8 sm:p-10 transition-transform transform hover:scale-105 hover:shadow-2xl">
-                {isSubmitting && <Loader message="Submitting..." />}
-
-
-
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                    <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200 text-center mb-6 transform transition-all duration-500 ease-in-out hover:text-indigo-600">
-                        Login
-                    </h1>
-
-                    {/* Identifier */}
-                    <div>
-                        <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email or Phone Number</Label>
-                        <Input
-                            {...register("identifier")}
-                            type="text"
-                            placeholder="Enter your email or phone number"
-                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-md focus:ring-2 focus:ring-indigo-600 focus:outline-none dark:bg-gray-700 dark:text-gray-200 transition-all duration-300 ease-in-out transform hover:scale-105"
-                        />
-                        {errors.identifier && <p className="text-red-500 text-sm mt-1">{errors.identifier.message}</p>}
-                    </div>
-
-                    {/* Password */}
-                    <div>
-                        <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</Label>
-                        <Input
-                            {...register("password")}
-                            type="password"
-                            placeholder="Enter your password"
-                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-md focus:ring-2 focus:ring-indigo-600 focus:outline-none dark:bg-gray-700 dark:text-gray-200 transition-all duration-300 ease-in-out transform hover:scale-105"
-                        />
-                        {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
-                    </div>
-
-                    {/* Role Selection */}
-                    <div className="mb-4">
-                        <Label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Select Your Role</Label>
-                        <div className="flex gap-4 items-center">
-                            <label className="flex items-center space-x-2">
-                                <Input
-                                    {...register("role")}
-                                    type="radio"
-                                    value="student"
-                                    className="h-3 w-3 rounded-full text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 dark:text-blue-400"
-                                />
-                                <span className="text-gray-700 dark:text-gray-300 text-sm">Student</span>
-                            </label>
-                            <label className="flex items-center space-x-2">
-                                <Input
-                                    {...register("role")}
-                                    type="radio"
-                                    value="recruiter"
-                                    className="h-3 w-3 rounded-full text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 dark:text-blue-400"
-                                />
-                                <span className="text-gray-700 dark:text-gray-300 text-sm">Recruiter</span>
-                            </label>
-                        </div>
-                        {errors.role && <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>}
-                    </div>
-
-                    {/* Submit Button */}
-                    <Button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full py-3 bg-indigo-800 text-white font-semibold text-lg rounded-lg shadow-lg hover:bg-indigo-900 transition-all duration-500 ease-in-out hover:shadow-2xl"
+        <motion.div className="flex flex-col items-center min-h-screen px-4 py-6 dark:bg-gray-900"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+        >
+            {/* Header Section */}
+            {/* Header Section */}
+            <motion.header
+                className="w-full max-w-3xl text-center"
+                variants={itemVariants}
+            >
+                <h1 className="text-3xl font-extrabold text-blue-600 dark:text-white">
+                    Welcome to Workify
+                </h1>
+                <p className="font-semibold text-xl mt-2">
+                    Start your journey today!{" "}
+                    <motion.span
+                        animate={{ rotate: [0, 20, -20, 0], scale: [1, 1.2, 1] }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                        style={{ display: "inline-block" }} // Ensures the span can be animated
                     >
-                        {isSubmitting ? "Submitting..." : "Login"}
-                    </Button>
+                        👍
+                    </motion.span>
+                </p>
+            </motion.header>
 
-                    {/* Social Logins */}
-                    <div className="space-y-4 mt-4">
-                        <Button
-                            type="button"
-                            className="w-full flex items-center justify-center py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-300"
-                            onClick={() => loginWithRedirect()}
-                        >
-                            <FcGoogle className="mr-2 text-xl" /> Login with Google
-                        </Button>
-                        <Button
-                            type="button"
-                            className="w-full flex items-center justify-center py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-300"
-                        >
-                            <GrLinkedin className="mr-2 text-xl text-blue-600" /> Login with LinkedIn
-                        </Button>
-                        <Button
-                            type="button"
-                            className="w-full flex items-center justify-center py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-300"
-                        >
-                            <FaGithub className="mr-2 text-xl text-gray-700 dark:text-gray-300" /> Login with GitHub
-                        </Button>
-                    </div>
-
-                    {/* Sign Up Link */}
-                    <p className="text-center text-sm mt-6">
-                        Don&apos;t have an account?{" "}
-                        <Link to="/signUp" className="text-indigo-600 hover:underline dark:text-indigo-400">
-                            Sign Up
-                        </Link>
+            {/* Login Section */}
+            <div className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-between bg-white dark:bg-gray-800 rounded-lg px-6 py-6 md:px-8 md:py-8">
+                <div className="w-full md:w-1/2 p-6">
+                    <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-4">Login</h2>
+                    <p className="text-sm mb-6">
+                        Don&apos;t have an account?
+                        <Link to="/signUp" className="text-blue-700 hover:underline dark:text-blue-400 font-bold"> Sign Up</Link>
                     </p>
-                </form>
+                    {isSubmitting && <Loader message="Submitting..." />}
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                        {/* Identifier */}
+                        <div>
+                            <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Email or Phone Number
+                            </Label>
+                            <Input
+                                {...register("identifier")}
+                                type="text"
+                                placeholder="Enter your email or phone number"
+                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-md focus:ring-2 focus:ring-indigo-600 focus:outline-none dark:bg-gray-700 dark:text-gray-200"
+                            />
+                            {errors.identifier && <p className="text-red-500 text-sm mt-1">{errors.identifier.message}</p>}
+                        </div>
+
+                        {/* Password */}
+                        <div>
+                            <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</Label>
+                            <Input
+                                {...register("password")}
+                                type="password"
+                                placeholder="Enter your password"
+                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-md focus:ring-2 focus:ring-indigo-600 focus:outline-none dark:bg-gray-700 dark:text-gray-200"
+                            />
+                            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+                        </div>
+                        <div className="mb-4">
+                            <Label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">Select Your Role</Label>
+                            <div className="flex items-center justify-between">
+                                <div className="flex gap-4 items-center">
+                                    <label className="flex items-center space-x-2">
+                                        <Input
+                                            {...register("role")}
+                                            type="radio"
+                                            value="student"
+                                            className="h-3 w-3 rounded-full text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                        />
+                                        <span className="text-gray-700 dark:text-gray-300 text-sm">Student</span>
+                                    </label>
+                                    <label className="flex items-center space-x-2">
+                                        <Input
+                                            {...register("role")}
+                                            type="radio"
+                                            value="recruiter"
+                                            className="h-3 w-3 rounded-full text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                        />
+                                        <span className="text-gray-700 dark:text-gray-300 text-sm">Recruiter</span>
+                                    </label>
+                                </div>
+                                <div className="text-sm text-end">
+                                    <Link className="font-medium text-indigo-600 hover:text-indigo-500">
+                                        Forgot password?
+                                    </Link>
+                                </div>
+                            </div>
+                            {errors.role && <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>}
+                        </div>
+                        {errors.role && <p className="text-red-500 text-sm">{errors.role.message}</p>}
+                        <Button type="submit" disabled={isSubmitting} className="w-full py-3  bg-blue-600 text-white text-lg font-semibold rounded-lg transition-all duration-300 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-800">
+                            {isSubmitting ? "Submitting..." : "Login"}
+                        </Button>
+                    </form>
+                    <div className="relative mt-4">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-300" />
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                            <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                        </div>
+                    </div>
+                    <div className="flex justify-center mt-4 gap-6">
+                        <FcGoogle className="text-2xl cursor-pointer" />
+                        <GrLinkedin className="text-2xl text-blue-600 cursor-pointer" />
+                        <FaGithub className="text-2xl dark:text-gray-300 cursor-pointer" />
+                    </div>
+                </div>
+                <div className="hidden md:flex md:w-1/2 justify-center">
+                    <motion.img src="login.png" alt="Login Illustration" className="max-w-full h-auto" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.8 }} />
+                </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 
 export default Login;
+
+
+
+// Framer Motion variants for staggered animations
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.2,
+            when: "beforeChildren",
+        },
+    },
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.6 }
+    },
+};

@@ -43,12 +43,12 @@ const Header = () => {
   // Handle user logout
   const handleLogout = async () => {
     try {
-      const accessToken = localStorage.getItem("acessToken"); // Retrieve access token
-
+      const accessToken = localStorage.getItem("accessToken"); // Retrieve access token
+      console.log("accessToken from handleLogout", accessToken);
       const response = await axios.post(
         `${API_END_POINT}/user/logout`,
         {},
-         {
+        {
           headers: {
             Authorization: `Bearer ${accessToken}`, // Send token in headers
           },

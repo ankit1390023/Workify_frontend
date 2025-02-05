@@ -6,10 +6,12 @@ import { setAllJobs } from "@/redux/jobSlice";
 import { API_END_POINT } from "@/utils/constant";
 
 const useGetAllJobs = () => {
+    console.log("kjwec jkec")
     const dispatch = useDispatch();
     const { searchQuery } = useSelector((state) => state.job)
     useEffect(() => {
         const fetchAllJobs = async () => {
+
             const response = await axios.get(`${API_END_POINT}/job/allJobs?keyword=${searchQuery}`,
                 {
                     headers: {
@@ -26,7 +28,7 @@ const useGetAllJobs = () => {
 
         };
         fetchAllJobs();
-    }, []); // Ensure no stale dispatch
+    }, [dispatch,searchQuery]); // Ensure no stale dispatch
 };
 
 export default useGetAllJobs;

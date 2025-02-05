@@ -10,6 +10,9 @@ import AppliedJobsTable from "../AppliedJobsTable";
 import UpdateProfileDialog from "../UpdateProfileDialog";
 import { useSelector } from "react-redux";
 import { API_END_POINT } from '@/utils/constant';
+import Header from "../shared/Header";
+import Footer from "../shared/Footer";
+import Chat from "../ai/Chat";
 const MAX_FILE_SIZE_MB = 5;
 
 const Profile = () => {
@@ -71,6 +74,8 @@ const Profile = () => {
         }`;
 
     return (
+        <div>
+            <Header/>
         <div className="max-w-6xl mx-auto my-8 bg-white dark:bg-gray-900 rounded-lg">
             <div className="relative h-48 bg-gradient-to-r from-blue-300 via-purple-400 to-pink-300 dark:from-blue-600 dark:via-purple-700 dark:to-pink-600 rounded-t-lg">
                 {user?.profile?.coverImage && (
@@ -160,6 +165,9 @@ const Profile = () => {
             )}
 
             <UpdateProfileDialog open={open} setOpen={setOpen} />
+            </div>
+            <Chat />
+            <Footer/>
         </div>
     );
 };

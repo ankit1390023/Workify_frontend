@@ -4,6 +4,9 @@ import Job from './Job';
 import { ScrollArea } from './ui/scroll-area';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import Header from './shared/Header';
+import Footer from './shared/Footer';
+import Chat from './ai/Chat';
 
 const Jobs = () => {
   const { allJobs, searchQuery } = useSelector((state) => state.job);
@@ -100,38 +103,43 @@ const Jobs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8">
-        {/* Filter Section */}
-        <div className="w-full lg:w-1/4 flex-shrink-0 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
-          <FilterCard onFilterChange={handleFilterChange} />
-        </div>
+    <div>
+      <Header />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8">
+          {/* Filter Section */}
+          <div className="w-full lg:w-1/4 flex-shrink-0 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+            <FilterCard onFilterChange={handleFilterChange} />
+          </div>
 
-        {/* Jobs List */}
-        <div className="flex-1">
-          <ScrollArea className="h-[calc(100vh-2.5rem)] pr-4">
-            <div className="space-y-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filterJob.length > 0 ? (
-                filterJob.map((job) =>
-                  <motion.div
-                    initial={{ opacity: 0, x: 100 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.8 }}
-                    className="flex-shrink-0"
-                    as={motion.div}
-                    key={job._id}>
-                    <Job  {...job} />
-                  </motion.div>
-                 )
-              ) : (
-                <p className="text-gray-500 text-center col-span-full">No jobs found.</p>
-              )}
-            </div>
-          </ScrollArea>
+          {/* Jobs List */}
+          <div className="flex-1">
+            <ScrollArea className="h-[calc(100vh-2.5rem)] pr-4">
+              <div className="space-y-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filterJob.length > 0 ? (
+                  filterJob.map((job) =>
+                    <motion.div
+                      initial={{ opacity: 0, x: 100 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.8 }}
+                      className="flex-shrink-0"
+                      as={motion.div}
+                      key={job._id}>
+                      <Job  {...job} />
+                    </motion.div>
+                  )
+                ) : (
+                  <p className="text-gray-500 text-center col-span-full">No jobs found.</p>
+                )}
+              </div>
+            </ScrollArea>
+          </div>
         </div>
       </div>
+      <Chat />
+      <Footer />
     </div>
-  );
+      );
 };
 
-export default Jobs;
+      export default Jobs;

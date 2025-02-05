@@ -5,6 +5,10 @@ import { ScrollArea } from './ui/scroll-area';
 import { setSearchQuery } from '@/redux/jobSlice';
 import { motion } from 'framer-motion';
 
+import Footer from './shared/Footer';
+import Header from './shared/Header';
+import Chat from './ai/Chat';
+
 const Browse = () => {
   const dispatch = useDispatch();
   const { allJobs, searchQuery, isLoading } = useSelector(state => state.job);
@@ -24,6 +28,8 @@ const Browse = () => {
   }, []);  // Empty dependency array means this runs only on unmount
 
   return (
+    <div>
+    <Header/>
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <header className="bg-blue-500 dark:bg-blue-700 text-white py-6">
         <div className="container mx-auto px-4 text-center">
@@ -71,7 +77,10 @@ const Browse = () => {
             </ScrollArea>
           </section>
         )}
-      </main>
+        </main>
+        <Chat />
+      </div>
+      <Footer />
     </div>
   );
 };
