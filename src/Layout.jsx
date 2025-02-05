@@ -8,11 +8,12 @@ import Chat from './components/ai/Chat'
 
 
 const Layout = () => {
-  useGetAllJobs() // Fetch all jobs on component mount
+
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   
   useEffect(() => {
+    useGetAllJobs() // Fetch all jobs on component mount
     // Navigate to admin/companies if user is a recruiter
     if (user && user?.role == 'recruiter') {
      navigate('admin/companies');
