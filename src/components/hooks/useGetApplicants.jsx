@@ -13,7 +13,6 @@ const useGetAllApplicants = (jobId) => {
         const fetchAllApplicants = async () => {
             try {
                 const response = await axios.get(`${API_END_POINT}/application/${jobId}/getApplicants`, {
-                    withCredentials: true,
                     headers: {
                         "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
                     }

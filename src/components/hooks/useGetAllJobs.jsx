@@ -13,7 +13,6 @@ const useGetAllJobs = () => {
 
             const response = await axios.get(`${API_END_POINT}/job/allJobs?keyword=${searchQuery}`,
                 {
-                    withCredentials: true,
                     headers: {
                         "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
                     }

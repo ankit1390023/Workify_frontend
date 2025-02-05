@@ -12,7 +12,6 @@ const useGetAllCompany = () => {
         const fetchAllCompany = async () => {
 
             const response = await axios.get(`${API_END_POINT}/company/get`, {
-                withCredentials: true,
                 headers: {
                     "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
                 }

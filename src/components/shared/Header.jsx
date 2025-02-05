@@ -48,8 +48,7 @@ const Header = () => {
       const response = await axios.post(
         `${API_END_POINT}/user/logout`,
         {},
-        {
-          withCredentials: true, // Ensure cookies are sent
+         {
           headers: {
             Authorization: `Bearer ${accessToken}`, // Send token in headers
           },

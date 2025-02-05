@@ -12,7 +12,6 @@ const useGetJobByAdmin = () => {
         const fetchGetAdminJobs = async () => {
             try {
                 const response = await axios.get(`${API_END_POINT}/job/getJobByAdmin`, {
-                    withCredentials: true,
                     headers: {
                         "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
                     }

@@ -13,7 +13,6 @@ const useGetSingleJobs = (jobId) => {
 
             const response = await axios.get(`${API_END_POINT}//job/getJobById/${jobId}`,
                 {
-                    withCredentials: true,
                     headers: {
                         "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
                     }

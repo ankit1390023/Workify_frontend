@@ -14,7 +14,6 @@ const useGetSingleCompany = (companyId) => {
 
            try {
                const response = await axios.get(`${API_END_POINT}/company/get/${companyId}`, {
-                   withCredentials: true,
                    headers: {
                        "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
                    }
