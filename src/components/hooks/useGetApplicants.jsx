@@ -14,7 +14,7 @@ const useGetAllApplicants = (jobId) => {
             try {
                 const response = await axios.get(`${API_END_POINT}/application/${jobId}/getApplicants`, {
                     headers: {
-                        "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+                        "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
                     }
                 });
                 console.log("Response from fetchAllApplicants:", response?.data?.data?.applications);

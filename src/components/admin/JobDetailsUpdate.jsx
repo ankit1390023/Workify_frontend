@@ -13,6 +13,8 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../ui/Loader";
 import useGetSingleJobs from "../hooks/useGetSingleJob";
+import Header from "../shared/Header";
+import Footer from "../shared/Footer";
 
 // Zod Schema for Validation
 const jobUpdateSchema = z.object({
@@ -70,7 +72,7 @@ const JobDetailsUpdate = () => {
             const response = await axios.post(`${API_END_POINT}/job/post`, data, {
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+                    "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
                 },
             });
             console.log("response from JOB POSTING", data);
@@ -98,6 +100,8 @@ const JobDetailsUpdate = () => {
     };
 
     return (
+        <div>
+            <Header/>
         <div className="p-10 max-w-5xl mx-auto bg-white rounded-lg">
             <h1 className="text-3xl font-semibold text-gray-800 mb-8 text-center">
                 Update a Job Post
@@ -269,6 +273,8 @@ const JobDetailsUpdate = () => {
                     </Button>
                 </div>
             </form>
+            </div>
+            <Footer/>
         </div>
     );
 };

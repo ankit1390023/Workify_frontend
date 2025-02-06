@@ -13,7 +13,7 @@ const useGetAllCompany = () => {
 
             const response = await axios.get(`${API_END_POINT}/company/get`, {
                 headers: {
-                    "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+                    "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
                 }
              });
             // console.log("response from customHooks is", response);

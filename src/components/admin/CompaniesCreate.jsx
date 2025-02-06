@@ -13,6 +13,8 @@ import { toast } from 'sonner';
 import Loader from '../ui/Loader';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoading } from '@/redux/authSlice';
+import Header from '../shared/Header';
+import Footer from '../shared/Footer';
 
 // Define the schema using Zod
 const companySchema = z.object({
@@ -46,7 +48,7 @@ const CompaniesCreate = () => {
       const res = await axios.post(`${API_END_POINT}/company/register`, formData, {
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+          "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
         },
       });
 
@@ -65,6 +67,8 @@ const CompaniesCreate = () => {
   };
 
   return (
+    <div>
+      <Header/>
     <div className="max-w-4xl mx-auto p-8 my-10 bg-white rounded-lg ">
       <h1 className="text-3xl font-semibold text-gray-800 mb-4">Register a New Company</h1>
       <p className="text-gray-600 text-sm mb-6">
@@ -146,6 +150,8 @@ const CompaniesCreate = () => {
       </form>
       {/* Show Loader */}
       {isSubmitting && <Loader message="Submitting..." />} 
+      </div>
+      <Footer/>
     </div>
   );
 };

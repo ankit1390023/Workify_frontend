@@ -13,6 +13,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { setLoading } from "@/redux/authSlice";
 import Loader from "../ui/Loader";
+import Header from "../shared/Header";
+import Footer from "../shared/Footer";
 
 // Zod Schema for Validation
 const jobPostSchema = z.object({
@@ -49,7 +51,7 @@ const JobPost = () => {
      const response = await axios.post(`${API_END_POINT}/job/post`, data, {
        headers: {
          "Content-Type": "application/json",
-         "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+         "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
        },
      });
      console.log("response from JOB POSTING", data);
@@ -77,6 +79,8 @@ const JobPost = () => {
   };
 
   return (
+    <div>
+      <Header/>
     <div className="p-10 max-w-5xl mx-auto bg-white rounded-lg">
       <h1 className="text-3xl font-semibold text-gray-800 mb-8 text-center">
         Create a Job Post
@@ -248,6 +252,8 @@ const JobPost = () => {
           </Button>
         </div>
       </form>
+      </div>
+      <Footer/>
     </div>
   );
 };

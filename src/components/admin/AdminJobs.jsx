@@ -6,6 +6,8 @@ import useGetJobByAdmin from '../hooks/useGetJobByAdmin';
 import AdminJobsTable from './AdminJobsTable';
 import { setSearchJobByText } from '@/redux/jobSlice';
 import { useEffect, useState } from 'react';
+import Header from '../shared/Header';
+import Footer from '../shared/Footer';
 
 
 const AdminJobs = () => {
@@ -18,6 +20,8 @@ const AdminJobs = () => {
     }, [input, setInput])
 
     return (
+        <div>
+            <Header/>
         <div className='max-w-4xl max-h-full  py-6 mx-auto '>
             <div className='flex  justify-center'>
                 <Input
@@ -41,6 +45,8 @@ const AdminJobs = () => {
             </div>
             <h1 className='text-center text-2xl my-5 '>List of Jobs Created By Admin</h1>
             <AdminJobsTable/>
+            </div>
+            <Footer/>
         </div>
     )
 }

@@ -13,11 +13,12 @@ const useGetJobByAdmin = () => {
             try {
                 const response = await axios.get(`${API_END_POINT}/job/getJobByAdmin`, {
                     headers: {
-                        "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+                        "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
                     }
                  });
                 // console.log("response from getJobByAdmin", response);
-                if (response?.data?.success) { // Safely access response.data.success
+                if (response?.data?.success) {
+    
                     console.log("useGetAllJObByAdmin", response.data.data);
                     dispatch(setAllAdminJobs(response.data.data)); // Dispatch jobs to Redux
                     toast.success("All admin Jobs fetched successfully!"); // Success toast

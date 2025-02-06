@@ -33,9 +33,6 @@ const AdminJobsTable = () => {
     return (
         <div className="overflow-x-auto p-4">
             <Table className="min-w-full bg-white shadow-lg rounded-lg">
-                <TableCaption className="text-left text-xl font-semibold text-gray-800">
-                    * List of Posted Jobs by Admin
-                </TableCaption>
                 <TableHeader>
                     <TableRow className="bg-blue-600 text-white">
                         <TableHead className="w-[80px] font-semibold">No.</TableHead>

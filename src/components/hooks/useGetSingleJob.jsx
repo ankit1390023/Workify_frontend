@@ -14,7 +14,7 @@ const useGetSingleJobs = (jobId) => {
             const response = await axios.get(`${API_END_POINT}//job/getJobById/${jobId}`,
                 {
                     headers: {
-                        "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+                        "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
                     }
                  });
             // console.log("response from customHooks is", response);

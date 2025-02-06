@@ -14,6 +14,8 @@ import Loader from '../ui/Loader';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoading } from '@/redux/authSlice';
 import useGetSingleCompany from '../hooks/useGetSigleCompany';
+import Header from '../shared/Header';
+import Footer from '../shared/Footer';
 
 
 // Define the schema using Zod
@@ -80,7 +82,7 @@ const CompanyDetailsUpdate = () => {
       const res = await axios.post(`${API_END_POINT}/company/update/${companyId}`, formData, {
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+          "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
         },
       });
 
@@ -97,6 +99,8 @@ const CompanyDetailsUpdate = () => {
   };
 
   return (
+    <div>
+      <Header/>
     <div className="max-w-4xl mx-auto p-8 my-10 bg-white rounded-lg">
       <h1 className="text-3xl font-semibold text-gray-800 mb-4">Update Company Details</h1>
       <p className="text-gray-600 text-sm mb-6">
@@ -191,6 +195,8 @@ const CompanyDetailsUpdate = () => {
 
       {/* Show Loader */}
       {isSubmitting && <Loader message="Submitting..." />}
+      </div>
+      <Footer/>
     </div>
   );
 };

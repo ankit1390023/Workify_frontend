@@ -26,7 +26,7 @@ const AppliedJobsTable = () => {
                     `${API_END_POINT}/application/getAppliedJobs`,
                     {
                         headers: {
-                            "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+                            "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
                         },
                     }
                 );
