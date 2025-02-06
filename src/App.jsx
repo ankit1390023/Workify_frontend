@@ -16,7 +16,7 @@ import PostJobs from './components/admin/PostJobs';
 import JobDetailsUpdate from './components/admin/JobDetailsUpdate';
 import Applicants from './components/admin/Applicants';
 import ApplicantsCards from './components/admin/ApplicantCard';
-import ProtectedRoute from './components/admin/ProtectedRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const appRouter = createBrowserRouter([
   // Public Routes

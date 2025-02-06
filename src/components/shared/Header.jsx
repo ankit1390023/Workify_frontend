@@ -120,7 +120,6 @@ const Header = () => {
               </NavLink>
             ))
             : [
-              { name: "Home", path: "/home" },
               { name: "Companies", path: "/admin/companies" },
               { name: "Jobs", path: "/admin/jobs" },
             ].map(({ name, path }) => (
