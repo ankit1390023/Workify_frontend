@@ -8,6 +8,7 @@ import { setSearchCompanyByText } from '@/redux/companySlice';
 import { useEffect, useState } from 'react';
 import Header from '../shared/Header';
 import Footer from '../shared/Footer';
+import Chat from '../ai/Chat';
 
 
 const Companies = () => {
@@ -46,7 +47,8 @@ const Companies = () => {
         </Button>
       </div>
       <h1 className='text-center text-2xl my-5 '>Registered Companies</h1>
-      <CompaniesTable />
+        <CompaniesTable />
+        <Chat/>
       </div>
       <Footer/>
     </div>

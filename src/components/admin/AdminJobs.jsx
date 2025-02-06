@@ -8,6 +8,7 @@ import { setSearchJobByText } from '@/redux/jobSlice';
 import { useEffect, useState } from 'react';
 import Header from '../shared/Header';
 import Footer from '../shared/Footer';
+import Chat from '../ai/Chat';
 
 
 const AdminJobs = () => {
@@ -44,7 +45,8 @@ const AdminJobs = () => {
                 </Button>
             </div>
             <h1 className='text-center text-2xl my-5 '>List of Jobs Created By Admin</h1>
-            <AdminJobsTable/>
+                <AdminJobsTable />
+                <Chat/>
             </div>
             <Footer/>
         </div>

@@ -196,16 +196,17 @@ const Header = () => {
 
       {menuOpen && (
         <nav className="md:hidden bg-white dark:bg-gray-800 p-4 shadow-lg space-y-2">
-          {["Home", "Contact", "Jobs", "Browse"].map((link) => (
-            <Link
-              key={link}
-              to={`/${link.toLowerCase()}`}
-              className="block py-2 text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-blue-700 rounded-md"
-              onClick={() => setMenuOpen(false)}
-            >
-              {link}
-            </Link>
-          ))}
+          {user?.role === "recruiter"
+            ? ["Companies", "Jobs"].map((link) => (
+              <Link key={link} to={`/admin/${link.toLowerCase()}`} className="block py-2 rounded-md">
+                {link}
+              </Link>
+            ))
+            : ["Home", "Contact", "Jobs", "Browse"].map((link) => (
+              <Link key={link} to={`/${link.toLowerCase()}`} className="block py-2 rounded-md">
+                {link}
+              </Link>
+            ))}
         </nav>
       )}
     </header>
