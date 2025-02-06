@@ -104,22 +104,8 @@ const Header = () => {
         </div>
 
         <nav className="hidden md:flex space-x-6 text-lg">
-          {user && user.role === "student"
-            ? ["Home", "Contact", "Jobs", "Browse"].map((link) => (
-              <NavLink
-                key={link}
-                to={`/${link.toLowerCase()}`}
-                className={({ isActive }) =>
-                  `py-2 px-4 transition-colors duration-200 ${isActive
-                    ? "text-yellow-500 dark:text-yellow-400 border-b-2 border-yellow-500"
-                    : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-                  }`
-                }
-              >
-                {link}
-              </NavLink>
-            ))
-            : [
+          {user && user.role === "recruiter"
+            ? [
               { name: "Companies", path: "/admin/companies" },
               { name: "Jobs", path: "/admin/jobs" },
             ].map(({ name, path }) => (
@@ -134,6 +120,19 @@ const Header = () => {
                 }
               >
                 {name}
+              </NavLink>
+            )):["Home", "Contact", "Jobs", "Browse"].map((link) => (
+              <NavLink
+                key={link}
+                to={`/${link.toLowerCase()}`}
+                className={({ isActive }) =>
+                  `py-2 px-4 transition-colors duration-200 ${isActive
+                    ? "text-yellow-500 dark:text-yellow-400 border-b-2 border-yellow-500"
+                    : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                  }`
+                }
+              >
+                {link}
               </NavLink>
             ))}
         </nav>
