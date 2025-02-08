@@ -47,7 +47,7 @@ const JobDescription = () => {
             const response = await axios.get(`${API_END_POINT}/application/applyJob/${jobId}`,
                 {
                     headers: {
-                        "Authorization": `Bearer ${localStorage.getItem('acessToken')}`
+                        "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
                     },
                 }
             );
