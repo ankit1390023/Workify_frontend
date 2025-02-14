@@ -81,7 +81,7 @@ const CompanyDetailsUpdate = () => {
     try {
       const res = await axios.post(`${API_END_POINT}/company/update/${companyId}`, formData, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
           "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
         },
       });
