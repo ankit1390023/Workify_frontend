@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,61 +28,17 @@ const Profile = () => {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isCoverUploading, setIsCoverUploading] = useState(false);
     const [coverUploadProgress, setCoverUploadProgress] = useState(0);
+    const [stats, setStats] = useState({
+        totalAppliedJobs: 0,
+        totalInterviews: 0,
+        profileScore: 0
+    });
+    const [loading, setLoading] = useState(true);
 
     // Default professional cover image
     const defaultCoverImage = "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80";
 
-    const onDrop = useCallback(async (acceptedFiles) => {
-        if (acceptedFiles.length > 0) {
-            const file = acceptedFiles[0];
 
-            if (file.size / 1024 / 1024 > MAX_FILE_SIZE_MB) {
-                toast.error("File size exceeds 5MB limit.");
-                return;
-            }
-
-            setResume(file);
-            console.log("Selected file:", file);
-
-            const formData = new FormData();
-            formData.append("resume", file);
-
-            try {
-                setIsUploading(true);
-                setUploadProgress(0);
-                const response = await axios.patch(
-                    `${API_END_POINT}/user/update-account`,
-                    formData,
-                    {
-                        headers: { 'Content-Type': 'multipart/form-data' },
-                        onUploadProgress: (progressEvent) => {
-                            const progress = Math.round(
-                                (progressEvent.loaded * 100) / progressEvent.total
-                            );
-                            setUploadProgress(progress);
-                        },
-                    }
-                );
-
-                console.log("File uploaded successfully:", response.data);
-                toast.success("Resume uploaded successfully!");
-            } catch (error) {
-                console.error("Error uploading resume:", error.response?.data || error.message);
-                toast.error("Failed to upload resume. Please try again.");
-            } finally {
-                setIsUploading(false);
-                setUploadProgress(0);
-            }
-        }
-    }, []);
-
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop,
-        accept: {
-            "application/pdf": [".pdf"],
-            "application/msword": [".doc", ".docx"],
-        },
-    });
 
     const getDropzoneClasses = () =>
         `border-dashed border-2 p-4 rounded-lg transition-all duration-300 ${
@@ -290,7 +246,11 @@ const Profile = () => {
                                         </div>
                                         <div>
                                             <p className="text-gray-500 dark:text-gray-400">Applied Jobs</p>
-                                            <p className="text-2xl font-bold text-gray-900 dark:text-white">12</p>
+                                            {loading ? (
+                                                <div className="animate-pulse h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                            ) : (
+                                                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalAppliedJobs}</p>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 hover:scale-[1.02] transition-all duration-300">
@@ -299,7 +259,11 @@ const Profile = () => {
                                         </div>
                                         <div>
                                             <p className="text-gray-500 dark:text-gray-400">Interviews</p>
-                                            <p className="text-2xl font-bold text-gray-900 dark:text-white">5</p>
+                                            {loading ? (
+                                                <div className="animate-pulse h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                            ) : (
+                                                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalInterviews}</p>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 hover:scale-[1.02] transition-all duration-300">
@@ -308,7 +272,11 @@ const Profile = () => {
                                         </div>
                                         <div>
                                             <p className="text-gray-500 dark:text-gray-400">Profile Score</p>
-                                            <p className="text-2xl font-bold text-gray-900 dark:text-white">85%</p>
+                                            {loading ? (
+                                                <div className="animate-pulse h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                            ) : (
+                                                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.profileScore}%</p>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -333,10 +301,10 @@ const Profile = () => {
                                         <a
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            href={`${user?.profile?.resume}?fl_attachment=false`}
+                                            href={`${user?.profile?.resume}?fl_attachment=false&preview=true`}
                                             className="text-blue-600 dark:text-blue-400 hover:underline"
                                         >
-                                            Download
+                                            View Resume
                                         </a>
                                     </div>
                                 ) : (

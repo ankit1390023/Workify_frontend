@@ -114,7 +114,8 @@ const ApplicantsTable = () => {
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="text-blue-600 dark:text-blue-400 hover:underline"
-                                                href={`${item?.applicant?.profile?.resume}?fl_attachment=false`}
+                                                href={item?.applicant?.profile?.resume}
+                                                download={item?.applicant?.profile?.resumeOriginalName}
                                             >
                                                 {item?.applicant?.profile?.resumeOriginalName}
                                             </a>
@@ -156,6 +157,7 @@ const ApplicantsTable = () => {
                                             </SelectTrigger>
                                             <SelectContent className="bg-background text-foreground">
                                                 <SelectItem value="pending">Pending</SelectItem>
+                                                <SelectItem value="selected">Selected</SelectItem>
                                                 <SelectItem value="accepted">Accepted</SelectItem>
                                                 <SelectItem value="rejected">Rejected</SelectItem>
                                                 <SelectItem value="interview">Interview</SelectItem>

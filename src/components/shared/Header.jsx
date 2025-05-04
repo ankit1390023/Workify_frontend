@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
-import { Bell, Menu, X } from "lucide-react";
+import { Bell, Menu, X, ChevronDown } from "lucide-react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -12,6 +12,12 @@ import axios from "axios";
 import { setUser } from "@/redux/authSlice";
 import { setSearchQuery } from "@/redux/jobSlice";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -116,21 +122,59 @@ const Header = () => {
                 {link}
               </NavLink>
             ))
-            : ["Home", "Contact", "Jobs", "Browse"].map((link) => (
-              <NavLink
-                key={link}
-                to={`/${link.toLowerCase()}`}
-                className={({ isActive }) =>
-                  `py-2 px-4 transition-colors duration-200 ${
-                    isActive
-                      ? "text-yellow-500 border-b-2 border-yellow-500"
-                      : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-                  }`
-                }
-              >
-                {link}
-              </NavLink>
-            ))}
+            : (
+              <>
+                <NavLink
+                  to="/"
+                  className={({ isActive }) =>
+                    `py-2 px-4 transition-colors duration-200 ${
+                      isActive
+                        ? "text-yellow-500 border-b-2 border-yellow-500"
+                        : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                    }`
+                  }
+                >
+                  Home
+                </NavLink>
+                <NavLink
+                  to="/jobs"
+                  className={({ isActive }) =>
+                    `py-2 px-4 transition-colors duration-200 ${
+                      isActive
+                        ? "text-yellow-500 border-b-2 border-yellow-500"
+                        : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                    }`
+                  }
+                >
+                  Jobs
+                </NavLink>
+                <NavLink
+                  to="/browse"
+                  className={({ isActive }) =>
+                    `py-2 px-4 transition-colors duration-200 ${
+                      isActive
+                        ? "text-yellow-500 border-b-2 border-yellow-500"
+                        : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                    }`
+                  }
+                >
+                  Browse
+                </NavLink>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="flex items-center gap-1 py-2 px-4 transition-colors duration-200 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+                    More <ChevronDown className="h-4 w-4" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem>
+                      <Link to="/dashboard" className="w-full">Dashboard</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link to="/contact" className="w-full">Contact</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            )}
         </nav>
 
         <div className="flex items-center space-x-4">

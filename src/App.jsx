@@ -18,6 +18,7 @@ import Applicants from './components/admin/Applicants';
 import ApplicantsCards from './components/admin/ApplicantCard';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ThemeProvider } from './context/ThemeContext';
+import Dashboard from './components/Dashboard';
 
 const appRouter = createBrowserRouter([
   // Public Routes
@@ -27,6 +28,7 @@ const appRouter = createBrowserRouter([
   { path: '/contact', element: <Contact /> },
   { path: '/jobs', element: <Jobs /> },
   { path: '/browse', element: <Browse /> },
+  { path: '/dashboard', element: <Dashboard /> },
 
   // Auth Routes
   { path: '/login', element: <Login /> },

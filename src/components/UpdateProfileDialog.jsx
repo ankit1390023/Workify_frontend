@@ -163,7 +163,7 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
                             id="resume"
                             name="resume"
                             type="file"
-                            accept="application/pdf"
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                             onChange={handleFileChange}
                             className="mt-2 p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600"
                         />
