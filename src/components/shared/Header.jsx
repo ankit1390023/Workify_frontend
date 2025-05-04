@@ -3,54 +3,57 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
-import { Bell, Moon, Sun, Menu } from "lucide-react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Bell, Menu, X } from "lucide-react";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { API_END_POINT } from "@/utils/constant";
 import axios from "axios";
 import { setUser } from "@/redux/authSlice";
 import { setSearchQuery } from "@/redux/jobSlice";
-import Darkmode from "../Darkmode";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const [query, setQuery] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
 
+  // Helper function to normalize search terms
+  const normalizeSearchTerm = (term) => {
+    return term.toLowerCase().replace(/\s+/g, '');
+  };
+
+  // Implement live search with debouncing
   useEffect(() => {
-    // Check the dark mode setting from local storage
-    const savedMode = localStorage.getItem('darkMode');
-    if (savedMode === 'enabled') {
-      setDarkMode(true);
-      document.documentElement.classList.add('dark');
-    } else {
-      setDarkMode(false);
-      document.documentElement.classList.remove('dark');
-    }
-  }, []);
+    const debounceTimer = setTimeout(() => {
+      dispatch(setSearchQuery(query));
+      // If we're not on the jobs page, navigate to it
+      if (!location.pathname.includes('/jobs') && query.trim() !== '') {
+        navigate('/jobs');
+      }
+    }, 300);
 
-  // Search company by text
-  const searchJobHandler = () => {
-    dispatch(setSearchQuery(query));
-    navigate("/browse");
+    return () => clearTimeout(debounceTimer);
+  }, [query, dispatch, navigate, location.pathname]);
+
+  const handleSearch = (e) => {
+    setQuery(e.target.value);
   };
 
   // Handle user logout
   const handleLogout = async () => {
     try {
-      const accessToken = localStorage.getItem("accessToken"); // Retrieve access token
-      console.log("accessToken from handleLogout", accessToken);
+      const accessToken = localStorage.getItem("accessToken");
       const response = await axios.post(
         `${API_END_POINT}/user/logout`,
         {},
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`, // Send token in headers
+            Authorization: `Bearer ${accessToken}`,
           },
         }
       );
@@ -69,9 +72,8 @@ const Header = () => {
     }
   };
 
-
   return (
-    <header className="bg-white dark:bg-black shadow-md sticky top-0 z-50 font-sans">
+    <header className="bg-background/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50 font-sans">
       <div className="flex justify-between items-center px-2 py-3 md:px-10 space-x-4">
         <div className="flex">
           <Button
@@ -80,55 +82,49 @@ const Header = () => {
             className="block md:hidden"
             onClick={() => setMenuOpen(!menuOpen)}
           >
-            <Menu size={24} className="text-gray-700 dark:text-gray-300" />
+            <Menu size={24} className="text-foreground" />
           </Button>
-          <Link to="/" className="text-2xl font-bold text-blue-600 dark:text-yellow-400">
-            <span className="text-yellow-500 dark:text-blue-300">Work</span>ify
+          <Link to="/" className="text-2xl font-bold text-primary">
+            <span className="text-yellow-500">Work</span>ify
           </Link>
         </div>
 
         <div className="hidden md:flex items-center w-1/3">
           <Input
-            onChange={(e) => setQuery(e.target.value)}
+            value={query}
+            onChange={handleSearch}
             type="text"
             placeholder="Search jobs, companies..."
-            className="w-full pl-4 border border-gray-300 dark:border-gray-600 focus:border-blue-600 rounded-md dark:bg-gray-700 dark:text-gray-300"
+            className="w-full pl-4 border border-gray-300 dark:border-gray-700 focus:border-blue-600 dark:focus:border-blue-500 rounded-md bg-background"
           />
-          <Button
-            onClick={searchJobHandler}
-            variant="default"
-            className="ml-2 px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
-          >
-            Search
-          </Button>
         </div>
 
         <nav className="hidden md:flex space-x-6 text-lg">
-          {user && user.role === "recruiter"
-            ? [
-              { name: "Companies", path: "/admin/companies" },
-              { name: "Jobs", path: "/admin/jobs" },
-            ].map(({ name, path }) => (
+          {user?.role === "recruiter"
+            ? ["Companies", "Jobs"].map((link) => (
               <NavLink
-                key={name}
-                to={path}
+                key={link}
+                to={`/admin/${link.toLowerCase()}`}
                 className={({ isActive }) =>
-                  `py-2 px-4 transition-colors duration-200 ${isActive
-                    ? "text-yellow-500 dark:text-yellow-400 border-b-2 border-yellow-500"
-                    : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                  `py-2 px-4 transition-colors duration-200 ${
+                    isActive
+                      ? "text-yellow-500 border-b-2 border-yellow-500"
+                      : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
                   }`
                 }
               >
-                {name}
+                {link}
               </NavLink>
-            )):["Home", "Contact", "Jobs", "Browse"].map((link) => (
+            ))
+            : ["Home", "Contact", "Jobs", "Browse"].map((link) => (
               <NavLink
                 key={link}
                 to={`/${link.toLowerCase()}`}
                 className={({ isActive }) =>
-                  `py-2 px-4 transition-colors duration-200 ${isActive
-                    ? "text-yellow-500 dark:text-yellow-400 border-b-2 border-yellow-500"
-                    : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                  `py-2 px-4 transition-colors duration-200 ${
+                    isActive
+                      ? "text-yellow-500 border-b-2 border-yellow-500"
+                      : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
                   }`
                 }
               >
@@ -138,34 +134,33 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center space-x-4">
-          <Darkmode darkMode={darkMode} setDarkMode={setDarkMode} />
-
+          <ThemeToggle />
           {!user ? (
             <Link to="/login">
-              <Button className="bg-blue-600 text-white hover:bg-blue-700 rounded-md">
+              <Button className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-md">
                 Login
               </Button>
             </Link>
           ) : (
             <Popover>
               <PopoverTrigger asChild>
-                <Avatar className="cursor-pointer">
+                <Avatar className="cursor-pointer ring-2 ring-blue-500 dark:ring-blue-400">
                   <AvatarImage src={user.profile?.avatar} alt="User Avatar" />
                   <AvatarFallback>AS</AvatarFallback>
                 </Avatar>
               </PopoverTrigger>
-              <PopoverContent className="w-64 p-4 bg-white dark:bg-gray-800 rounded-md shadow-lg">
+              <PopoverContent className="w-64 p-4 bg-background border border-gray-200 dark:border-gray-800 rounded-md shadow-lg">
                 <div className="flex flex-col items-center">
-                  <Avatar className="w-16 h-16">
+                  <Avatar className="w-16 h-16 ring-2 ring-blue-500 dark:ring-blue-400">
                     <AvatarImage src={user.profile?.avatar} alt="Profile Avatar" />
                     <AvatarFallback>AS</AvatarFallback>
                   </Avatar>
-                  <h4 className="mt-2 text-lg font-semibold text-gray-700 dark:text-gray-200">
+                  <h4 className="mt-2 text-lg font-semibold text-foreground">
                     {user?.fullName}
                   </h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{user?.email}</p>
+                  <p className="text-sm text-muted-foreground">{user?.email}</p>
 
-                  <div className="w-full mt-4 space-y-2 text-sm text-gray-800 dark:text-gray-300">
+                  <div className="w-full mt-4 space-y-2 text-sm text-foreground">
                     <div className="flex justify-between">
                       <span className="font-medium">Role:</span>
                       <span>{user.role}</span>
@@ -181,7 +176,7 @@ const Header = () => {
                     <Button
                       onClick={handleLogout}
                       variant="default"
-                      className="w-full bg-red-500 text-white hover:bg-red-600"
+                      className="w-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
                     >
                       Logout
                     </Button>
@@ -194,19 +189,63 @@ const Header = () => {
       </div>
 
       {menuOpen && (
-        <nav className="md:hidden bg-white dark:bg-gray-800 p-4 shadow-lg space-y-2">
-          {user?.role === "recruiter"
-            ? ["Companies", "Jobs"].map((link) => (
-              <Link key={link} to={`/admin/${link.toLowerCase()}`} className="block py-2 rounded-md">
-                {link}
-              </Link>
-            ))
-            : ["Home", "Contact", "Jobs", "Browse"].map((link) => (
-              <Link key={link} to={`/${link.toLowerCase()}`} className="block py-2 rounded-md">
-                {link}
-              </Link>
-            ))}
-        </nav>
+        <div className="md:hidden fixed inset-0 bg-background/95 z-50">
+          <div className="flex justify-between items-center p-4 border-b">
+            <Link to="/" className="text-2xl font-bold text-primary">
+              <span className="text-yellow-500">Work</span>ify
+            </Link>
+            <Button
+              variant="ghost"
+              onClick={() => setMenuOpen(false)}
+              className="text-foreground"
+            >
+              <X size={24} />
+            </Button>
+          </div>
+          <div className="p-4 space-y-4">
+            <Input
+              value={query}
+              onChange={handleSearch}
+              type="text"
+              placeholder="Search jobs, companies..."
+              className="w-full pl-4 border border-gray-300 dark:border-gray-700 focus:border-blue-600 dark:focus:border-blue-500 rounded-md bg-background"
+            />
+            {user ? (
+              <div className="space-y-2">
+                <Link to="/profile">
+                  <Button variant="ghost" className="w-full text-foreground">
+                    Profile
+                  </Button>
+                </Link>
+                {user.role === "admin" && (
+                  <Link to="/admin/dashboard">
+                    <Button variant="ghost" className="w-full text-foreground">
+                      Dashboard
+                    </Button>
+                  </Link>
+                )}
+                <Link to="/logout">
+                  <Button variant="ghost" className="w-full text-foreground">
+                    Logout
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Link to="/login">
+                  <Button variant="ghost" className="w-full text-foreground">
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button variant="ghost" className="w-full text-foreground">
+                    Register
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </header>
   );

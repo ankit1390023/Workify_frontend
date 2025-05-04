@@ -4,6 +4,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import emailjs from '@emailjs/browser';
 import { toast } from 'react-hot-toast';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 
 emailjs.init('njHD48xNl8tkUu47J'); // Replace with your EmailJS user ID
 
@@ -43,24 +46,23 @@ export const ContactForm = ({ serviceId, templateId, userId }) => {
     return (
         <form
             onSubmit={handleSubmit(onSubmit)}
-            className="space-y-6 p-6 rounded-lg shadow-md bg-white dark:bg-gray-800 transition-colors"
+            className="space-y-6"
         >
             <div>
                 <label
                     htmlFor="name"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    className="block text-sm font-medium text-foreground mb-2"
                 >
                     Name
                 </label>
-                <input
+                <Input
                     {...register('name')}
                     type="text"
                     id="name"
-                    className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${touchedFields.name && errors.name ? 'border-red-600 focus:border-red-600 focus:ring-red-500' : 'border-gray-300'
-                        }`}
+                    className={`w-full ${touchedFields.name && errors.name ? 'border-destructive focus:ring-destructive' : ''}`}
                 />
                 {touchedFields.name && errors.name && (
-                    <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                    <p className="mt-2 text-sm text-destructive">
                         {errors.name.message}
                     </p>
                 )}
@@ -69,19 +71,18 @@ export const ContactForm = ({ serviceId, templateId, userId }) => {
             <div>
                 <label
                     htmlFor="email"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    className="block text-sm font-medium text-foreground mb-2"
                 >
                     Email
                 </label>
-                <input
+                <Input
                     {...register('email')}
                     type="email"
                     id="email"
-                    className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${touchedFields.email && errors.email ? 'border-red-600 focus:border-red-600 focus:ring-red-500' : 'border-gray-300'
-                        }`}
+                    className={`w-full ${touchedFields.email && errors.email ? 'border-destructive focus:ring-destructive' : ''}`}
                 />
                 {touchedFields.email && errors.email && (
-                    <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                    <p className="mt-2 text-sm text-destructive">
                         {errors.email.message}
                     </p>
                 )}
@@ -90,31 +91,30 @@ export const ContactForm = ({ serviceId, templateId, userId }) => {
             <div>
                 <label
                     htmlFor="message"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    className="block text-sm font-medium text-foreground mb-2"
                 >
                     Message
                 </label>
-                <textarea
+                <Textarea
                     {...register('message')}
                     id="message"
                     rows={4}
-                    className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm sm:text-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 ${touchedFields.message && errors.message ? 'border-red-600 focus:border-red-600 focus:ring-red-500' : 'border-gray-300'
-                        }`}
-                ></textarea>
+                    className={`w-full ${touchedFields.message && errors.message ? 'border-destructive focus:ring-destructive' : ''}`}
+                />
                 {touchedFields.message && errors.message && (
-                    <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                    <p className="mt-2 text-sm text-destructive">
                         {errors.message.message}
                     </p>
                 )}
             </div>
 
-            <button
+            <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
             >
                 {isSubmitting ? 'Sending...' : 'Send Message'}
-            </button>
+            </Button>
         </form>
     );
 };

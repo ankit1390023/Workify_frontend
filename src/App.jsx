@@ -17,6 +17,7 @@ import JobDetailsUpdate from './components/admin/JobDetailsUpdate';
 import Applicants from './components/admin/Applicants';
 import ApplicantsCards from './components/admin/ApplicantCard';
 import ProtectedRoute from './components/ProtectedRoute';
+import { ThemeProvider } from './context/ThemeContext';
 
 const appRouter = createBrowserRouter([
   // Public Routes
@@ -45,7 +46,11 @@ const appRouter = createBrowserRouter([
 ]);
 
 const App = () => {
-  return <RouterProvider router={appRouter} />;
+  return (
+    <ThemeProvider>
+      <RouterProvider router={appRouter} />
+    </ThemeProvider>
+  );
 };
 
 export default App;

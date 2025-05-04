@@ -25,9 +25,8 @@ const Home = () => {
     <>
       <Header/>
       <HeroSection />
-      <MyAccordion/>
-      
       <LatestJobs />
+      <MyAccordion/>
       <Chat />
       <Footer />
     </>

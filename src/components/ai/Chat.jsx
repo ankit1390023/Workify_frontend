@@ -14,6 +14,7 @@ import { API_END_POINT } from "@/utils/constant";
 import { BsFillChatDotsFill } from "react-icons/bs";
 import { IoMdMicOff, IoMdMic, IoIosSend } from "react-icons/io";
 import { motion } from "framer-motion";
+import { useTheme } from '@/context/ThemeContext';
 
 let recognition = null;
 if (typeof window !== "undefined" && (window.SpeechRecognition || window.webkitSpeechRecognition)) {
@@ -31,6 +32,7 @@ const Chat = () => {
     const [listening, setListening] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const { theme } = useTheme();
 
     const speak = (text) => {
         console.log("Text-to-Speech Output:", text);
@@ -119,15 +121,18 @@ const Chat = () => {
 
     return (
         <div className="max-w-2xl sm:max-h-[400px]">
-            <Button onClick={() => setIsOpen(true)} className="fixed bottom-4 right-4 w-16 h-16 rounded-full bg-blue-600 text-white shadow-lg z-50 hover:bg-blue-700">
+            <Button 
+                onClick={() => setIsOpen(true)} 
+                className="fixed bottom-4 right-4 w-16 h-16 rounded-full bg-blue-600 dark:bg-blue-700 text-white shadow-lg z-50 hover:bg-blue-700 dark:hover:bg-blue-800"
+            >
                 <BsFillChatDotsFill />
             </Button>
 
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogContent className="sm:max-w-[425px] bg-white p-6 shadow-lg rounded-lg">
+                <DialogContent className="sm:max-w-[425px] bg-background border border-gray-200 dark:border-gray-800 p-6 shadow-lg rounded-lg">
                     <DialogHeader>
-                        <DialogTitle className="text-lg font-semibold text-blue-600">AI Support Assistant</DialogTitle>
-                        <DialogDescription className="text-sm text-gray-600">
+                        <DialogTitle className="text-lg font-semibold text-blue-600 dark:text-blue-400">AI Support Assistant</DialogTitle>
+                        <DialogDescription className="text-sm text-muted-foreground">
                             Ask me anything about job searching or using Workify!
                         </DialogDescription>
                     </DialogHeader>
@@ -141,7 +146,11 @@ const Chat = () => {
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.3 }}
                             >
-                                <div className={`inline-block p-2 rounded-xl ${msg.sender === "user" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}>
+                                <div className={`inline-block p-2 rounded-xl ${
+                                    msg.sender === "user" 
+                                        ? "bg-blue-600 dark:bg-blue-700 text-white" 
+                                        : "bg-gray-200 dark:bg-gray-800 text-foreground"
+                                }`}>
                                     {msg.text}
                                 </div>
                             </motion.div>
@@ -155,11 +164,19 @@ const Chat = () => {
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
                             onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                            className="bg-background text-foreground border-gray-300 dark:border-gray-700"
                         />
-                        <Button onClick={toggleListening} className={`${listening ? "animate-pulse bg-green-500" : "bg-red-500"} hover:bg-opacity-80`}>
+                        <Button 
+                            onClick={toggleListening} 
+                            className={`${listening ? "animate-pulse bg-green-500 dark:bg-green-600" : "bg-red-500 dark:bg-red-600"} hover:bg-opacity-80`}
+                        >
                             {listening ? <IoMdMic /> : <IoMdMicOff />}
                         </Button>
-                        <Button onClick={sendMessage} className="bg-blue-500 hover:bg-blue-600" disabled={loading}>
+                        <Button 
+                            onClick={sendMessage} 
+                            className="bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700" 
+                            disabled={loading}
+                        >
                             {loading ? "Sending..." : <IoIosSend />}
                         </Button>
                     </div>

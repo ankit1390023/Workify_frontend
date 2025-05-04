@@ -16,6 +16,7 @@ import { setLoading } from '@/redux/authSlice';
 import useGetSingleCompany from '../hooks/useGetSigleCompany';
 import Header from '../shared/Header';
 import Footer from '../shared/Footer';
+import { useTheme } from '@/context/ThemeContext';
 
 
 // Define the schema using Zod
@@ -37,6 +38,7 @@ const CompanyDetailsUpdate = () => {
   const companyId = params?.id;
   useGetSingleCompany(companyId);
   const company = useSelector((store) => store.company?.singleCompany);
+  const { theme } = useTheme();
 
   const [logoPreview, setLogoPreview] = useState('');
   const navigate = useNavigate();
@@ -99,102 +101,102 @@ const CompanyDetailsUpdate = () => {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-background">
       <Header/>
-    <div className="max-w-4xl mx-auto p-8 my-10 bg-white rounded-lg">
-      <h1 className="text-3xl font-semibold text-gray-800 mb-4">Update Company Details</h1>
-      <p className="text-gray-600 text-sm mb-6">
-        Make sure the correct company details are filled. Changes will reflect for students.
-      </p>
+      <div className="max-w-4xl mx-auto p-8 my-10 bg-background rounded-lg border border-gray-200 dark:border-gray-800 shadow-lg">
+        <h1 className="text-3xl font-semibold text-foreground mb-4">Update Company Details</h1>
+        <p className="text-muted-foreground text-sm mb-6">
+          Make sure the correct company details are filled. Changes will reflect for students.
+        </p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Company Name */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Company Name */}
+            <div>
+              <Label htmlFor="companyName" className="text-foreground">Company Name</Label>
+              <Input
+                id="companyName"
+                type="text"
+                {...register('companyName')}
+                className="mt-1 bg-background text-foreground border-gray-300 dark:border-gray-700"
+              />
+              {errors.companyName && <p className="text-red-500 text-sm mt-1">{errors.companyName.message}</p>}
+            </div>
+
+            {/* Location */}
+            <div>
+              <Label htmlFor="location" className="text-foreground">Location</Label>
+              <Input
+                id="location"
+                type="text"
+                {...register('location')}
+                className="mt-1 bg-background text-foreground border-gray-300 dark:border-gray-700"
+              />
+              {errors.location && <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>}
+            </div>
+          </div>
+
+          {/* Website */}
           <div>
-            <Label htmlFor="companyName">Company Name</Label>
+            <Label htmlFor="website" className="text-foreground">Website</Label>
             <Input
-              id="companyName"
-              type="text"
-              {...register('companyName')}
-              className="mt-1"
+              id="website"
+              type="url"
+              {...register('website')}
+              className="mt-1 bg-background text-foreground border-gray-300 dark:border-gray-700"
             />
-            {errors.companyName && <p className="text-red-500 text-sm mt-1">{errors.companyName.message}</p>}
+            {errors.website && <p className="text-red-500 text-sm mt-1">{errors.website.message}</p>}
           </div>
 
-          {/* Location */}
+          {/* Logo */}
           <div>
-            <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              type="text"
-              {...register('location')}
-              className="mt-1"
-            />
-            {errors.location && <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>}
+            <Label htmlFor="logo" className="text-foreground">Upload Logo (Image)</Label>
+            <div className="flex items-center space-x-4">
+              {logoPreview ? (
+                <img src={logoPreview} alt="Logo Preview" className="w-16 h-16 object-cover rounded" />
+              ) : null}
+              <Input
+                id="logo"
+                type="file"
+                accept=".jpg,.png,.jpeg"
+                {...register('logo')}
+                onChange={onLogoChange}
+                className="mt-1 bg-background text-foreground border-gray-300 dark:border-gray-700"
+              />
+            </div>
+            {errors.logo && <p className="text-red-500 text-sm mt-1">{errors.logo.message}</p>}
           </div>
-        </div>
 
-        {/* Website */}
-        <div>
-          <Label htmlFor="website">Website</Label>
-          <Input
-            id="website"
-            type="url"
-            {...register('website')}
-            className="mt-1"
-          />
-          {errors.website && <p className="text-red-500 text-sm mt-1">{errors.website.message}</p>}
-        </div>
-
-        {/* Logo */}
-        <div>
-          <Label htmlFor="logo">Upload Logo (Image)</Label>
-          <div className="flex items-center space-x-4">
-            {logoPreview ? (
-              <img src={logoPreview} alt="Logo Preview" className="w-16 h-16 object-cover rounded" />
-            ) : null}
-            <Input
-              id="logo"
-              type="file"
-              accept=".jpg,.png,.jpeg"
-              {...register('logo')}
-              onChange={onLogoChange}
-              className="mt-1"
+          {/* Description */}
+          <div>
+            <Label htmlFor="description" className="text-foreground">Description</Label>
+            <Textarea
+              id="description"
+              {...register('description')}
+              className="mt-1 bg-background text-foreground border-gray-300 dark:border-gray-700"
             />
           </div>
-          {errors.logo && <p className="text-red-500 text-sm mt-1">{errors.logo.message}</p>}
-        </div>
 
-        {/* Description */}
-        <div>
-          <Label htmlFor="description">Description</Label>
-          <Textarea
-            id="description"
-            {...register('description')}
-            className="mt-1"
-          />
-        </div>
+          {/* Buttons */}
+          <div className="flex justify-end space-x-4">
+            <Button
+              variant="outline"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-700 text-foreground rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              onClick={() => navigate('/admin/companies')}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className={`${isSubmitting ? 'cursor-not-allowed' : 'cursor-pointer'} px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800`}
+            >
+              Update
+            </Button>
+          </div>
+        </form>
 
-        {/* Buttons */}
-        <div className="flex justify-end space-x-4">
-          <Button
-            variant="outline"
-            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100"
-            onClick={() => navigate('/admin/companies')}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            className={`${isSubmitting ? 'cursor-not-allowed' : 'cursor-pointer'} px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700`}
-          >
-            Update
-          </Button>
-        </div>
-      </form>
-
-      {/* Show Loader */}
-      {isSubmitting && <Loader message="Submitting..." />}
+        {/* Show Loader */}
+        {isSubmitting && <Loader message="Submitting..." />}
       </div>
       <Footer/>
     </div>

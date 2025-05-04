@@ -21,16 +21,24 @@ const MyAccordion = () => {
         }
     ];
     return (
-        <div className="max-w-screen-xs md:max-w-screen-md lg:max-w-screen-lg  p-4">
-            <h1 className="text-3xl font-semibold text-gray-800 m-6 text-justify">Frequently Asked Questions</h1>
-            <div className="bg-white p-6 rounded-lg">
+        <div className="max-w-screen-xs md:max-w-screen-md lg:max-w-screen-lg p-2 mt-10 ml-8">
+            <h1 className="text-3xl font-semibold text-gray-800 dark:text-gray-100 m-6 text-justify">Frequently Asked Questions</h1>
+            <div className="bg-background p-6 rounded-lg">
                 <Accordion type="single" collapsible>
                     {qA.map((item, index) => (
-                        <AccordionItem key={index} value={`item-${index}`} className="mb-4">
-                            <AccordionTrigger className="text-lg font-semibold text-blue-600 py-4  rounded-lg shadow-sm hover:bg-blue-100 transition duration-300 ease-in-out">
+                        <AccordionItem 
+                            key={index} 
+                            value={`item-${index}`} 
+                            className="mb-4 border-gray-200 dark:border-gray-700"
+                        >
+                            <AccordionTrigger 
+                                className="text-lg font-semibold text-blue-600 dark:text-blue-400 py-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition duration-300 ease-in-out"
+                            >
                                 {item.question}
                             </AccordionTrigger>
-                            <AccordionContent className="p-4 text-gray-700 text-sm rounded-lg bg-gray-50">
+                            <AccordionContent 
+                                className="p-4 text-gray-700 dark:text-gray-300 text-sm rounded-lg"
+                            >
                                 {item.answer}
                             </AccordionContent>
                         </AccordionItem>

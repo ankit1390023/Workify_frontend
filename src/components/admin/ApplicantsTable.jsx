@@ -22,9 +22,11 @@ import { Button } from '../ui/button';
 import { useSelector } from 'react-redux';
 import { API_END_POINT } from "@/utils/constant";
 import { toast } from 'sonner';
+import { useTheme } from '@/context/ThemeContext';
 
 const ApplicantsTable = () => {
     const navigate = useNavigate();
+    const { theme } = useTheme();
     const { allApplicants } = useSelector((state) => state.application);
     const [applicants, setApplicants] = useState(allApplicants);
 
@@ -65,11 +67,11 @@ const ApplicantsTable = () => {
 
     return (
         <div className="overflow-x-auto p-4">
-            <Table className="min-w-full bg-white shadow-lg rounded-lg">
-                <TableCaption className="text-xl font-semibold text-gray-700">
+            <Table className="min-w-full bg-background shadow-lg rounded-lg border border-gray-200 dark:border-gray-800">
+                <TableCaption className="text-xl font-semibold text-muted-foreground">
                     List of Recent Applicants
                 </TableCaption>
-                <TableHeader className="bg-blue-600 text-white text-lg">
+                <TableHeader className="bg-blue-600 dark:bg-blue-700 text-white text-lg">
                     <TableRow>
                         <TableHead className="px-4 py-2">No</TableHead>
                         <TableHead className="px-4 py-2">Full Name</TableHead>
@@ -86,41 +88,41 @@ const ApplicantsTable = () => {
                         applicants.map((item, index) => {
                             const rowColor =
                                 item.status === 'accepted'
-                                    ? 'bg-green-100'
+                                    ? 'bg-green-100 dark:bg-green-900/30'
                                     : item.status === 'rejected'
-                                        ? 'bg-red-100'
+                                        ? 'bg-red-100 dark:bg-red-900/30'
                                         : item.status === 'interview'
-                                            ? 'bg-sky-100'
-                                            : 'bg-yellow-100';
+                                            ? 'bg-sky-100 dark:bg-sky-900/30'
+                                            : 'bg-yellow-100 dark:bg-yellow-900/30';
 
                             return (
                                 <TableRow
                                     key={item._id}
-                                    className={`border-b hover:bg-gray-50 ${rowColor}`}
+                                    className={`border-b hover:bg-gray-50 dark:hover:bg-gray-800 ${rowColor}`}
                                 >
-                                    <TableCell className="font-medium px-4 py-3">
+                                    <TableCell className="font-medium px-4 py-3 text-foreground">
                                         {index + 1}
                                     </TableCell>
-                                    <TableCell className="font-medium px-4 py-3">
+                                    <TableCell className="font-medium px-4 py-3 text-foreground">
                                         {item?.applicant?.fullName}
                                     </TableCell>
-                                    <TableCell className="px-4 py-3">{item?.applicant?.email}</TableCell>
-                                    <TableCell className="px-4 py-3">{item?.applicant?.phoneNumber}</TableCell>
+                                    <TableCell className="px-4 py-3 text-foreground">{item?.applicant?.email}</TableCell>
+                                    <TableCell className="px-4 py-3 text-foreground">{item?.applicant?.phoneNumber}</TableCell>
                                     <TableCell className="px-4 py-3">
                                         {item?.applicant?.profile?.resume ? (
                                             <a
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-blue-600 hover:underline"
+                                                className="text-blue-600 dark:text-blue-400 hover:underline"
                                                 href={`${item?.applicant?.profile?.resume}?fl_attachment=false`}
                                             >
                                                 {item?.applicant?.profile?.resumeOriginalName}
                                             </a>
                                         ) : (
-                                            <span className="text-gray-500">Not available</span>
+                                            <span className="text-muted-foreground">Not available</span>
                                         )}
                                     </TableCell>
-                                    <TableCell className="px-4 py-3">
+                                    <TableCell className="px-4 py-3 text-muted-foreground">
                                         {new Date(item?.createdAt).toLocaleDateString()}
                                     </TableCell>
                                     <TableCell className="px-4 py-3 text-center">
@@ -128,9 +130,9 @@ const ApplicantsTable = () => {
                                             aria-label="View Applicant"
                                             variant="ghost"
                                             onClick={() => navigate(`/admin/jobs/view-applicantion/${item?._id}`)}
-                                            className={`flex items-center justify-center p-2 rounded-md bg-${rowColor} text-blue-600 hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                                            className={`flex items-center justify-center p-2 rounded-md bg-${rowColor} text-blue-600 dark:text-blue-400 hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-blue-500`}
                                         >
-                                            <EyeIcon size={24} color="#1D4ED8" /> {/* Eye Icon color set to blue */}
+                                            <EyeIcon size={24} color={theme === 'dark' ? '#60A5FA' : '#1D4ED8'} />
                                         </Button>
                                     </TableCell>
                                     <TableCell className="text-right px-4 py-3">
@@ -142,17 +144,17 @@ const ApplicantsTable = () => {
                                         >
                                             <SelectTrigger
                                                 className={`w-[100px] text-white rounded-md ${item.status === 'accepted'
-                                                    ? 'bg-green-500'
+                                                    ? 'bg-green-500 dark:bg-green-600'
                                                     : item.status === 'rejected'
-                                                        ? 'bg-red-500'
+                                                        ? 'bg-red-500 dark:bg-red-600'
                                                         : item.status === 'interview'
-                                                            ? 'bg-sky-500'
-                                                            : 'bg-yellow-500'
+                                                            ? 'bg-sky-500 dark:bg-sky-600'
+                                                            : 'bg-yellow-500 dark:bg-yellow-600'
                                                     }`}
                                             >
                                                 <SelectValue placeholder="Select Status" />
                                             </SelectTrigger>
-                                            <SelectContent className="bg-gray-200">
+                                            <SelectContent className="bg-background text-foreground">
                                                 <SelectItem value="pending">Pending</SelectItem>
                                                 <SelectItem value="accepted">Accepted</SelectItem>
                                                 <SelectItem value="rejected">Rejected</SelectItem>
@@ -167,7 +169,7 @@ const ApplicantsTable = () => {
                         <TableRow>
                             <TableCell
                                 colSpan={8}
-                                className="text-center text-xl font-bold py-4"
+                                className="text-center text-xl font-bold py-4 text-muted-foreground"
                             >
                                 No applicants have been registered yet.
                             </TableCell>

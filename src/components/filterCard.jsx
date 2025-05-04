@@ -1,11 +1,8 @@
-import React, { useEffect } from 'react';
-import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import React from 'react';
 import { Label } from './ui/label';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { setSearchQuery } from '@/redux/jobSlice';
-import { Input } from './ui/input';
-import { Button } from './ui/button';
+import { Checkbox } from './ui/checkbox';
+import { motion } from 'framer-motion';
 
 const filterData = [
     {
@@ -28,98 +25,72 @@ const filterData = [
             'DevOps Engineer',
         ],
     },
-    // {
-    //     filterType: 'Salary',
-    //     array: ['0-40k', '40k-1 Lakh', '1 Lakh to 5 Lakh', '5 Lakh to 10 Lakh', 'Above 10 Lakh'],
-    // },
     {
         filterType: 'JobType',
         array: ['Part-Time', 'Full-Time', 'Internship', 'Contract', 'Remote'],
     },
-    // {
-    //     filterType: 'Experience',
-    //     array: ['Fresher', '0-2 Years', '3-5 Years', '6-10 Years', 'Above 10 Years'],
-    // },
-    // {
-    //     filterType: 'Technologies',
-    //     array: [
-    //         'JavaScript',
-    //         'Python',
-    //         'Java',
-    //         'C++',
-    //         'React',
-    //         'Node.js',
-    //         'Angular',
-    //         'MongoDB',
-    //         'MySQL',
-    //         'AWS',
-    //         'Docker',
-    //         'Kubernetes',
-    //     ],
-    // },
-    // {
-    //     filterType: 'Work Environment',
-    //     array: ['On-Site', 'Remote', 'Hybrid'],
-    // },
-    // {
-    //     filterType: 'Posted Date',
-    //     array: ['Last 24 Hours', 'Last 7 Days', 'Last 14 Days', 'Last 30 Days', 'Older'],
-    // },
 ];
 
-const FilterCard = () => {
-    const [selectedValue, setSelectedValue] = useState('');
-    const dispatch = useDispatch();
+const FilterCard = ({ onFilterChange }) => {
+    const [selectedFilters, setSelectedFilters] = useState({});
 
-    const [query, setQuery] = useState("");
-    // Search company by text
-    const searchJobHandler = () => {
-        console.log("searchJobHandler");
-        dispatch(setSearchQuery(query));
-        navigate("/browse");
+    const handleFilterChange = (filterType, value) => {
+        setSelectedFilters(prev => {
+            const newFilters = { ...prev };
+            if (!newFilters[filterType]) {
+                newFilters[filterType] = [];
+            }
+            
+            if (newFilters[filterType].includes(value)) {
+                // Remove the value if it's already selected
+                newFilters[filterType] = newFilters[filterType].filter(item => item !== value);
+                if (newFilters[filterType].length === 0) {
+                    delete newFilters[filterType];
+                }
+            } else {
+                // Add the value if it's not selected
+                newFilters[filterType] = [...newFilters[filterType], value];
+            }
+            
+            // Notify parent component of the change
+            onFilterChange(filterType, newFilters[filterType] || null);
+            return newFilters;
+        });
     };
 
-    const changeHandler = (value) => {
-    setSelectedValue(value);
-    }
-    useEffect(() => {
-      dispatch(setSearchQuery(selectedValue))
-    }, [selectedValue]);
     return (
-        <div className='w-full bg-white p-2 rounded-full'>
-            <h1>Filter Jobs</h1>
-            <hr className="mt-3" />
-            <RadioGroup defaultValue="comfortable" value={selectedValue} onValueChange={changeHandler}>
-                {filterData.map((data, index) => (
-                    <div key={index}>
-                        <Label className="text-lg font-bold">{data.filterType}</Label>
-                        {data.array.map((item, idx) => (
-                            <div key={idx} className="flex items-center space-x-2 my-2">
-                                <RadioGroupItem value={item} id={`r${index}-${idx}`} />
-                                <Label htmlFor={`r${index}-${idx}`}>{item}</Label>
+        <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className='w-full bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700'
+        >
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Filter Jobs</h1>
+            <hr className="border-gray-200 dark:border-gray-700 mb-6" />
+
+            {/* Filter Options */}
+            {filterData.map((filter) => (
+                <div key={filter.filterType} className="mb-6">
+                    <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">
+                        {filter.filterType}
+                    </h2>
+                    <div className="space-y-2">
+                        {filter.array.map((option) => (
+                            <div key={option} className="flex items-center space-x-2">
+                                <Checkbox
+                                    id={`${filter.filterType}-${option}`}
+                                    checked={selectedFilters[filter.filterType]?.includes(option) || false}
+                                    onCheckedChange={() => handleFilterChange(filter.filterType, option)}
+                                />
+                                <Label htmlFor={`${filter.filterType}-${option}`} className="text-gray-700 dark:text-gray-300">
+                                    {option}
+                                </Label>
                             </div>
                         ))}
                     </div>
-                ))}
-            </RadioGroup>
-
-                   {/* Search Bar */}
-                    <div className="md:hidden flex items-center w-full my-5">
-                      <Input
-                        onChange={(e) => setQuery(e.target.value)}
-                        type="text"
-                        placeholder="Search jobs, companies..."
-                        className="w-full pl-4 border border-gray-800 dark:border-gray-600 focus:border-blue-600 rounded-md dark:bg-gray-700 dark:text-gray-300"
-                      />
-                      <Button
-                     onClick={searchJobHandler}
-                        variant="default"
-                        className="ml-2 px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
-                      >
-                        Search
-                      </Button>
-                    </div>
-        </div>
+                </div>
+            ))}
+        </motion.div>
     );
 };
 

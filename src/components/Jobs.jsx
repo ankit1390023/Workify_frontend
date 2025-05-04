@@ -13,81 +13,104 @@ const Jobs = () => {
   const [filterJob, setFilterJob] = useState([]);
   const [appliedFilters, setAppliedFilters] = useState({});
 
+  // Helper function to normalize search terms
+  const normalizeSearchTerm = (term) => {
+    return term.toLowerCase().replace(/\s+/g, '');
+  };
+
   useEffect(() => {
     const applyFilters = () => {
-      let filteredJobs = allJobs;
+      let filteredJobs = [...allJobs];
 
-      // Filter by Search Query
+      // Apply search query filter
       if (searchQuery) {
-        filteredJobs = filteredJobs.filter((job) =>
-          job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          job.company.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          job.jobType.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          job.location.some((loc) => loc.toLowerCase().includes(searchQuery.toLowerCase())) ||
-          job.requirements.some((skill) => skill.toLowerCase().includes(searchQuery.toLowerCase()))
-        );
-      }
-
-      // Apply location filter
-      if (appliedFilters.Location) {
-        filteredJobs = filteredJobs.filter((job) =>
-          job.location.some((loc) => loc === appliedFilters.Location)
-        );
-      }
-
-      // Apply industry filter
-      if (appliedFilters.Industry) {
-        filteredJobs = filteredJobs.filter((job) =>
-          job.title.toLowerCase() === appliedFilters.Industry.toLowerCase()
-        );
-      }
-
-      // Apply salary filter
-      if (appliedFilters.Salary) {
-        const [min, max] = appliedFilters.Salary.split('-').map((s) => parseInt(s.replace(/[^0-9]/g, '')) || 0);
-        filteredJobs = filteredJobs.filter((job) =>
-          job.salary >= min && (!max || job.salary <= max)
-        );
-      }
-
-      // Apply job type filter
-      if (appliedFilters.JobType) {
-        filteredJobs = filteredJobs.filter((job) => job.jobType === appliedFilters.JobType);
-      }
-
-      // Apply experience filter
-      if (appliedFilters.Experience) {
-        const exp = parseInt(appliedFilters.Experience.split('-')[0]) || 0;
-        filteredJobs = filteredJobs.filter((job) => job.experience >= exp);
-      }
-
-      // Apply technologies filter
-      if (appliedFilters.Technologies) {
-        filteredJobs = filteredJobs.filter((job) =>
-          job.requirements.includes(appliedFilters.Technologies)
-        );
-      }
-
-      // Apply work environment filter
-      if (appliedFilters['Work Environment']) {
-        filteredJobs = filteredJobs.filter((job) => job.workEnvironment === appliedFilters['Work Environment']);
-      }
-
-      // Apply posted date filter
-      if (appliedFilters['Posted Date']) {
-        const now = new Date();
-        const daysAgo = {
-          'Last 24 Hours': 1,
-          'Last 7 Days': 7,
-          'Last 14 Days': 14,
-          'Last 30 Days': 30,
-          Older: Infinity,
-        }[appliedFilters['Posted Date']];
+        const normalizedSearch = normalizeSearchTerm(searchQuery);
         filteredJobs = filteredJobs.filter((job) => {
-          const postedDate = new Date(job.createdAt);
-          return (now - postedDate) / (1000 * 60 * 60 * 24) <= daysAgo;
+          const normalizedTitle = normalizeSearchTerm(job.title);
+          const normalizedCompany = normalizeSearchTerm(job.company.companyName);
+          const normalizedJobType = normalizeSearchTerm(job.jobType);
+          const normalizedLocations = job.location.map(loc => normalizeSearchTerm(loc));
+          const normalizedRequirements = job.requirements.map(req => normalizeSearchTerm(req));
+
+          return (
+            normalizedTitle.includes(normalizedSearch) ||
+            normalizedCompany.includes(normalizedSearch) ||
+            normalizedJobType.includes(normalizedSearch) ||
+            normalizedLocations.some(loc => loc.includes(normalizedSearch)) ||
+            normalizedRequirements.some(req => req.includes(normalizedSearch))
+          );
         });
       }
+
+      // Apply all active filters
+      Object.entries(appliedFilters).forEach(([filterType, filterValues]) => {
+        if (filterValues && filterValues.length > 0) {
+          switch (filterType) {
+            case 'Location':
+              filteredJobs = filteredJobs.filter((job) =>
+                filterValues.some(location => job.location.includes(location))
+              );
+              break;
+            case 'Industry':
+              filteredJobs = filteredJobs.filter((job) =>
+                filterValues.some(industry => 
+                  normalizeSearchTerm(job.title).includes(normalizeSearchTerm(industry))
+                )
+              );
+              break;
+            case 'JobType':
+              filteredJobs = filteredJobs.filter((job) => 
+                filterValues.includes(job.jobType)
+              );
+              break;
+            case 'Salary':
+              const salaryRanges = filterValues.map(range => {
+                const [min, max] = range.split('-').map((s) => parseInt(s.replace(/[^0-9]/g, '')) || 0);
+                return { min, max };
+              });
+              filteredJobs = filteredJobs.filter((job) =>
+                salaryRanges.some(({ min, max }) => 
+                  job.salary >= min && (!max || job.salary <= max)
+                )
+              );
+              break;
+            case 'Experience':
+              const experienceLevels = filterValues.map(exp => parseInt(exp.split('-')[0]) || 0);
+              filteredJobs = filteredJobs.filter((job) => 
+                experienceLevels.some(exp => job.experience >= exp)
+              );
+              break;
+            case 'Technologies':
+              filteredJobs = filteredJobs.filter((job) =>
+                filterValues.some(tech => job.requirements.includes(tech))
+              );
+              break;
+            case 'Work Environment':
+              filteredJobs = filteredJobs.filter((job) => 
+                filterValues.includes(job.workEnvironment)
+              );
+              break;
+            case 'Posted Date':
+              const now = new Date();
+              const dateRanges = filterValues.map(range => {
+                const daysAgo = {
+                  'Last 24 Hours': 1,
+                  'Last 7 Days': 7,
+                  'Last 14 Days': 14,
+                  'Last 30 Days': 30,
+                  'Older': Infinity,
+                }[range];
+                return daysAgo;
+              });
+              filteredJobs = filteredJobs.filter((job) => {
+                const postedDate = new Date(job.createdAt);
+                const daysSincePosted = (now - postedDate) / (1000 * 60 * 60 * 24);
+                return dateRanges.some(daysAgo => daysSincePosted <= daysAgo);
+              });
+              break;
+          }
+        }
+      });
 
       setFilterJob(filteredJobs);
     };
@@ -95,11 +118,18 @@ const Jobs = () => {
     applyFilters();
   }, [allJobs, searchQuery, appliedFilters]);
 
-  const handleFilterChange = (filterType, value) => {
-    setAppliedFilters((prev) => ({
-      ...prev,
-      [filterType]: value,
-    }));
+  const handleFilterChange = (filterType, values) => {
+    setAppliedFilters(prev => {
+      const newFilters = { ...prev };
+      if (values === null || values.length === 0) {
+        // Remove the filter if no values are selected
+        delete newFilters[filterType];
+      } else {
+        // Update the filter with new values
+        newFilters[filterType] = values;
+      }
+      return newFilters;
+    });
   };
 
   return (
@@ -117,19 +147,19 @@ const Jobs = () => {
             <ScrollArea className="h-[calc(100vh-2.5rem)] pr-4">
               <div className="space-y-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filterJob.length > 0 ? (
-                  filterJob.map((job) =>
+                  filterJob.map((job) => (
                     <motion.div
                       initial={{ opacity: 0, x: 100 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.8 }}
                       className="flex-shrink-0"
-                      as={motion.div}
-                      key={job._id}>
-                      <Job  {...job} />
+                      key={job._id}
+                    >
+                      <Job {...job} />
                     </motion.div>
-                  )
+                  ))
                 ) : (
-                  <p className="text-gray-500 text-center col-span-full">No jobs found.</p>
+                  <p className="text-gray-500 text-center col-span-full">No jobs found matching your criteria.</p>
                 )}
               </div>
             </ScrollArea>
@@ -139,7 +169,7 @@ const Jobs = () => {
       <Chat />
       <Footer />
     </div>
-      );
+  );
 };
 
-      export default Jobs;
+export default Jobs;

@@ -13,6 +13,7 @@ import { FcGoogle } from "react-icons/fc";
 import { GrLinkedin } from "react-icons/gr";
 import { FaGithub } from "react-icons/fa6";
 import Loader from "../ui/Loader";
+import { useTheme } from "@/context/ThemeContext";
 
 // Framer Motion variants for staggered animations
 const containerVariants = {
@@ -75,6 +76,7 @@ const SignUp = () => {
         resolver: zodResolver(formSchema),
     });
     const navigate = useNavigate();
+    const { theme } = useTheme();
 
     const onSubmit = async (data) => {
         console.log("data from signup is", data);
@@ -117,229 +119,231 @@ const SignUp = () => {
 
     return (
         <motion.div
-            className="flex flex-col items-center min-h-screen px-4 py-6 dark:bg-gray-900"
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
+            className="min-h-screen flex items-center justify-center p-4 bg-background"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
         >
-            {/* Header Section */}
-            <motion.header className="w-full max-w-3xl text-center" variants={itemVariants}>
-                <h1 className="text-3xl font-extrabold text-blue-600 dark:text-white">
-                    Welcome to Workify
-                </h1>
-                <p className="font-semibold text-xl mt-2">
-                    Start your journey today!{" "}
-                    <motion.span
-                        animate={{ rotate: [0, 20, -20, 0], scale: [1, 1.2, 1] }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                        style={{ display: "inline-block" }} // Ensures the span can be animated
-                    >
-                        👍
-                    </motion.span>
-                </p>
-            </motion.header>
+            <div className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-between bg-card rounded-xl dark:shadow-lg overflow-hidden">
+                {/* Left side - Form */}
+                <motion.div
+                    className="w-full md:w-1/2 p-8 md:p-12 bg-gradient-to-br from-background to-background/95"
+                    initial={{ x: -50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                    <div className="text-center md:text-left mb-8">
+                        <h1 className="text-3xl font-bold text-primary mb-2">Create Account</h1>
+                        <p className="text-muted-foreground">Join us and start your journey</p>
+                    </div>
 
-            {/* SignUp Section */}
-            <motion.div
-                className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-between bg-white dark:bg-gray-800 rounded-lg px-6 py-6 md:px-8 md:py-8"
-                variants={itemVariants}
-            >
-                <motion.div className="w-full md:w-1/2 p-6" variants={itemVariants}>
-                    <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-4">
-                        Sign Up
-                    </h2>
-                    <p className="text-sm mb-6">
-                        Already have an account?
-                        <Link
-                            to="/login"
-                            className="text-indigo-600 hover:underline dark:text-indigo-400 font-bold"
-                        >
-                            {" "}
-                            Login
-                        </Link>
-                    </p>
-                    {isSubmitting && <Loader message="Submitting..." />}
+                    {isSubmitting && (
+                        <div className="fixed inset-0 bg-background/50 dark:bg-background/50 backdrop-blur-sm flex items-center justify-center z-50">
+                            <Loader message="Creating account..." />
+                        </div>
+                    )}
+
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                        {/* Full Name */}
-                        <div>
-                            <Label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                Full Name
-                            </Label>
-                            <Input
-                                {...register("fullName")}
-                                type="text"
-                                placeholder="Enter your full name"
-                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-md focus:ring-2 focus:ring-indigo-600 focus:outline-none dark:bg-gray-700 dark:text-gray-200"
-                            />
-                            {errors.fullName && (
-                                <p className="text-red-600 text-sm mt-1">
-                                    {errors.fullName.message}
-                                </p>
-                            )}
-                        </div>
-
-                        {/* Email */}
-                        <div>
-                            <Label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                Email
-                            </Label>
-                            <Input
-                                {...register("email")}
-                                type="email"
-                                placeholder="Enter your email"
-                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-md focus:ring-2 focus:ring-indigo-600 focus:outline-none dark:bg-gray-700 dark:text-gray-200"
-                            />
-                            {errors.email && (
-                                <p className="text-red-600 text-sm mt-1">
-                                    {errors.email.message}
-                                </p>
-                            )}
-                        </div>
-
-                        {/* Phone Number */}
-                        <div>
-                            <Label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                Phone Number
-                            </Label>
-                            <Input
-                                {...register("phoneNumber")}
-                                type="text"
-                                placeholder="Enter your phone number"
-                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-md focus:ring-2 focus:ring-indigo-600 focus:outline-none dark:bg-gray-700 dark:text-gray-200"
-                            />
-                            {errors.phoneNumber && (
-                                <p className="text-red-600 text-sm mt-1">
-                                    {errors.phoneNumber.message}
-                                </p>
-                            )}
-                        </div>
-
-                        {/* Password */}
-                        <div>
-                            <Label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                Password
-                            </Label>
-                            <Input
-                                {...register("password")}
-                                type="password"
-                                placeholder="Enter your password"
-                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-md focus:ring-2 focus:ring-indigo-600 focus:outline-none dark:bg-gray-700 dark:text-gray-200"
-                            />
-                            {errors.password && (
-                                <p className="text-red-600 text-sm mt-1">
-                                    {errors.password.message}
-                                </p>
-                            )}
-                        </div>
-
-                        {/* Confirm Password */}
-                        <div>
-                            <Label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                Confirm Password
-                            </Label>
-                            <Input
-                                {...register("confirmPassword")}
-                                type="password"
-                                placeholder="Confirm your password"
-                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-md focus:ring-2 focus:ring-indigo-600 focus:outline-none dark:bg-gray-700 dark:text-gray-200"
-                            />
-                            {errors.confirmPassword && (
-                                <p className="text-red-600 text-sm mt-1">
-                                    {errors.confirmPassword.message}
-                                </p>
-                            )}
-                        </div>
-
-                        {/* Role Selection */}
-                        <div className="mb-4">
-                            <Label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
-                                Select Your Role
-                            </Label>
-                            <div className="flex gap-4 items-center">
-                                <label className="flex items-center space-x-2">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Left Column */}
+                            <div className="space-y-6">
+                                {/* Full Name */}
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium text-foreground">Full Name</Label>
                                     <Input
-                                        {...register("role")}
-                                        type="radio"
-                                        value="student"
-                                        className="h-3 w-3 rounded-full cursor-pointer text-blue-600 focus:ring-blue-500 border-blue-300 dark:bg-gray-700"
+                                        {...register("fullName")}
+                                        type="text"
+                                        placeholder="Enter your full name"
+                                        className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
                                     />
-                                    <span className="text-gray-700 dark:text-gray-300 text-sm">
-                                        Student
-                                    </span>
-                                </label>
-                                <label className="flex items-center space-x-2">
+                                    {errors.fullName && (
+                                        <p className="text-sm text-destructive">{errors.fullName.message}</p>
+                                    )}
+                                </div>
+
+                                {/* Password */}
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium text-foreground">Password</Label>
                                     <Input
-                                        {...register("role")}
-                                        type="radio"
-                                        value="recruiter"
-                                        className="h-3 w-3 rounded-full cursor-pointer text-blue-600 focus:ring-blue-500 border-blue-300 dark:bg-gray-700"
+                                        {...register("password")}
+                                        type="password"
+                                        placeholder="Enter your password"
+                                        className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
                                     />
-                                    <span className="text-gray-700 dark:text-gray-300 text-sm">
-                                        Recruiter
-                                    </span>
-                                </label>
+                                    {errors.password && (
+                                        <p className="text-sm text-destructive">{errors.password.message}</p>
+                                    )}
+                                </div>
+
+                                {/* Role Selection */}
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium text-foreground">Select Your Role</Label>
+                                    <div className="flex gap-4">
+                                        <label className="flex items-center space-x-2">
+                                            <input
+                                                {...register("role")}
+                                                type="radio"
+                                                value="student"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-input"
+                                            />
+                                            <span className="text-sm text-foreground">Student</span>
+                                        </label>
+                                        <label className="flex items-center space-x-2">
+                                            <input
+                                                {...register("role")}
+                                                type="radio"
+                                                value="recruiter"
+                                                className="h-4 w-4 text-primary focus:ring-primary border-input"
+                                            />
+                                            <span className="text-sm text-foreground">Recruiter</span>
+                                        </label>
+                                    </div>
+                                    {errors.role && (
+                                        <p className="text-sm text-destructive">{errors.role.message}</p>
+                                    )}
+                                </div>
                             </div>
-                            {errors.role && (
-                                <p className="text-red-500 text-sm mt-1">
-                                    {errors.role.message}
-                                </p>
-                            )}
+
+                            {/* Right Column */}
+                            <div className="space-y-6">
+                                {/* Email */}
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium text-foreground">Email</Label>
+                                    <Input
+                                        {...register("email")}
+                                        type="email"
+                                        placeholder="Enter your email"
+                                        className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+                                    />
+                                    {errors.email && (
+                                        <p className="text-sm text-destructive">{errors.email.message}</p>
+                                    )}
+                                </div>
+
+                                {/* Phone Number */}
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium text-foreground">Phone Number</Label>
+                                    <Input
+                                        {...register("phoneNumber")}
+                                        type="text"
+                                        placeholder="Enter your phone number"
+                                        className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+                                    />
+                                    {errors.phoneNumber && (
+                                        <p className="text-sm text-destructive">{errors.phoneNumber.message}</p>
+                                    )}
+                                </div>
+
+                                {/* Confirm Password */}
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium text-foreground">Confirm Password</Label>
+                                    <Input
+                                        {...register("confirmPassword")}
+                                        type="password"
+                                        placeholder="Confirm your password"
+                                        className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+                                    />
+                                    {errors.confirmPassword && (
+                                        <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Avatar */}
-                        <div>
-                            <Label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                Avatar
-                            </Label>
+                        {/* Avatar Upload - Full Width */}
+                        <div className="space-y-2">
+                            <Label className="text-sm font-medium text-foreground">Profile Picture</Label>
                             <Input
                                 {...register("avatar")}
                                 type="file"
-                                className="w-full px-4 py-2 border border-blue-300 rounded-lg shadow-sm cursor-pointer text-gray-800 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:outline-none transition-all duration-300 ease-in-out"
+                                accept="image/*"
+                                className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 cursor-pointer"
                             />
+                            {errors.avatar && (
+                                <p className="text-sm text-destructive">{errors.avatar.message}</p>
+                            )}
                         </div>
 
                         {/* Submit Button */}
                         <Button
                             type="submit"
-                            className="w-full py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg transition-all duration-300 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-800"
+                            className="w-full py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-200 shadow-lg hover:shadow-xl"
                             disabled={isSubmitting}
                         >
-                            {isSubmitting ? "Submitting..." : "Sign Up"}
+                            {isSubmitting ? "Creating account..." : "Sign Up"}
                         </Button>
                     </form>
-                    <div className="relative mt-4">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-300" />
+
+                    {/* Social Sign Up */}
+                    <div className="mt-8">
+                        <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-border" />
+                            </div>
+                            <div className="relative flex justify-center text-sm">
+                                <span className="px-2 bg-card text-muted-foreground">
+                                    Or continue with
+                                </span>
+                            </div>
                         </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-white text-gray-500">
-                                Or continue with
-                            </span>
+                        <div className="flex justify-center mt-4 gap-6">
+                            <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="p-3 rounded-full bg-background border border-input hover:bg-accent transition-colors"
+                            >
+                                <FcGoogle className="text-2xl" />
+                            </motion.button>
+                            <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="p-3 rounded-full bg-background border border-input hover:bg-accent transition-colors"
+                            >
+                                <GrLinkedin className="text-2xl text-blue-600" />
+                            </motion.button>
+                            <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="p-3 rounded-full bg-background border border-input hover:bg-accent transition-colors"
+                            >
+                                <FaGithub className="text-2xl text-foreground" />
+                            </motion.button>
                         </div>
                     </div>
-                    <div className="flex justify-center mt-4 gap-6">
-                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                            <FcGoogle className="text-2xl cursor-pointer" />
-                        </motion.div>
-                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                            <GrLinkedin className="text-2xl text-blue-600 cursor-pointer" />
-                        </motion.div>
-                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                            <FaGithub className="text-2xl dark:text-gray-300 cursor-pointer" />
-                        </motion.div>
+
+                    {/* Login Link */}
+                    <div className="mt-6 text-center">
+                        <p className="text-sm text-muted-foreground">
+                            Already have an account?{" "}
+                            <Link
+                                to="/login"
+                                className="text-primary hover:underline font-medium"
+                            >
+                                Login
+                            </Link>
+                        </p>
                     </div>
                 </motion.div>
-                <motion.div className="hidden md:flex md:w-1/2 justify-center" variants={itemVariants}>
-                    <motion.img
-                        src="register.png"
-                        alt="Sign Up Illustration"
-                        className="max-w-full h-auto"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.8 }}
-                    />
+
+                {/* Right side - Illustration */}
+                <motion.div
+                    className="hidden md:block md:w-1/2 bg-gradient-to-br from-primary/5 to-primary/10 p-8"
+                    initial={{ x: 50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                >
+                    <div className="h-full flex items-center justify-center">
+                        <motion.img
+                            src="/register.png"
+                            alt="Sign Up Illustration"
+                            className="max-w-full h-auto"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ duration: 0.8 }}
+                        />
+                    </div>
                 </motion.div>
-            </motion.div>
+            </div>
         </motion.div>
     );
 };
