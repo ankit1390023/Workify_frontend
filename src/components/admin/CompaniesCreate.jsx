@@ -16,12 +16,14 @@ import { setLoading } from '@/redux/authSlice';
 import Header from '../shared/Header';
 import Footer from '../shared/Footer';
 import { useTheme } from '@/context/ThemeContext';
+import { Building2, Globe, MapPin, X } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 
 // Define the schema using Zod
 const companySchema = z.object({
-  companyName: z.string().nonempty('Company name is required'),
-  location: z.string().nonempty('Location is required'),
-  website: z.string().url('Invalid URL format'),
+  companyName: z.string().min(2, 'Company name must be at least 2 characters'),
+  location: z.string().min(2, 'Location must be at least 2 characters'),
+  website: z.string().url('Please enter a valid website URL'),
   description: z.string().optional(),
 });
 
@@ -31,7 +33,7 @@ const CompaniesCreate = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors,isSubmitting },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(companySchema),
   });
@@ -62,7 +64,7 @@ const CompaniesCreate = () => {
         toast.error(`Failed to register company: ${res.data.message}`);
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || "An error occurred during reegister company";
+      const errorMessage = error.response?.data?.message || error.message || "An error occurred during company registration";
       toast.error(errorMessage);
     }
   };
@@ -70,84 +72,120 @@ const CompaniesCreate = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header/>
-      <div className="max-w-4xl mx-auto p-8 my-10 bg-background rounded-lg border border-gray-200 dark:border-gray-800 shadow-lg">
-        <h1 className="text-3xl font-semibold text-foreground mb-4">Register a New Company</h1>
-        <p className="text-muted-foreground text-sm mb-6">
-          Please provide your company details. You can update them later if needed.
-        </p>
-     
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Company Name */}
-            <div>
-              <Label htmlFor="name" className="text-foreground">Company Name</Label>
-              <Input
-                id="name"
-                type="text"
-                {...register('companyName')}
-                placeholder="Enter company name"
-                className="mt-1 bg-background text-foreground border-gray-300 dark:border-gray-700"
-              />
-              {errors.companyName && <p className="text-red-500 text-sm mt-1">{errors.companyName.message}</p>}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Card className="border-border">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Building2 className="h-6 w-6 text-primary" />
+              <div>
+                <CardTitle className="text-2xl font-bold">Register a New Company</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Please provide your company details. You can update them later if needed.
+                </CardDescription>
+              </div>
             </div>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Company Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="companyName" className="text-foreground">Company Name</Label>
+                  <div className="relative">
+                    <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="companyName"
+                      type="text"
+                      {...register('companyName')}
+                      placeholder="Enter company name"
+                      className="pl-10 bg-background text-foreground border-border focus:ring-2 focus:ring-primary/20"
+                    />
+                  </div>
+                  {errors.companyName && (
+                    <p className="text-sm text-destructive">{errors.companyName.message}</p>
+                  )}
+                </div>
 
-            {/* Location */}
-            <div>
-              <Label htmlFor="location" className="text-foreground">Location</Label>
-              <Input
-                id="location"
-                type="text"
-                {...register('location')}
-                placeholder="Enter location (e.g., Bangalore, Pune)"
-                className="mt-1 bg-background text-foreground border-gray-300 dark:border-gray-700"
-              />
-              {errors.location && <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>}
-            </div>
-          </div>
+                {/* Location */}
+                <div className="space-y-2">
+                  <Label htmlFor="location" className="text-foreground">Location</Label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="location"
+                      type="text"
+                      {...register('location')}
+                      placeholder="Enter company location"
+                      className="pl-10 bg-background text-foreground border-border focus:ring-2 focus:ring-primary/20"
+                    />
+                  </div>
+                  {errors.location && (
+                    <p className="text-sm text-destructive">{errors.location.message}</p>
+                  )}
+                </div>
 
-          {/* Website */}
-          <div>
-            <Label htmlFor="website" className="text-foreground">Website</Label>
-            <Input
-              id="website"
-              type="url"
-              {...register('website')}
-              placeholder="Enter website URL"
-              className="mt-1 bg-background text-foreground border-gray-300 dark:border-gray-700"
-            />
-            {errors.website && <p className="text-red-500 text-sm mt-1">{errors.website.message}</p>}
-          </div>
+                {/* Website */}
+                <div className="space-y-2">
+                  <Label htmlFor="website" className="text-foreground">Website</Label>
+                  <div className="relative">
+                    <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="website"
+                      type="url"
+                      {...register('website')}
+                      placeholder="https://example.com"
+                      className="pl-10 bg-background text-foreground border-border focus:ring-2 focus:ring-primary/20"
+                    />
+                  </div>
+                  {errors.website && (
+                    <p className="text-sm text-destructive">{errors.website.message}</p>
+                  )}
+                </div>
 
-          {/* Description */}
-          <div>
-            <Label htmlFor="description" className="text-foreground">Description</Label>
-            <Textarea
-              id="description"
-              {...register('description')}
-              placeholder="Enter company description (optional)"
-              className="mt-1 bg-background text-foreground border-gray-300 dark:border-gray-700"
-            />
-          </div>
+                {/* Description */}
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="description" className="text-foreground">Description (Optional)</Label>
+                  <Textarea
+                    id="description"
+                    {...register('description')}
+                    placeholder="Enter company description"
+                    className="min-h-[100px] bg-background text-foreground border-border focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+              </div>
 
-          {/* Buttons */}
-          <div className="flex justify-end space-x-4">
-            <Button
-              variant="outline"
-              className="px-4 py-2 border border-gray-300 dark:border-gray-700 text-foreground rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-              onClick={() => navigate('/admin/companies')}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              className={`${isSubmitting ? 'cursor-not-allowed' : 'cursor-pointer'} px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800`}
-            >
-              Register
-            </Button>
-          </div>
-        </form>
-        {/* Show Loader */}
-        {isSubmitting && <Loader message="Submitting..." />} 
+              {/* Buttons */}
+              <div className="flex justify-end gap-4 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="gap-2"
+                  onClick={() => navigate('/admin/companies')}
+                >
+                  <X className="h-4 w-4" />
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  className="gap-2"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader className="h-4 w-4" />
+                      Registering...
+                    </>
+                  ) : (
+                    <>
+                      <Building2 className="h-4 w-4" />
+                      Register Company
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
       <Footer/>
     </div>

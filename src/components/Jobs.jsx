@@ -3,15 +3,21 @@ import FilterCard from './filterCard';
 import Job from './Job';
 import { ScrollArea } from './ui/scroll-area';
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Header from './shared/Header';
 import Footer from './shared/Footer';
 import Chat from './ai/Chat';
+import { Search, Briefcase, Filter, X } from 'lucide-react';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
+import { Card } from './ui/card';
+import { Badge } from './ui/badge';
 
 const Jobs = () => {
   const { allJobs, searchQuery } = useSelector((state) => state.job);
   const [filterJob, setFilterJob] = useState([]);
   const [appliedFilters, setAppliedFilters] = useState({});
+  const [showFilters, setShowFilters] = useState(false);
 
   // Helper function to normalize search terms
   const normalizeSearchTerm = (term) => {
@@ -133,33 +139,111 @@ const Jobs = () => {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
       <Header />
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold tracking-tight text-foreground mb-4">
+            Find Your Dream Job
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Discover thousands of job opportunities with all the information you need. It's your future, come find it.
+          </p>
+        </div>
+
+        {/* Search and Filter Bar */}
+        <div className="mb-8">
+          <Card className="p-6 border-border/50 bg-card/50 backdrop-blur-sm shadow-lg">
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search jobs, companies, or keywords..."
+                  className="pl-12 h-12 bg-background/50 text-foreground border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                  value={searchQuery}
+                  onChange={(e) => dispatch(setSearchQuery(e.target.value))}
+                />
+              </div>
+              <Button
+                variant="outline"
+                className="gap-2 h-12 px-6 hover:bg-primary/5 transition-colors duration-200"
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <Filter className="h-5 w-5" />
+                Filters
+                {Object.keys(appliedFilters).length > 0 && (
+                  <Badge variant="secondary" className="ml-2 bg-primary/10 text-primary">
+                    {Object.keys(appliedFilters).length}
+                  </Badge>
+                )}
+              </Button>
+            </div>
+          </Card>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-8">
           {/* Filter Section */}
-          <div className="w-full lg:w-1/4 flex-shrink-0 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
-            <FilterCard onFilterChange={handleFilterChange} />
-          </div>
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                className="lg:w-1/4"
+              >
+                <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-lg p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-lg font-semibold">Filters</h2>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="lg:hidden"
+                      onClick={() => setShowFilters(false)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <FilterCard onFilterChange={handleFilterChange} />
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Jobs List */}
           <div className="flex-1">
-            <ScrollArea className="h-[calc(100vh-2.5rem)] pr-4">
-              <div className="space-y-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <ScrollArea className="h-[calc(100vh-16rem)] pr-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filterJob.length > 0 ? (
                   filterJob.map((job) => (
                     <motion.div
-                      initial={{ opacity: 0, x: 100 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.8 }}
-                      className="flex-shrink-0"
                       key={job._id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      whileHover={{ y: -5 }}
+                      className="group"
                     >
                       <Job {...job} />
                     </motion.div>
                   ))
                 ) : (
-                  <p className="text-gray-500 text-center col-span-full">No jobs found matching your criteria.</p>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                    className="col-span-full flex flex-col items-center justify-center py-16"
+                  >
+                    <div className="bg-primary/5 p-8 rounded-full mb-6">
+                      <Briefcase className="h-16 w-16 text-primary" />
+                    </div>
+                    <h3 className="text-2xl font-semibold text-foreground mb-3">No jobs found</h3>
+                    <p className="text-muted-foreground text-center max-w-md">
+                      Try adjusting your search or filter criteria to find more jobs. You can also try different keywords or locations.
+                    </p>
+                  </motion.div>
                 )}
               </div>
             </ScrollArea>

@@ -8,11 +8,12 @@ import {
     TableHeader,
     TableRow,
 } from '../ui/table';
-import { Edit2 } from 'lucide-react';
+import { Edit2, Building2 } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { useTheme } from '@/context/ThemeContext';
+import { Badge } from '../ui/badge';
 
 const CompaniesTable = () => {
     const navigate = useNavigate();
@@ -25,49 +26,78 @@ const CompaniesTable = () => {
     );
 
     return (
-        <div className="overflow-x-auto p-4">
-            <Table className="min-w-full bg-background shadow-lg rounded-lg border border-gray-200 dark:border-gray-800">
-                <TableCaption className="text-muted-foreground">List of Registered Companies</TableCaption>
+        <div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+            <Table>
+                <TableCaption className="mt-4 text-sm text-muted-foreground">
+                    List of registered companies in the system
+                </TableCaption>
                 <TableHeader>
-                    <TableRow className="bg-blue-600 dark:bg-blue-700 text-white">
-                        <TableHead className="w-[100px] font-bold">No.</TableHead>
-                        <TableHead className="w-[100px] font-bold">Logo</TableHead>
-                        <TableHead className="font-bold">Company Name</TableHead>
-                        <TableHead className="font-bold">Registered Date</TableHead>
-                        <TableHead className="text-right font-bold">Actions</TableHead>
+                    <TableRow className="bg-muted/50 hover:bg-muted/50">
+                        <TableHead className="w-[80px] font-medium">No.</TableHead>
+                        <TableHead className="w-[100px] font-medium">Logo</TableHead>
+                        <TableHead className="font-medium">Company Name</TableHead>
+                        <TableHead className="font-medium">Registered Date</TableHead>
+                        <TableHead className="text-right font-medium">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {filterCompany.length > 0 ? (
                         filterCompany.map((company, index) => (
-                            <TableRow key={company._id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                                <TableCell className="text-foreground">{index + 1}</TableCell>
-                                <TableCell>
-                                    <img
-                                        src={company.logo}
-                                        alt={`${company.companyName} Logo`}
-                                        className="w-10 h-10 object-cover rounded"
-                                    />
+                            <TableRow 
+                                key={company._id} 
+                                className="group transition-colors hover:bg-muted/50"
+                            >
+                                <TableCell className="font-medium text-muted-foreground">
+                                    {index + 1}
                                 </TableCell>
-                                <TableCell className="font-medium text-foreground">{company.companyName}</TableCell>
-                                <TableCell className="text-muted-foreground">{new Date(company.createdAt).toLocaleDateString()}</TableCell>
+                                <TableCell>
+                                    {company.logo ? (
+                                        <img
+                                            src={company.logo}
+                                            alt={`${company.companyName} Logo`}
+                                            className="h-10 w-10 rounded-full object-cover ring-2 ring-border"
+                                        />
+                                    ) : (
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                                            <Building2 className="h-5 w-5 text-muted-foreground" />
+                                        </div>
+                                    )}
+                                </TableCell>
+                                <TableCell className="font-medium">
+                                    <div className="flex flex-col">
+                                        <span className="text-foreground">{company.companyName}</span>
+                                        <span className="text-xs text-muted-foreground">
+                                            {company.location}
+                                        </span>
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant="outline" className="font-normal">
+                                        {new Date(company.createdAt).toLocaleDateString()}
+                                    </Badge>
+                                </TableCell>
                                 <TableCell className="text-right">
                                     <Button
-                                        variant="outline"
-                                        aria-label="Edit Job Details"
-                                        className="gap-1 px-2 py-1 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 rounded-md shadow-md hover:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-8 w-8 p-0 hover:bg-muted"
                                         onClick={() => navigate(`/admin/companies/${company._id}`)}
                                     >
-                                        <Edit2 className="w-4 h-4" />
-                                        <span>Edit</span>
+                                        <Edit2 className="h-4 w-4" />
+                                        <span className="sr-only">Edit company</span>
                                     </Button>
                                 </TableCell>
                             </TableRow>
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={5} className="text-center text-xl font-bold text-muted-foreground">
-                                No Companies have been registered yet.
+                            <TableCell colSpan={5} className="h-24 text-center">
+                                <div className="flex flex-col items-center justify-center gap-2">
+                                    <Building2 className="h-8 w-8 text-muted-foreground" />
+                                    <p className="text-sm text-muted-foreground">
+                                        No companies have been registered yet.
+                                    </p>
+                                </div>
                             </TableCell>
                         </TableRow>
                     )}

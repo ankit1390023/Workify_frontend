@@ -334,7 +334,7 @@ const SignUp = () => {
                 >
                     <div className="h-full flex items-center justify-center">
                         <motion.img
-                            src="/register.png"
+                            src="/signup.png"
                             alt="Sign Up Illustration"
                             className="max-w-full h-auto"
                             initial={{ scale: 0 }}

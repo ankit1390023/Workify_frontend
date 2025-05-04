@@ -2,20 +2,18 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Edit2, Eye, Mail, Phone } from "lucide-react";
+import { Edit2, Eye, Mail, Phone, FileText, Linkedin, Github } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from '@/context/ThemeContext';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const ApplicantsCards = () => {
     const params = useParams();
     const { theme } = useTheme();
     const applicationId = params.id;
-    console.log("Application ID", applicationId);
     const { allApplicants } = useSelector((state) => state.application);
-
-    console.log("allApplicants for application", allApplicants);
-
     const [filteredApplication, setFilteredApplication] = useState([]);
 
     useEffect(() => {
@@ -23,144 +21,165 @@ const ApplicantsCards = () => {
             const filtered = allApplicants.filter(applicant => applicant._id === applicationId);
             setFilteredApplication(filtered);
         } else {
-            setFilteredApplication([]); // Reset if no ID is selected
+            setFilteredApplication([]);
         }
     }, [allApplicants, applicationId]);
 
-    console.log("Filtered application", filteredApplication);
-
     return (
-        <div className="max-w-5xl mx-auto my-6 max-h-full">
-            <h2 className="text-2xl font-bold text-foreground my-4 underline underline-offset-1">
-                Applicants Profile:-
+        <div className="max-w-4xl mx-auto my-8">
+            <h2 className="text-2xl font-bold text-foreground mb-6">
+                Applicant Profile
             </h2>
             {filteredApplication.length > 0 ? (
-                <div>
+                <div className="space-y-6">
                     {filteredApplication.map((item) => (
-                        <div
-                            key={item._id}
-                            className="flex flex-col items-center bg-background shadow-lg rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800"
-                        >
-                            <div className="relative w-full h-64">
-                                {item?.applicant?.profile?.coverImage ? (
-                                    <img
-                                        src={item?.applicant?.profile?.coverImage}
-                                        alt="Cover"
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full bg-gradient-to-r from-blue-300 via-purple-400 to-pink-300 dark:from-blue-600 dark:via-purple-700 dark:to-pink-600 flex items-center justify-center">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            className="w-14 h-14 text-gray-400 dark:text-gray-300"
-                                        >
-                                            <rect x="3" y="3" width="18" height="14" rx="2" ry="2" />
-                                            <circle cx="8.5" cy="8.5" r="1.5" />
-                                            <path d="M21 15l-5-5L5 21" />
-                                        </svg>
-                                    </div>
-                                )}
-                                {item?.applicant?.profile?.avatar && (
-                                    <img
-                                        src={item?.applicant?.profile?.avatar}
-                                        alt="Avatar"
-                                        className="absolute -bottom-8 left-8 w-40 h-40 rounded-full border-4 border-white dark:border-gray-800 object-cover"
-                                    />
-                                )}
-                                <div className="absolute top-0 right-0 bg-blue-500 dark:bg-blue-600 text-white text-xs font-thin px-4 py-1 rounded-bl-lg shadow-md">
-                                    <p className="text-xs font-medium text-white">
+                        <Card key={item._id} className="border-border">
+                            <CardHeader className="relative">
+                                <div className="absolute top-4 right-4">
+                                    <Badge variant="secondary" className="bg-primary/10 text-primary">
                                         Applied on: {new Date(item?.createdAt).toLocaleDateString()}
-                                    </p>
+                                    </Badge>
                                 </div>
-                            </div>
-                            <div className="p-6 w-full flex flex-col">
-                                <h3 className="text-2xl font-bold text-foreground">
-                                    {item?.applicant?.fullName}
-                                </h3>
-                                <p className="mt-2 text-muted-foreground text-base font-semibold font-serif">
-                                    {item?.applicant?.profile?.bio}
-                                </p>
-                                <div className="mt-3">
-                                    <h4 className="text-foreground font-semibold">Contact Information</h4>
-                                    <p className="text-sm text-muted-foreground bg-gray-100 dark:bg-gray-800 p-3 rounded-md">
-                                        <div className="flex gap-2">
-                                            <Mail className="w-5 h-5 text-foreground" />
-                                            <span className="font-medium text-blue-600 dark:text-blue-400">
-                                                {item?.applicant?.email}
-                                            </span>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <Phone className="w-5 h-5 text-foreground" />
-                                            <span className="font-medium text-blue-600 dark:text-blue-400">{item?.applicant?.phoneNumber}</span>
-                                        </div>
-                                    </p>
+                                <div className="flex items-center gap-4">
+                                    <div className="relative">
+                                        {item?.applicant?.profile?.avatar ? (
+                                            <img
+                                                src={item?.applicant?.profile?.avatar}
+                                                alt="Avatar"
+                                                className="w-20 h-20 rounded-full border-4 border-card object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+                                                <span className="text-2xl text-primary">
+                                                    {item?.applicant?.fullName?.[0]?.toUpperCase()}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-2xl font-bold text-foreground">
+                                            {item?.applicant?.fullName}
+                                        </CardTitle>
+                                        <p className="text-muted-foreground">
+                                            {item?.applicant?.profile?.bio}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="mt-3 gap-2">
-                                    <div className="text-foreground font-semibold">Skills</div>
-                                    <p className="text-sm text-muted-foreground bg-gray-100 dark:bg-gray-800 p-3 rounded-md">
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                {/* Contact Information */}
+                                <div className="space-y-4">
+                                    <h3 className="text-lg font-semibold text-foreground">Contact Information</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="flex items-center gap-2 p-3 bg-card rounded-lg">
+                                            <Mail className="w-5 h-5 text-primary" />
+                                            <span className="text-foreground">{item?.applicant?.email}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 p-3 bg-card rounded-lg">
+                                            <Phone className="w-5 h-5 text-primary" />
+                                            <span className="text-foreground">{item?.applicant?.phoneNumber}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Skills */}
+                                <div className="space-y-4">
+                                    <h3 className="text-lg font-semibold text-foreground">Skills</h3>
+                                    <div className="flex flex-wrap gap-2">
                                         {item?.applicant?.profile?.skills?.length ? (
                                             item?.applicant?.profile?.skills?.map((skill, index) => (
                                                 <Badge
                                                     key={index}
-                                                    variant="outline"
-                                                    className="px-3 py-1 mx-1 bg-gray-800 dark:bg-gray-700 text-white rounded-full"
+                                                    variant="secondary"
+                                                    className="bg-primary/10 text-primary"
                                                 >
                                                     {skill}
                                                 </Badge>
                                             ))
                                         ) : (
-                                            <span className="text-sm text-muted-foreground">No skills added yet.</span>
+                                            <p className="text-muted-foreground">No skills added yet</p>
                                         )}
-                                    </p>
+                                    </div>
                                 </div>
-                                <div className="mt-3">
-                                    <h4 className="text-foreground font-semibold">View Resume:</h4>
+
+                                {/* Resume */}
+                                <div className="space-y-4">
+                                    <h3 className="text-lg font-semibold text-foreground">Resume</h3>
                                     {item?.applicant?.profile?.resume ? (
-                                        <p className="text-sm text-muted-foreground bg-gray-100 dark:bg-gray-800 p-3 rounded-md">
+                                        <Button
+                                            variant="outline"
+                                            className="flex items-center gap-2"
+                                            asChild
+                                        >
                                             <Link
                                                 to={`${item?.applicant?.profile?.resume}?fl_attachment=false`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-blue-600 dark:text-blue-400 hover:underline"
                                             >
+                                                <FileText className="w-4 h-4" />
                                                 {item?.applicant?.profile?.resumeOriginalName}
                                             </Link>
-                                        </p>
+                                        </Button>
                                     ) : (
-                                        <span className="text-muted-foreground">Resume not available</span>
+                                        <p className="text-muted-foreground">Resume not available</p>
                                     )}
                                 </div>
-                                <div className="mt-3">
-                                    <h4 className="text-foreground font-semibold">Cover Letter</h4>
-                                    <p className="text-sm text-muted-foreground bg-gray-100 dark:bg-gray-800 p-3 rounded-md">
-                                        {item?.applicant?.profile?.coverLetter ||
-                                            "This is a placeholder cover letter. It highlights the applicant's goals and skills."}
-                                    </p>
+
+                                {/* Cover Letter */}
+                                <div className="space-y-4">
+                                    <h3 className="text-lg font-semibold text-foreground">Cover Letter</h3>
+                                    <div className="p-4 bg-card rounded-lg">
+                                        <p className="text-foreground">
+                                            {item?.applicant?.profile?.coverLetter ||
+                                                "No cover letter provided"}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="mt-3">
-                                    <h4 className="text-foreground font-semibold">Additional Info</h4>
-                                    <p className="text-sm text-muted-foreground bg-gray-100 dark:bg-gray-800 p-3 rounded-md">
-                                        <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">
-                                            LinkedIn Profile
-                                        </a>
-                                        <br />
-                                        <a href="https://www.github.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">
-                                            GitHub Profile
-                                        </a>
-                                    </p>
+
+                                {/* Social Links */}
+                                <div className="space-y-4">
+                                    <h3 className="text-lg font-semibold text-foreground">Social Links</h3>
+                                    <div className="flex gap-4">
+                                        <Button
+                                            variant="outline"
+                                            className="flex items-center gap-2"
+                                            asChild
+                                        >
+                                            <a
+                                                href="https://www.linkedin.com"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                <Linkedin className="w-4 h-4" />
+                                                LinkedIn
+                                            </a>
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            className="flex items-center gap-2"
+                                            asChild
+                                        >
+                                            <a
+                                                href="https://www.github.com"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                <Github className="w-4 h-4" />
+                                                GitHub
+                                            </a>
+                                        </Button>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+                            </CardContent>
+                        </Card>
                     ))}
                 </div>
             ) : (
-                <p className="text-muted-foreground text-center text-xl font-medium">No applicants found.</p>
+                <div className="text-center py-12">
+                    <p className="text-muted-foreground text-lg">
+                        No applicant details found
+                    </p>
+                </div>
             )}
         </div>
     );

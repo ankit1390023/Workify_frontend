@@ -10,24 +10,36 @@ const useGetAllCompany = () => {
 
     useEffect(() => {
         const fetchAllCompany = async () => {
+            try {
+                const response = await axios.get(`${API_END_POINT}/company/get`, {
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                });
 
-            const response = await axios.get(`${API_END_POINT}/company/get`, {
-                headers: {
-                    "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
+                if (response.data.success) {
+                    dispatch(setAllCompanies(response.data.data || []));
+                    if (response.data.data?.length > 0) {
+                        toast.success("Companies fetched successfully!");
+                    }
+                } else {
+                    toast.error(`Failed to fetch companies: ${response.data.message}`);
                 }
-             });
-            // console.log("response from customHooks is", response);
-            if (response.data.success) {
-                dispatch(setAllCompanies(response.data.data)); // Dispatch jobs to Redux
-                toast.success("All Companies fetched successfully!"); // Success toast
-            } else {
-                toast.error(`Failed to fetch Companies: ${response.data.message}`); // Error toast for API failure
+            } catch (error) {
+                console.error("Error fetching companies:", error);
+                if (error.response?.status === 401) {
+                    toast.error("Please login to view companies");
+                } else if (error.response?.status === 404) {
+                    toast.error("No companies found");
+                } else {
+                    toast.error("Failed to fetch companies due to an error");
+                }
+                dispatch(setAllCompanies([]));
             }
-
         };
 
         fetchAllCompany();
-    }, [dispatch]); // Ensure no stale dispatch
+    }, [dispatch]);
 };
 
 export default useGetAllCompany;

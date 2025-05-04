@@ -16,6 +16,9 @@ import Loader from "../ui/Loader";
 import Header from "../shared/Header";
 import Footer from "../shared/Footer";
 import { useTheme } from '@/context/ThemeContext';
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Label } from "../ui/label";
+import { Briefcase } from "lucide-react";
 
 // Zod Schema for Validation
 const jobPostSchema = z.object({
@@ -77,182 +80,214 @@ const JobPost = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header/>
-      <div className="max-w-4xl mx-auto p-8 my-10 bg-background rounded-lg border border-gray-200 dark:border-gray-800 shadow-lg">
-        <h1 className="text-3xl font-semibold text-foreground mb-4 text-center">
-          Create a Job Post
-        </h1>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="space-y-6"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Title */}
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-foreground mb-2">Job Title</label>
-              <Input
-                type="text"
-                {...register("title")}
-                placeholder="e.g., Web Developer"
-                className="w-full bg-background text-foreground border-gray-300 dark:border-gray-700"
-              />
-              {errors.title && (
-                <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
-              )}
-            </div>
-
-            {/* Requirements */}
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-foreground mb-2">Requirements</label>
-              <Input
-                type="text"
-                {...register("requirements")}
-                placeholder="e.g., React, Node.js, PHP"
-                className="w-full bg-background text-foreground border-gray-300 dark:border-gray-700"
-              />
-              {errors.requirements && (
-                <p className="text-red-500 text-sm mt-1">{errors.requirements.message}</p>
-              )}
-            </div>
-
-            {/* Salary */}
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">Salary</label>
-              <Input
-                type="number"
-                {...register("salary", { valueAsNumber: true })}
-                placeholder="e.g., 85000"
-                className="w-full bg-background text-foreground border-gray-300 dark:border-gray-700"
-              />
-              {errors.salary && (
-                <p className="text-red-500 text-sm mt-1">{errors.salary.message}</p>
-              )}
-            </div>
-
-            {/* Experience */}
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">Experience (years)</label>
-              <Input
-                type="number"
-                {...register("experience", { valueAsNumber: true })}
-                placeholder="e.g., 3"
-                className="w-full bg-background text-foreground border-gray-300 dark:border-gray-700"
-              />
-              {errors.experience && (
-                <p className="text-red-500 text-sm mt-1">{errors.experience.message}</p>
-              )}
-            </div>
-
-            {/* Location */}
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">Location</label>
-              <Input
-                type="text"
-                {...register("location")}
-                placeholder="e.g., Singapore"
-                className="w-full bg-background text-foreground border-gray-300 dark:border-gray-700"
-              />
-              {errors.location && (
-                <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>
-              )}
-            </div>
-
-            {/* Position */}
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">Open Positions</label>
-              <Input
-                type="number"
-                {...register("position", { valueAsNumber: true })}
-                placeholder="e.g., 9"
-                className="w-full bg-background text-foreground border-gray-300 dark:border-gray-700"
-              />
-              {errors.position && (
-                <p className="text-red-500 text-sm mt-1">{errors.position.message}</p>
-              )}
-            </div>
-
-            {/* Company Selection */}
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">Company</label>
-              {allCompanies.length > 0 ? (
-                <Select onValueChange={selectChangeHandler}>
-                  <SelectTrigger className="w-full bg-background text-foreground border-gray-300 dark:border-gray-700">
-                    <SelectValue placeholder="Select a company" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background border-gray-300 dark:border-gray-700">
-                    {allCompanies.map((company) => (
-                      <SelectItem
-                        key={company.companyId}
-                        value={company.companyName.toLowerCase()}
-                        className="text-foreground hover:bg-gray-100 dark:hover:bg-gray-800"
-                      >
-                        {company.companyName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <p className="text-muted-foreground text-sm">
-                  No companies available. Please add a company first.
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Card className="border-border">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <Briefcase className="w-8 h-8 text-primary" />
+              <div>
+                <CardTitle className="text-2xl font-bold text-foreground">
+                  Create New Job Post
+                </CardTitle>
+                <p className="text-muted-foreground">
+                  Fill in the details below to create a new job posting
                 </p>
-              )}
-              {errors.companyId && (
-                <p className="text-red-500 text-sm mt-1">{errors.companyId.message}</p>
-              )}
+              </div>
             </div>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Title */}
+                <div className="space-y-2">
+                  <Label htmlFor="title" className="text-foreground">Job Title</Label>
+                  <Input
+                    id="title"
+                    type="text"
+                    {...register("title")}
+                    placeholder="Enter job title"
+                    className="bg-background"
+                  />
+                  {errors.title && (
+                    <p className="text-sm text-destructive">{errors.title.message}</p>
+                  )}
+                </div>
 
-            {/* Job Type */}
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">Job Type</label>
-              <Select
-                onValueChange={(value) => setValue("jobType", value, { shouldValidate: true })}
-              >
-                <SelectTrigger className="w-full bg-background text-foreground border-gray-300 dark:border-gray-700">
-                  <SelectValue placeholder="Select job type" />
-                </SelectTrigger>
-                <SelectContent className="bg-background border-gray-300 dark:border-gray-700">
-                  <SelectItem value="Full-time" className="text-foreground hover:bg-gray-100 dark:hover:bg-gray-800">Full-time</SelectItem>
-                  <SelectItem value="Part-time" className="text-foreground hover:bg-gray-100 dark:hover:bg-gray-800">Part-time</SelectItem>
-                  <SelectItem value="Contract" className="text-foreground hover:bg-gray-100 dark:hover:bg-gray-800">Contract</SelectItem>
-                  <SelectItem value="Freelance" className="text-foreground hover:bg-gray-100 dark:hover:bg-gray-800">Freelance</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.jobType && (
-                <p className="text-red-500 text-sm mt-1">{errors.jobType.message}</p>
-              )}
-            </div>
-          </div>
+                {/* Company */}
+                <div className="space-y-2">
+                  <Label htmlFor="company" className="text-foreground">Company</Label>
+                  <Input
+                    id="company"
+                    type="text"
+                    {...register("companyName")}
+                    placeholder="Enter company name"
+                    className="bg-background"
+                  />
+                  {errors.companyName && (
+                    <p className="text-sm text-destructive">{errors.companyName.message}</p>
+                  )}
+                </div>
 
-          {/* Description */}
-          <div className="col-span-2">
-            <label className="block text-sm font-medium text-foreground mb-2">Job Description</label>
-            <Textarea
-              {...register("description")}
-              placeholder="Describe the job role and responsibilities..."
-              className="w-full bg-background text-foreground border-gray-300 dark:border-gray-700"
-            />
-            {errors.description && (
-              <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
-            )}
-          </div>
+                {/* Location */}
+                <div className="space-y-2">
+                  <Label htmlFor="location" className="text-foreground">Location</Label>
+                  <Input
+                    id="location"
+                    type="text"
+                    {...register("location")}
+                    placeholder="Enter location"
+                    className="bg-background"
+                  />
+                  {errors.location && (
+                    <p className="text-sm text-destructive">{errors.location.message}</p>
+                  )}
+                </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-end space-x-4">
-            <Button
-              variant="outline"
-              className="px-4 py-2 border border-gray-300 dark:border-gray-700 text-foreground rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-              onClick={() => navigate('/admin/jobs')}
-            >
-              Back
-            </Button>
-            <Button
-              type="submit"
-              className={`${isSubmitting ? 'cursor-not-allowed' : 'cursor-pointer'} px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800`}
-            >
-              {isSubmitting ? "Posting job..." : "Post job"}
-            </Button>
-          </div>
-        </form>
-        {isSubmitting && <Loader message="Posting job..." />}
+                {/* Salary */}
+                <div className="space-y-2">
+                  <Label htmlFor="salary" className="text-foreground">Salary</Label>
+                  <Input
+                    id="salary"
+                    type="number"
+                    {...register("salary", { valueAsNumber: true })}
+                    placeholder="Enter salary"
+                    className="bg-background"
+                  />
+                  {errors.salary && (
+                    <p className="text-sm text-destructive">{errors.salary.message}</p>
+                  )}
+                </div>
+
+                {/* Experience */}
+                <div className="space-y-2">
+                  <Label htmlFor="experience" className="text-foreground">Experience (years)</Label>
+                  <Input
+                    id="experience"
+                    type="number"
+                    {...register("experience", { valueAsNumber: true })}
+                    placeholder="Enter years of experience"
+                    className="bg-background"
+                  />
+                  {errors.experience && (
+                    <p className="text-sm text-destructive">{errors.experience.message}</p>
+                  )}
+                </div>
+
+                {/* Position */}
+                <div className="space-y-2">
+                  <Label htmlFor="position" className="text-foreground">Open Positions</Label>
+                  <Input
+                    id="position"
+                    type="number"
+                    {...register("position", { valueAsNumber: true })}
+                    placeholder="Enter number of positions"
+                    className="bg-background"
+                  />
+                  {errors.position && (
+                    <p className="text-sm text-destructive">{errors.position.message}</p>
+                  )}
+                </div>
+
+                {/* Job Type */}
+                <div className="space-y-2">
+                  <Label htmlFor="jobType" className="text-foreground">Job Type</Label>
+                  <Select
+                    onValueChange={(value) => setValue("jobType", value, { shouldValidate: true })}
+                  >
+                    <SelectTrigger className="bg-background">
+                      <SelectValue placeholder="Select job type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Full-time">Full-time</SelectItem>
+                      <SelectItem value="Part-time">Part-time</SelectItem>
+                      <SelectItem value="Contract">Contract</SelectItem>
+                      <SelectItem value="Freelance">Freelance</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.jobType && (
+                    <p className="text-sm text-destructive">{errors.jobType.message}</p>
+                  )}
+                </div>
+
+                {/* Company Selection */}
+                <div className="space-y-2">
+                  <Label htmlFor="companyId" className="text-foreground">Select Company</Label>
+                  {allCompanies.length > 0 ? (
+                    <Select onValueChange={selectChangeHandler}>
+                      <SelectTrigger className="bg-background">
+                        <SelectValue placeholder="Select a company" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {allCompanies.map((company) => (
+                          <SelectItem
+                            key={company._id}
+                            value={company.companyName.toLowerCase()}
+                          >
+                            {company.companyName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      No companies available. Please add a company first.
+                    </p>
+                  )}
+                  {errors.companyId && (
+                    <p className="text-sm text-destructive">{errors.companyId.message}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-foreground">Job Description</Label>
+                <Textarea
+                  id="description"
+                  {...register("description")}
+                  placeholder="Enter job description"
+                  className="bg-background min-h-[150px]"
+                />
+                {errors.description && (
+                  <p className="text-sm text-destructive">{errors.description.message}</p>
+                )}
+              </div>
+
+              {/* Requirements */}
+              <div className="space-y-2">
+                <Label htmlFor="requirements" className="text-foreground">Requirements</Label>
+                <Textarea
+                  id="requirements"
+                  {...register("requirements")}
+                  placeholder="Enter job requirements"
+                  className="bg-background min-h-[150px]"
+                />
+                {errors.requirements && (
+                  <p className="text-sm text-destructive">{errors.requirements.message}</p>
+                )}
+              </div>
+
+              {/* Buttons */}
+              <div className="flex justify-end gap-4 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate('/admin/jobs')}
+                  className="hover:bg-card"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  {isSubmitting ? "Posting..." : "Post Job"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
       <Footer/>
     </div>
