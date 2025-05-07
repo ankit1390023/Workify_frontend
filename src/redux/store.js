@@ -6,7 +6,8 @@ import authSlice from './authSlice';
 import jobSlice from './jobSlice';
 import companySlice from './companySlice';
 import applicationSlice from './applicationSlice';
-
+import dashboardSlice from './dashboardSlice';
+import globalStatsSlice from './globalStatsSlice';
 // 1. Create a persist configuration
 const persistConfig = {
     key: 'root', // Key to persist the state
@@ -15,10 +16,12 @@ const persistConfig = {
 
 // 2. Combine reducers
 const rootReducer = combineReducers({
-      auth: authSlice,
-      job: jobSlice,
+    auth: authSlice,
+    job: jobSlice,
     company: companySlice,
-      application: applicationSlice,
+    application: applicationSlice,
+    dashboard: dashboardSlice,
+    globalStats: globalStatsSlice,
 });
 
 // 3. Wrap rootReducer with persistReducer

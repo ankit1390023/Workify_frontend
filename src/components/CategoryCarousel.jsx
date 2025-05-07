@@ -9,7 +9,7 @@ import {
 import { Button } from './ui/button';
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
-import { setSearchQuery, setCategoryFilter } from "@/redux/jobSlice";
+import { setSearchQuery, setCategoryFilter, setAllJobs } from "@/redux/jobSlice";
 import { motion } from "framer-motion";
 
 const categories = [
@@ -66,7 +66,35 @@ const CategoryCarousel = () => {
     const searchJobHandler = (category) => {
         setActiveCategory(category.name);
         
-        // Set only the category filter, clear search query
+        // Filter jobs based on category keywords
+        const filteredJobs = allJobs.filter(job => {
+            // Helper function to normalize search terms
+            const normalizeSearchTerm = (term) => {
+                if (!term) return '';
+                return term.toLowerCase().replace(/\s+/g, '');
+            };
+
+            // Helper function to check if a job matches any of the keywords
+            const matchesKeywords = (text, keywords) => {
+                if (!text) return false;
+                const normalizedText = normalizeSearchTerm(text);
+                return keywords.some(keyword => {
+                    const normalizedKeyword = normalizeSearchTerm(keyword);
+                    return normalizedText.includes(normalizedKeyword);
+                });
+            };
+
+            // Check if job matches any of the category keywords in any field
+            const matchesTitle = matchesKeywords(job.title, category.keywords);
+            const matchesDescription = matchesKeywords(job.description, category.keywords);
+            const matchesRequirements = job.requirements && job.requirements.some(req => matchesKeywords(req, category.keywords));
+            const matchesJobType = matchesKeywords(job.jobType, category.keywords);
+
+            return matchesTitle || matchesDescription || matchesRequirements || matchesJobType;
+        });
+
+        // Update Redux state with filtered jobs
+        dispatch(setAllJobs(filteredJobs));
         dispatch(setCategoryFilter(category.name));
         dispatch(setSearchQuery(''));
         
@@ -102,17 +130,9 @@ const CategoryCarousel = () => {
             const matchesRequirements = job.requirements && job.requirements.some(req => matchesKeywords(req, category.keywords));
             const matchesJobType = matchesKeywords(job.jobType, category.keywords);
 
-            const matches = matchesTitle || matchesDescription || matchesRequirements || matchesJobType;
-            
-            // Debug log to see which jobs are being counted
-            if (matches) {
-                console.log(`Job matched for ${category.name}:`, job.title);
-            }
-            
-            return matches;
+            return matchesTitle || matchesDescription || matchesRequirements || matchesJobType;
         });
 
-        console.log(`Total jobs for ${category.name}:`, filteredJobs.length);
         return filteredJobs.length;
     };
 

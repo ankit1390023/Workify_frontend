@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Header from './shared/Header';
 import Footer from './shared/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { API_END_POINT } from '@/utils/constant';
+import { useDashboardData } from './hooks/useDashboardData';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -40,85 +38,8 @@ ChartJS.register(
 
 export default function Dashboard() {
     const { user } = useSelector((state) => state.auth);
-    const navigate = useNavigate();
-
-    // State for all dashboard data
-    const [stats, setStats] = useState({
-        totalAppliedJobs: 0,
-        totalInterviews: 0,
-        totalPending: 0,
-        totalRejected: 0,
-        totalJobs: 0,
-        profileScore: 0,
-        totalSelected: 0,
-        applicationTrends: [],
-        skillsData: []
-    });
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-
-    // Fetch all dashboard data
-    useEffect(() => {
-        const fetchDashboardData = async () => {
-            setLoading(true);
-            setError('');
-            try {
-                const [statsResponse, trendsResponse, skillsResponse] = await Promise.all([
-                    axios.get(`${API_END_POINT}/dashboard/stats`, {
-                        headers: {
-                            "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
-                        },
-                    }),
-                    axios.get(`${API_END_POINT}/dashboard/trends`, {
-                        headers: {
-                            "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
-                        },
-                    }),
-                    axios.get(`${API_END_POINT}/dashboard/skills`, {
-                        headers: {
-                            "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
-                        },
-                    })
-                ]);
-
-                if (statsResponse.data?.data) {
-                    setStats(prev => ({
-                        ...prev,
-                        totalAppliedJobs: statsResponse.data.data.totalAppliedJobs || 0,
-                        totalInterviews: statsResponse.data.data.totalInterviews || 0,
-                        totalPending: statsResponse.data.data.totalPending || 0,
-                        totalRejected: statsResponse.data.data.totalRejected || 0,
-                        totalJobs: statsResponse.data.data.totalJobs || 0,
-                        profileScore: statsResponse.data.data.profileScore || 0,
-                        totalSelected: statsResponse.data.data.totalSelected || 0
-                    }));
-                }
-
-                if (trendsResponse.data?.data) {
-                    setStats(prev => ({
-                        ...prev,
-                        applicationTrends: trendsResponse.data.data
-                    }));
-                }
-
-                if (skillsResponse.data?.data) {
-                    setStats(prev => ({
-                        ...prev,
-                        skillsData: skillsResponse.data.data
-                    }));
-                }
-            } catch (err) {
-                console.error('Error fetching dashboard data:', err);
-                setError('Failed to load dashboard data. Please try again later.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchDashboardData();
-        const interval = setInterval(fetchDashboardData, 30000);
-        return () => clearInterval(interval);
-    }, [user?.token]);
+    const { stats, trends, skills } = useSelector((state) => state.dashboard);
+    const { loading, error } = useDashboardData();
 
     // Chart data for job distribution pie chart
     const jobDistributionData = {
@@ -163,11 +84,11 @@ export default function Dashboard() {
 
     // Chart data for application trends
     const applicationTrendsData = {
-        labels: stats.applicationTrends.map(trend => trend.month),
+        labels: trends.map(trend => trend.month),
         datasets: [
             {
                 label: 'Applications',
-                data: stats.applicationTrends.map(trend => trend.count),
+                data: trends.map(trend => trend.count),
                 borderColor: 'rgb(75, 192, 192)',
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 tension: 0.4,
@@ -178,11 +99,11 @@ export default function Dashboard() {
 
     // Chart data for skills analysis
     const skillsData = {
-        labels: stats.skillsData.map(skill => skill.name),
+        labels: skills.map(skill => skill.name),
         datasets: [
             {
                 label: 'Skill Level',
-                data: stats.skillsData.map(skill => skill.level),
+                data: skills.map(skill => skill.level),
                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
                 borderColor: 'rgb(54, 162, 235)',
                 pointBackgroundColor: 'rgb(54, 162, 235)',
@@ -246,10 +167,10 @@ export default function Dashboard() {
 
     // Chart data for polar area chart
     const polarAreaData = {
-        labels: stats.skillsData.map(skill => skill.name),
+        labels: skills.map(skill => skill.name),
         datasets: [
             {
-                data: stats.skillsData.map(skill => skill.level),
+                data: skills.map(skill => skill.level),
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.8)',
                     'rgba(54, 162, 235, 0.8)',

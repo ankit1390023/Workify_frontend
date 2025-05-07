@@ -12,7 +12,7 @@ const LatestJobs = () => {
     const dispatch = useDispatch();
     const allJobs = useSelector((state) => state.job.allJobs || []);
     const { user } = useSelector(store => store.auth);
-
+    console.log("allJobs",allJobs);
     // Fetch jobs with applications data
     useEffect(() => {
         const fetchJobs = async () => {

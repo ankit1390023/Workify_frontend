@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
-import { Bell, Menu, X, ChevronDown } from "lucide-react";
+import { Bell, Menu, X, ChevronDown, Search, Home, Briefcase, Compass, User, LogOut } from "lucide-react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -12,12 +12,14 @@ import axios from "axios";
 import { setUser } from "@/redux/authSlice";
 import { setSearchQuery } from "@/redux/jobSlice";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -25,7 +27,6 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
-
   const [query, setQuery] = useState("");
 
   // Helper function to normalize search terms
@@ -37,7 +38,6 @@ const Header = () => {
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       dispatch(setSearchQuery(query));
-      // If we're not on the jobs page, navigate to it
       if (!location.pathname.includes('/jobs') && query.trim() !== '') {
         navigate('/jobs');
       }
@@ -78,31 +78,125 @@ const Header = () => {
     }
   };
 
+  const mobileNavItems = [
+    { icon: <Home className="w-5 h-5" />, label: "Home", path: "/" },
+    { icon: <Briefcase className="w-5 h-5" />, label: "Jobs", path: "/jobs" },
+    { icon: <Compass className="w-5 h-5" />, label: "Browse", path: "/browse" },
+    { icon: <User className="w-5 h-5" />, label: "Profile", path: "/profile" },
+  ];
+
   return (
     <header className="bg-background/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50 font-sans">
-      <div className="flex justify-between items-center px-2 py-3 md:px-10 space-x-4">
-        <div className="flex">
-          <Button
-            aria-label="Menu"
-            variant="ghost"
-            className="block md:hidden"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            <Menu size={24} className="text-foreground" />
-          </Button>
+      <div className="flex justify-between items-center px-4 py-3 md:px-10 space-x-4">
+        <div className="flex items-center">
+          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] sm:w-[400px] p-0">
+              <div className="flex flex-col h-full">
+                <div className="p-4 border-b">
+                  <Link to="/" className="text-2xl font-bold text-primary">
+                    <span className="text-yellow-500">Work</span>ify
+                  </Link>
+                </div>
+                
+                <div className="p-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      value={query}
+                      onChange={handleSearch}
+                      type="text"
+                      placeholder="Search jobs, companies..."
+                      className="w-full pl-9"
+                    />
+                  </div>
+                </div>
+
+                <nav className="flex-1 px-4 space-y-2">
+                  {mobileNavItems.map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                        location.pathname === item.path
+                          ? "bg-primary/10 text-primary"
+                          : "hover:bg-muted"
+                      }`}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {item.icon}
+                      <span>{item.label}</span>
+                    </Link>
+                  ))}
+                </nav>
+
+                <div className="p-4 border-t">
+                  {user ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={user.profile?.avatar} />
+                          <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{user.fullName}</p>
+                          <p className="text-sm text-muted-foreground">{user.email}</p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="destructive"
+                        className="w-full"
+                        onClick={() => {
+                          handleLogout();
+                          setMenuOpen(false);
+                        }}
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Logout
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Link to="/login" className="w-full">
+                        <Button className="w-full" onClick={() => setMenuOpen(false)}>
+                          Login
+                        </Button>
+                      </Link>
+                      <Link to="/register" className="w-full">
+                        <Button variant="outline" className="w-full" onClick={() => setMenuOpen(false)}>
+                          Register
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
           <Link to="/" className="text-2xl font-bold text-primary">
             <span className="text-yellow-500">Work</span>ify
           </Link>
         </div>
 
         <div className="hidden md:flex items-center w-1/3">
-          <Input
-            value={query}
-            onChange={handleSearch}
-            type="text"
-            placeholder="Search jobs, companies..."
-            className="w-full pl-4 border border-gray-300 dark:border-gray-700 focus:border-blue-600 dark:focus:border-blue-500 rounded-md bg-background"
-          />
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={handleSearch}
+              type="text"
+              placeholder="Search jobs, companies..."
+              className="w-full pl-9"
+            />
+          </div>
         </div>
 
         <nav className="hidden md:flex space-x-6 text-lg">
@@ -190,14 +284,14 @@ const Header = () => {
               <PopoverTrigger asChild>
                 <Avatar className="cursor-pointer ring-2 ring-blue-500 dark:ring-blue-400">
                   <AvatarImage src={user.profile?.avatar} alt="User Avatar" />
-                  <AvatarFallback>AS</AvatarFallback>
+                  <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
                 </Avatar>
               </PopoverTrigger>
               <PopoverContent className="w-64 p-4 bg-background border border-gray-200 dark:border-gray-800 rounded-md shadow-lg">
                 <div className="flex flex-col items-center">
                   <Avatar className="w-16 h-16 ring-2 ring-blue-500 dark:ring-blue-400">
                     <AvatarImage src={user.profile?.avatar} alt="Profile Avatar" />
-                    <AvatarFallback>AS</AvatarFallback>
+                    <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <h4 className="mt-2 text-lg font-semibold text-foreground">
                     {user?.fullName}
@@ -219,8 +313,8 @@ const Header = () => {
                     </Link>
                     <Button
                       onClick={handleLogout}
-                      variant="default"
-                      className="w-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
+                      variant="destructive"
+                      className="w-full"
                     >
                       Logout
                     </Button>
@@ -231,66 +325,6 @@ const Header = () => {
           )}
         </div>
       </div>
-
-      {menuOpen && (
-        <div className="md:hidden fixed inset-0 bg-background/95 z-50">
-          <div className="flex justify-between items-center p-4 border-b">
-            <Link to="/" className="text-2xl font-bold text-primary">
-              <span className="text-yellow-500">Work</span>ify
-            </Link>
-            <Button
-              variant="ghost"
-              onClick={() => setMenuOpen(false)}
-              className="text-foreground"
-            >
-              <X size={24} />
-            </Button>
-          </div>
-          <div className="p-4 space-y-4">
-            <Input
-              value={query}
-              onChange={handleSearch}
-              type="text"
-              placeholder="Search jobs, companies..."
-              className="w-full pl-4 border border-gray-300 dark:border-gray-700 focus:border-blue-600 dark:focus:border-blue-500 rounded-md bg-background"
-            />
-            {user ? (
-              <div className="space-y-2">
-                <Link to="/profile">
-                  <Button variant="ghost" className="w-full text-foreground">
-                    Profile
-                  </Button>
-                </Link>
-                {user.role === "admin" && (
-                  <Link to="/admin/dashboard">
-                    <Button variant="ghost" className="w-full text-foreground">
-                      Dashboard
-                    </Button>
-                  </Link>
-                )}
-                <Link to="/logout">
-                  <Button variant="ghost" className="w-full text-foreground">
-                    Logout
-                  </Button>
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <Link to="/login">
-                  <Button variant="ghost" className="w-full text-foreground">
-                    Login
-                  </Button>
-                </Link>
-                <Link to="/register">
-                  <Button variant="ghost" className="w-full text-foreground">
-                    Register
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </header>
   );
 };

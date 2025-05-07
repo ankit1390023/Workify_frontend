@@ -16,6 +16,7 @@ import Chat from "../ai/Chat";
 import { motion } from "framer-motion";
 import { Progress } from "../ui/progress";
 import { toast } from "sonner";
+import { useDashboardData } from "../hooks/useDashboardData";
 
 const MAX_FILE_SIZE_MB = 5;
 
@@ -28,12 +29,8 @@ const Profile = () => {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isCoverUploading, setIsCoverUploading] = useState(false);
     const [coverUploadProgress, setCoverUploadProgress] = useState(0);
-    const [stats, setStats] = useState({
-        totalAppliedJobs: 0,
-        totalInterviews: 0,
-        profileScore: 0
-    });
-    const [loading, setLoading] = useState(true);
+    const { stats: { totalAppliedJobs, totalInterviews, totalPending, totalRejected, totalSelected, profileScore } } = useSelector((state) => state.dashboard);
+    const { loading, error } = useDashboardData();
 
     // Default professional cover image
     const defaultCoverImage = "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80";
@@ -249,7 +246,7 @@ const Profile = () => {
                                             {loading ? (
                                                 <div className="animate-pulse h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
                                             ) : (
-                                                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalAppliedJobs}</p>
+                                                <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalAppliedJobs}</p>
                                             )}
                                         </div>
                                     </div>
@@ -262,7 +259,7 @@ const Profile = () => {
                                             {loading ? (
                                                 <div className="animate-pulse h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
                                             ) : (
-                                                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalInterviews}</p>
+                                                <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalInterviews}</p>
                                             )}
                                         </div>
                                     </div>
@@ -275,7 +272,7 @@ const Profile = () => {
                                             {loading ? (
                                                 <div className="animate-pulse h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
                                             ) : (
-                                                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.profileScore}%</p>
+                                                <p className="text-2xl font-bold text-gray-900 dark:text-white">{profileScore}%</p>
                                             )}
                                         </div>
                                     </div>
