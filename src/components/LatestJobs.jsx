@@ -1,46 +1,17 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import LatestJobsCard from './LatestJobsCard';
 import { motion } from 'framer-motion';
 import CategoryCarousel from './CategoryCarousel';
-import { setAllJobs } from '@/redux/jobSlice';
-import axios from 'axios';
-import { API_END_POINT } from '@/utils/constant';
-import { toast } from 'sonner';
+import useGetAllJobs from './hooks/useGetAllJobs';
 
 const LatestJobs = () => {
-    const dispatch = useDispatch();
+    // Add the hook to fetch jobs
+    useGetAllJobs();
+    
     const allJobs = useSelector((state) => state.job.allJobs || []);
-    const { user } = useSelector(store => store.auth);
-    console.log("allJobs",allJobs);
-    // Fetch jobs with applications data
-    useEffect(() => {
-        const fetchJobs = async () => {
-            try {
-                const response = await axios.get(`${API_END_POINT}/job/getAllJobs`, {
-                    headers: {
-                        "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
-                    }
-                });
-                if (response.data.success) {
-                    // Ensure each job has an applications array
-                    const jobsWithApplications = response.data.data.map(job => ({
-                        ...job,
-                        applications: job.applications || []
-                    }));
-                    dispatch(setAllJobs(jobsWithApplications));
-                } else {
-                    toast.error('Failed to fetch jobs');
-                }
-            } catch (error) {
-                console.error('Error fetching jobs:', error);
-                toast.error('An error occurred while fetching jobs');
-            }
-        };
-
-        fetchJobs();
-    }, [dispatch, user?._id]); // Add user._id as dependency to refetch when user changes
-
+    const {loading, error} = useSelector((state) => state.job);
+    
     return (
         <div className="bg-background py-16 space-y-20 relative overflow-hidden">
             {/* Background Elements */}
@@ -92,7 +63,23 @@ const LatestJobs = () => {
                 className="relative z-10"
             >
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 md:px-8 lg:px-16">
-                    {allJobs.length <= 0 ? (
+                    {loading ? (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="col-span-full text-center py-12"
+                        >
+                            <p className="text-xl text-muted-foreground">Loading jobs...</p>
+                        </motion.div>
+                    ) : error ? (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="col-span-full text-center py-12"
+                        >
+                            <p className="text-xl text-destructive">{error}</p>
+                        </motion.div>
+                    ) : allJobs?.length <= 0 ? (
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}

@@ -9,6 +9,7 @@ const initialState = {
     categoryFilter: "",
     isLoading: false,
     error: null,
+    lastFetched: null,
 };
 
 const jobSlice = createSlice({
@@ -18,6 +19,8 @@ const jobSlice = createSlice({
         //actions
         setAllJobs: (state, action) => {
             state.allJobs = action.payload;
+            state.lastFetched = Date.now();
+            state.error = null;
         },
         setSingleJob: (state, action) => {
             state.singleJob = action.payload;
