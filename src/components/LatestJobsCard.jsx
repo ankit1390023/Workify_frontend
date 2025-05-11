@@ -67,7 +67,7 @@ const LatestJobCard = ({ job }) => {
         <motion.div
             onClick={() => navigate(`/jobDescription/${_id}`)}
             whileHover={{ y: -5 }}
-            className="group relative max-w-lg mx-auto bg-gradient-to-tr from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 shadow-lg rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300 cursor-pointer"
+            className="group relative w-full h-full max-w-lg mx-auto bg-gradient-to-tr from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 shadow-lg rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300 cursor-pointer"
         >
             {/* Decorative Ribbon */}
             <div className="absolute top-0 right-0 bg-gradient-to-r from-primary to-primary/80 text-white text-xs font-medium px-4 py-1 rounded-bl-lg shadow-md">

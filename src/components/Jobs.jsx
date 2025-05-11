@@ -224,7 +224,7 @@ const Jobs = () => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
                       whileHover={{ y: -5 }}
-                      className="group"
+                      className="h-full"
                     >
                       <Job {...job} />
                     </motion.div>

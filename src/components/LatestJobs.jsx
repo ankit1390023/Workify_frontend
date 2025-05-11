@@ -108,7 +108,7 @@ const LatestJobs = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: index * 0.1 }}
                                 whileHover={{ y: -5 }}
-                                className="transition-all duration-300"
+                                className="h-full transition-all duration-300"
                             >
                                 <LatestJobsCard job={job} />
                             </motion.div>

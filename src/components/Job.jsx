@@ -23,7 +23,7 @@ const LatestJobCard = ({
     return (
         <div 
             onClick={() => navigate(`/jobDescription/${_id}`)}
-            className="relative max-w-lg mx-auto bg-gradient-to-tr from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 shadow-md rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+            className="relative w-full h-full max-w-lg mx-auto bg-gradient-to-tr from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 shadow-md rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300 cursor-pointer"
         >
             {/* Decorative Ribbon */}
             <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-thin px-4 py-1 rounded-bl-lg shadow-md">
@@ -33,25 +33,25 @@ const LatestJobCard = ({
             </div>
 
             {/* Card Content */}
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 h-full flex flex-col">
                 {/* Header */}
                 <div className="flex items-start space-x-4">
                     {/* Company Logo */}
-                    <div className="h-14 w-14 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 flex items-center justify-center">
+                    <div className="h-14 w-14 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 flex items-center justify-center flex-shrink-0">
                         <img src={company?.logo} alt={company?.companyName} className="object-cover h-full w-full rounded-full" />
                     </div>
 
                     {/* Job Info */}
-                    <div>
-                        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">{title || "NA"}</h2>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <div className="flex-1 min-w-0">
+                        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 truncate">{title || "NA"}</h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                             {company?.companyName || "Company Name"} • {location?.join(", ") || "Location not available"}
                         </p>
                     </div>
                 </div>
 
                 {/* Description */}
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-2 flex-1">
                     {description || "Job description not available"}
                 </p>
 
