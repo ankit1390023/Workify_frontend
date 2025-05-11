@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import axios from 'axios';
-import { API_END_POINT } from '@/utils/constant';
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 import { useDispatch, useSelector } from 'react-redux';
 import { setGlobalStats, setLoading, setError } from '@/redux/globalStatsSlice';
 

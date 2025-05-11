@@ -9,7 +9,7 @@ import { Label } from "@radix-ui/react-dropdown-menu";
 import AppliedJobsTable from "../AppliedJobsTable";
 import UpdateProfileDialog from "../UpdateProfileDialog";
 import { useSelector } from "react-redux";
-import { API_END_POINT } from '@/utils/constant';
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 import Header from "../shared/Header";
 import Footer from "../shared/Footer";
 import Chat from "../ai/Chat";
@@ -34,8 +34,6 @@ const Profile = () => {
 
     // Default professional cover image
     const defaultCoverImage = "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80";
-
-
 
     const getDropzoneClasses = () =>
         `border-dashed border-2 p-4 rounded-lg transition-all duration-300 ${

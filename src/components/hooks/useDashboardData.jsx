@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { API_END_POINT } from '@/utils/constant';
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 import { useDispatch } from 'react-redux';
 import { setDashboardData } from '@/redux/dashboardSlice';
 

@@ -15,7 +15,7 @@ import { Label } from './ui/label';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { API_END_POINT } from '@/utils/constant';
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 import { useDispatch } from 'react-redux';
 import { setUser } from '@/redux/authSlice';
 

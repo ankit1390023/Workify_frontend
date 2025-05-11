@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { API_END_POINT } from "@/utils/constant";
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 import { useDispatch } from 'react-redux';
 import { setAllApplicants } from '@/redux/applicationSlice';
 import axios from 'axios';

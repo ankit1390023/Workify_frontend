@@ -10,11 +10,12 @@ import {
     DialogTitle,
     DialogDescription,
 } from "@/components/ui/dialog";
-import { API_END_POINT } from "@/utils/constant";
 import { BsFillChatDotsFill } from "react-icons/bs";
 import { IoMdMicOff, IoMdMic, IoIosSend } from "react-icons/io";
 import { motion } from "framer-motion";
 import { useTheme } from '@/context/ThemeContext';
+
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 
 let recognition = null;
 if (typeof window !== "undefined" && (window.SpeechRecognition || window.webkitSpeechRecognition)) {

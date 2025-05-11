@@ -7,7 +7,6 @@ import { Bell, Menu, X, ChevronDown, Search, Home, Briefcase, Compass, User, Log
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import { API_END_POINT } from "@/utils/constant";
 import axios from "axios";
 import { setUser } from "@/redux/authSlice";
 import { setSearchQuery } from "@/redux/jobSlice";
@@ -20,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user } = useSelector((state) => state.auth);

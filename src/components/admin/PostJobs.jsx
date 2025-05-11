@@ -7,7 +7,7 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { useDispatch, useSelector } from "react-redux"; 
-import { API_END_POINT } from '@/utils/constant';
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 import { toast } from "sonner";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";

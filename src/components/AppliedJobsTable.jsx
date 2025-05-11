@@ -10,11 +10,12 @@ import {
 import { Badge } from "./ui/badge";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 
 const AppliedJobsTable = () => {
     const navigate = useNavigate();

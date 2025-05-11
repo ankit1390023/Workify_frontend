@@ -20,9 +20,10 @@ import { EyeIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { useSelector } from 'react-redux';
-import { API_END_POINT } from "@/utils/constant";
 import { toast } from 'sonner';
 import { useTheme } from '@/context/ThemeContext';
+
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 
 const ApplicantsTable = () => {
     const navigate = useNavigate();

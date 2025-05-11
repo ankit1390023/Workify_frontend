@@ -3,12 +3,12 @@ import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { API_END_POINT } from '@/utils/constant';
 import { setSingleJob } from '@/redux/jobSlice';
 import Header from './shared/Header';
 import Footer from './shared/Footer';
 import Chat from './ai/Chat';
 
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 
 const JobDescription = () => {
     const params = useParams();

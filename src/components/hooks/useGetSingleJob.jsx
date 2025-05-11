@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { toast } from "sonner"
-import { API_END_POINT } from "@/utils/constant";
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 import { setSingleJob } from "@/redux/jobSlice";
 
 const useGetSingleJobs = (jobId) => {

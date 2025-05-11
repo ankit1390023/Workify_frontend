@@ -5,9 +5,10 @@ import { motion } from "framer-motion";
 import { Badge } from "./ui/badge";
 import { Clock, MapPin, Briefcase, DollarSign, Award } from "lucide-react";
 import axios from "axios";
-import { API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
+
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 
 const LatestJobCard = ({ job }) => {
     const navigate = useNavigate();

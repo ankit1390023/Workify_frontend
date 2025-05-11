@@ -7,13 +7,14 @@ import { Button } from "../ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import axios from "axios";
-import { API_END_POINT } from "@/utils/constant";
 import { motion } from "framer-motion";
 import { FcGoogle } from "react-icons/fc";
 import { GrLinkedin } from "react-icons/gr";
 import { FaGithub } from "react-icons/fa6";
 import Loader from "../ui/Loader";
 import { useTheme } from "@/context/ThemeContext";
+
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 
 // Framer Motion variants for staggered animations
 const containerVariants = {
@@ -124,15 +125,15 @@ const SignUp = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
         >
-            <div className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-between bg-card rounded-xl dark:shadow-lg overflow-hidden">
-                {/* Left side - Form */}
+            <div className="w-full max-w-md bg-card rounded-xl dark:shadow-lg overflow-hidden">
+                {/* Form */}
                 <motion.div
-                    className="w-full md:w-1/2 p-8 md:p-12 bg-gradient-to-br from-background to-background/95"
-                    initial={{ x: -50, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
+                    className="w-full p-8 bg-gradient-to-br from-background to-background/95"
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                    <div className="text-center md:text-left mb-8">
+                    <div className="text-center mb-8">
                         <h1 className="text-3xl font-bold text-primary mb-2">Create Account</h1>
                         <p className="text-muted-foreground">Join us and start your journey</p>
                     </div>
@@ -161,6 +162,20 @@ const SignUp = () => {
                                     )}
                                 </div>
 
+                                {/* Email */}
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium text-foreground">Email</Label>
+                                    <Input
+                                        {...register("email")}
+                                        type="email"
+                                        placeholder="Enter your email"
+                                        className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+                                    />
+                                    {errors.email && (
+                                        <p className="text-sm text-destructive">{errors.email.message}</p>
+                                    )}
+                                </div>
+
                                 {/* Password */}
                                 <div className="space-y-2">
                                     <Label className="text-sm font-medium text-foreground">Password</Label>
@@ -172,6 +187,37 @@ const SignUp = () => {
                                     />
                                     {errors.password && (
                                         <p className="text-sm text-destructive">{errors.password.message}</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Right Column */}
+                            <div className="space-y-6">
+                                {/* Phone Number */}
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium text-foreground">Phone Number</Label>
+                                    <Input
+                                        {...register("phoneNumber")}
+                                        type="text"
+                                        placeholder="Enter your phone number"
+                                        className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+                                    />
+                                    {errors.phoneNumber && (
+                                        <p className="text-sm text-destructive">{errors.phoneNumber.message}</p>
+                                    )}
+                                </div>
+
+                                {/* Confirm Password */}
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium text-foreground">Confirm Password</Label>
+                                    <Input
+                                        {...register("confirmPassword")}
+                                        type="password"
+                                        placeholder="Confirm your password"
+                                        className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+                                    />
+                                    {errors.confirmPassword && (
+                                        <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
                                     )}
                                 </div>
 
@@ -200,51 +246,6 @@ const SignUp = () => {
                                     </div>
                                     {errors.role && (
                                         <p className="text-sm text-destructive">{errors.role.message}</p>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Right Column */}
-                            <div className="space-y-6">
-                                {/* Email */}
-                                <div className="space-y-2">
-                                    <Label className="text-sm font-medium text-foreground">Email</Label>
-                                    <Input
-                                        {...register("email")}
-                                        type="email"
-                                        placeholder="Enter your email"
-                                        className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
-                                    />
-                                    {errors.email && (
-                                        <p className="text-sm text-destructive">{errors.email.message}</p>
-                                    )}
-                                </div>
-
-                                {/* Phone Number */}
-                                <div className="space-y-2">
-                                    <Label className="text-sm font-medium text-foreground">Phone Number</Label>
-                                    <Input
-                                        {...register("phoneNumber")}
-                                        type="text"
-                                        placeholder="Enter your phone number"
-                                        className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
-                                    />
-                                    {errors.phoneNumber && (
-                                        <p className="text-sm text-destructive">{errors.phoneNumber.message}</p>
-                                    )}
-                                </div>
-
-                                {/* Confirm Password */}
-                                <div className="space-y-2">
-                                    <Label className="text-sm font-medium text-foreground">Confirm Password</Label>
-                                    <Input
-                                        {...register("confirmPassword")}
-                                        type="password"
-                                        placeholder="Confirm your password"
-                                        className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
-                                    />
-                                    {errors.confirmPassword && (
-                                        <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
                                     )}
                                 </div>
                             </div>
@@ -322,25 +323,6 @@ const SignUp = () => {
                                 Login
                             </Link>
                         </p>
-                    </div>
-                </motion.div>
-
-                {/* Right side - Illustration */}
-                <motion.div
-                    className="hidden md:block md:w-1/2 bg-gradient-to-br from-primary/5 to-primary/10 p-8"
-                    initial={{ x: 50, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                >
-                    <div className="h-full flex items-center justify-center">
-                        <motion.img
-                            src="/signup.png"
-                            alt="Sign Up Illustration"
-                            className="max-w-full h-auto"
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ duration: 0.8 }}
-                        />
                     </div>
                 </motion.div>
             </div>

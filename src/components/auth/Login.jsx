@@ -8,7 +8,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import axios from "axios";
 import Loader from "../ui/Loader";
-import { API_END_POINT } from "@/utils/constant";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/authSlice";
@@ -17,7 +16,7 @@ import { FcGoogle } from "react-icons/fc";
 import { GrLinkedin } from "react-icons/gr";
 import { FaGithub } from "react-icons/fa6";
 import { useTheme } from "@/context/ThemeContext";
-
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 const formSchema = z.object({
     identifier: z
         .string()
@@ -69,15 +68,15 @@ const Login = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
         >
-            <div className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-between bg-card rounded-xl dark:shadow-lg overflow-hidden">
-                {/* Left side - Form */}
+            <div className="w-full max-w-md bg-card rounded-xl dark:shadow-lg overflow-hidden">
+                {/* Form */}
                 <motion.div 
-                    className="w-full md:w-1/2 p-8 md:p-12 bg-gradient-to-br from-background to-background/95"
-                    initial={{ x: -50, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
+                    className="w-full p-8 bg-gradient-to-br from-background to-background/95"
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                    <div className="text-center md:text-left mb-8">
+                    <div className="text-center mb-8">
                         <h1 className="text-3xl font-bold text-primary mb-2">Welcome Back</h1>
                         <p className="text-muted-foreground">Sign in to continue to your account</p>
                     </div>
@@ -213,25 +212,6 @@ const Login = () => {
                                 Sign up
                             </Link>
                         </p>
-                    </div>
-                </motion.div>
-
-                {/* Right side - Illustration */}
-                <motion.div
-                    className="hidden md:block md:w-1/2 bg-gradient-to-br from-primary/5 to-primary/10 p-8"
-                    initial={{ x: 50, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                >
-                    <div className="h-full flex items-center justify-center">
-                        <motion.img
-                            src="/login.png"
-                            alt="Login Illustration"
-                            className="max-w-full h-auto"
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ duration: 0.8 }}
-                        />
                     </div>
                 </motion.div>
             </div>

@@ -5,7 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { useNavigate } from 'react-router-dom';
-import { API_END_POINT } from '@/utils/constant';
 import axios from 'axios';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
@@ -26,6 +25,8 @@ const companySchema = z.object({
   website: z.string().url('Please enter a valid website URL'),
   description: z.string().optional(),
 });
+
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 
 const CompaniesCreate = () => {
   const navigate = useNavigate();

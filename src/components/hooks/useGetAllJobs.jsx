@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "sonner"
 import { setAllJobs, setLoading, setError } from "@/redux/jobSlice";
-import { API_END_POINT } from "@/utils/constant";
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 
 const useGetAllJobs = () => {
     const dispatch = useDispatch();

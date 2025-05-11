@@ -5,20 +5,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { useNavigate, useParams } from 'react-router-dom';
-import { API_END_POINT } from '@/utils/constant';
-import axios from 'axios';
-import { Textarea } from '../ui/textarea';
-import { Label } from '../ui/label';
-import { toast } from 'sonner';
-import Loader from '../ui/Loader';
-import { useDispatch, useSelector } from 'react-redux';
-import { setLoading } from '@/redux/authSlice';
-import useGetSingleCompany from '../hooks/useGetSigleCompany';
-import Header from '../shared/Header';
-import Footer from '../shared/Footer';
 import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
+
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 
 // Define the schema using Zod
 const companySchema = z.object({
