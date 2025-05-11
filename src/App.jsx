@@ -19,6 +19,24 @@ import ApplicantsCards from './components/admin/ApplicantCard';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ThemeProvider } from './context/ThemeContext';
 import Dashboard from './components/Dashboard';
+import ForgotPassword from './components/auth/ForgotPassword';
+import ResetPassword from './components/auth/ResetPassword';
+
+// Error boundary component
+const ErrorBoundary = ({ error }) => {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full space-y-8 p-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-extrabold text-gray-900 mb-4">
+            Oops! Something went wrong
+          </h2>
+          <p className="text-red-600">{error?.message || 'An unexpected error occurred'}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const appRouter = createBrowserRouter([
   // Public Routes
@@ -31,8 +49,14 @@ const appRouter = createBrowserRouter([
   { path: '/dashboard', element: <Dashboard /> },
 
   // Auth Routes
-  { path: '/login', element: <Login /> },
+  { 
+    path: '/login', 
+    element: <Login />,
+    errorElement: <ErrorBoundary />
+  },
   { path: '/signUp', element: <SignUp /> },
+  { path: '/forgot-password', element: <ForgotPassword /> },
+  { path: '/reset-password', element: <ResetPassword /> },
   { path: '/profile', element: <Profile /> },
   { path: '/jobDescription/:id', element: <JobDescription /> },
 
