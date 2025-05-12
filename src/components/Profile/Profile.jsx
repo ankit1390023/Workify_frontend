@@ -3,13 +3,11 @@ import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
-import { Contact, Mail, Pen, User, FileText, Upload, CheckCircle2, XCircle, Briefcase, GraduationCap, Award, Star, Image, Phone } from "lucide-react";
-import { Badge } from "../ui/badge";
+import { Contact, Mail, Pen, User, FileText, Upload, CheckCircle2, XCircle, Briefcase, GraduationCap, Award, Star, Image, Phone, Trash2 } from "lucide-react";
+import { Badge } from "../ui/badge";        
 import { Label } from "@radix-ui/react-dropdown-menu";
-import AppliedJobsTable from "../AppliedJobsTable";
 import UpdateProfileDialog from "../UpdateProfileDialog";
-import { useSelector } from "react-redux";
-const API_END_POINT = import.meta.env.VITE_API_END_POINT;
+import { useSelector, useDispatch } from "react-redux";
 import Header from "../shared/Header";
 import Footer from "../shared/Footer";
 import Chat from "../ai/Chat";
@@ -17,9 +15,11 @@ import { motion } from "framer-motion";
 import { Progress } from "../ui/progress";
 import { toast } from "sonner";
 import { useDashboardData } from "../hooks/useDashboardData";
+import Loader from '../ui/Loader';
+import { setUser } from "@/redux/authSlice";
 
 const MAX_FILE_SIZE_MB = 5;
-
+const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 const Profile = () => {
     const hasResume = true;
     const [open, setOpen] = useState(false);
@@ -31,9 +31,12 @@ const Profile = () => {
     const [coverUploadProgress, setCoverUploadProgress] = useState(0);
     const { stats: { totalAppliedJobs, totalInterviews, totalPending, totalRejected, totalSelected, profileScore } } = useSelector((state) => state.dashboard);
     const { loading, error } = useDashboardData();
+    const dispatch = useDispatch();
 
     // Default professional cover image
     const defaultCoverImage = "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80";
+
+
 
     const getDropzoneClasses = () =>
         `border-dashed border-2 p-4 rounded-lg transition-all duration-300 ${
@@ -57,11 +60,15 @@ const Profile = () => {
             try {
                 setIsCoverUploading(true);
                 setCoverUploadProgress(0);
+                console.log("Uploading cover image.123..");
                 const response = await axios.patch(
-                    `${API_END_POINT}/user/update-account`,
+                    `${API_END_POINT}/user/update-cover-image`,
                     formData,
                     {
-                        headers: { 'Content-Type': 'multipart/form-data' },
+                        headers: { 
+                            'Content-Type': 'multipart/form-data',
+                            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                        },
                         onUploadProgress: (progressEvent) => {
                             const progress = Math.round(
                                 (progressEvent.loaded * 100) / progressEvent.total
@@ -71,23 +78,30 @@ const Profile = () => {
                     }
                 );
 
-                console.log("Cover image uploaded successfully:", response.data);
-                toast.success("Cover image updated successfully!");
+                if (response.data.success) {
+                    // Update the user state with new cover image
+                    dispatch(setUser(response.data.data));
+                    toast.success("Cover image updated successfully!");
+                } else {
+                    throw new Error(response.data.message || "Failed to update cover image");
+                }
             } catch (error) {
                 console.error("Error uploading cover image:", error.response?.data || error.message);
-                toast.error("Failed to upload cover image. Please try again.");
+                toast.error(error.response?.data?.message || "Failed to upload cover image. Please try again.");
             } finally {
                 setIsCoverUploading(false);
                 setCoverUploadProgress(0);
             }
         }
-    }, []);
+    }, [dispatch]);
 
     const { getRootProps: getCoverRootProps, getInputProps: getCoverInputProps, isDragActive: isCoverDragActive } = useDropzone({
         onDrop: onCoverDrop,
         accept: {
             'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp']
         },
+        maxSize: 5 * 1024 * 1024, // 5MB
+        multiple: false
     });
 
     const getCoverDropzoneClasses = () =>
@@ -96,6 +110,29 @@ const Profile = () => {
                 ? "bg-black/60"
                 : "bg-black/0 hover:bg-black/40"
         }`;
+
+    const handleDeleteCoverImage = async () => {
+        try {
+            const response = await axios.delete(
+                `${API_END_POINT}/user/delete-cover-image`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                    }
+                }
+            );
+
+            if (response.data.success) {
+                dispatch(setUser(response.data.data));
+                toast.success("Cover image removed successfully!");
+            } else {
+                throw new Error(response.data.message || "Failed to remove cover image");
+            }
+        } catch (error) {
+            console.error("Error removing cover image:", error.response?.data || error.message);
+            toast.error(error.response?.data?.message || "Failed to remove cover image. Please try again.");
+        }
+    };
 
     return (
         <motion.div 
@@ -129,8 +166,8 @@ const Profile = () => {
                         <input {...getCoverInputProps()} />
                         {isCoverUploading ? (
                             <div className="text-center text-white">
-                                <p className="mb-2">Uploading...</p>
-                                <Progress value={coverUploadProgress} className="w-48" />
+                                <Loader size="sm" variant="light" message="Uploading cover..." />
+                                <Progress value={coverUploadProgress} className="w-48 mt-2" />
                             </div>
                         ) : isCoverDragActive ? (
                             <div className="text-center text-white">
@@ -138,7 +175,7 @@ const Profile = () => {
                                 <p>Drop your cover image here...</p>
                             </div>
                         ) : (
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex gap-2">
                                 <Button
                                     className="bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm"
                                     onClick={(e) => e.stopPropagation()}
@@ -146,6 +183,19 @@ const Profile = () => {
                                     <Image className="w-4 h-4 mr-2" />
                                     Change Cover
                                 </Button>
+                                {user?.profile?.coverImage && (
+                                    <Button
+                                        variant="destructive"
+                                        className="bg-red-500/20 hover:bg-red-500/30 text-white backdrop-blur-sm"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteCoverImage();
+                                        }}
+                                    >
+                                        <Trash2 className="w-4 h-4 mr-2" />
+                                        Remove Cover
+                                    </Button>
+                                )}
                             </div>
                         )}
                     </div>
@@ -242,7 +292,7 @@ const Profile = () => {
                                         <div>
                                             <p className="text-gray-500 dark:text-gray-400">Applied Jobs</p>
                                             {loading ? (
-                                                <div className="animate-pulse h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                                <Loader size="sm" message="Loading..." />
                                             ) : (
                                                 <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalAppliedJobs}</p>
                                             )}
@@ -255,7 +305,7 @@ const Profile = () => {
                                         <div>
                                             <p className="text-gray-500 dark:text-gray-400">Interviews</p>
                                             {loading ? (
-                                                <div className="animate-pulse h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                                <Loader size="sm" message="Loading..." />
                                             ) : (
                                                 <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalInterviews}</p>
                                             )}
@@ -268,7 +318,7 @@ const Profile = () => {
                                         <div>
                                             <p className="text-gray-500 dark:text-gray-400">Profile Score</p>
                                             {loading ? (
-                                                <div className="animate-pulse h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                                <Loader size="sm" message="Loading..." />
                                             ) : (
                                                 <p className="text-2xl font-bold text-gray-900 dark:text-white">{profileScore}%</p>
                                             )}
@@ -329,19 +379,6 @@ const Profile = () => {
                             </motion.div>
                         </div>
                     </div>
-
-                    {/* Applied Jobs Section - Full Width */}
-                    {user && user.role === "student" && (
-                        <motion.div 
-                            initial={{ y: 20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ duration: 0.5, delay: 0.8 }}
-                            className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 mt-8"
-                        >
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Applied Jobs</h2>
-                            <AppliedJobsTable />
-                        </motion.div>
-                    )}
                 </div>
             </motion.div>
             <Chat />

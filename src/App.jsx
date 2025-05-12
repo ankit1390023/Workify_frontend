@@ -21,6 +21,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import Dashboard from './components/Dashboard';
 import ForgotPassword from './components/auth/ForgotPassword';
 import ResetPassword from './components/auth/ResetPassword';
+import ChangePassword from './components/auth/ChangePassword';
 
 // Error boundary component
 const ErrorBoundary = ({ error }) => {
@@ -57,6 +58,7 @@ const appRouter = createBrowserRouter([
   { path: '/signUp', element: <SignUp /> },
   { path: '/forgot-password', element: <ForgotPassword /> },
   { path: '/reset-password', element: <ResetPassword /> },
+  { path: '/change-password', element: <ChangePassword /> },
   { path: '/profile', element: <Profile /> },
   { path: '/jobDescription/:id', element: <JobDescription /> },
 

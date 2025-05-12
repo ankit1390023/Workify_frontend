@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
-import { Bell, Menu, X, ChevronDown, Search, Home, Briefcase, Compass, User, LogOut } from "lucide-react";
+import { Bell, Menu, X, ChevronDown, Search, Home, Briefcase, Compass, User, LogOut, Lock } from "lucide-react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -19,9 +19,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import AppliedJobsTable from "../AppliedJobsTable";
 const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [appliedJobsOpen, setAppliedJobsOpen] = useState(false);
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -64,15 +66,28 @@ const Header = () => {
       );
 
       if (response?.data?.success) {
-        localStorage.removeItem("acessToken");
-        toast.success("Logged out successfully");
+        // Remove all tokens from localStorage
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        
+        // Clear user from Redux store
         dispatch(setUser(null));
+        
+        // Show success message
+        toast.success("Logged out successfully");
+        
+        // Navigate to login page
         navigate("/login");
       } else {
         toast.error("Failed to log out");
       }
     } catch (error) {
       console.error("Logout error:", error.response?.data || error.message);
+      // Even if the API call fails, we should still clear local state
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      dispatch(setUser(null));
+      navigate("/login");
       toast.error("Error logging out");
     }
   };
@@ -81,7 +96,6 @@ const Header = () => {
     { icon: <Home className="w-5 h-5" />, label: "Home", path: "/" },
     { icon: <Briefcase className="w-5 h-5" />, label: "Jobs", path: "/jobs" },
     { icon: <Compass className="w-5 h-5" />, label: "Browse", path: "/browse" },
-    { icon: <User className="w-5 h-5" />, label: "Profile", path: "/profile" },
   ];
 
   return (
@@ -135,6 +149,38 @@ const Header = () => {
                       <span>{item.label}</span>
                     </Link>
                   ))}
+                  {user?.role === "student" && (
+                    <button
+                      onClick={() => {
+                        setAppliedJobsOpen(true);
+                        setMenuOpen(false);
+                      }}
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:bg-muted w-full"
+                    >
+                      <Briefcase className="w-5 h-5" />
+                      <span>Applied Jobs</span>
+                    </button>
+                  )}
+                  {user && (
+                    <>
+                      <Link
+                        to="/change-password"
+                        className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:bg-muted w-full"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        <Lock className="w-5 h-5" />
+                        <span>Change Password</span>
+                      </Link>
+                      <Link
+                        to="/profile"
+                        className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:bg-muted w-full"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        <User className="w-5 h-5" />
+                        <span>Profile</span>
+                      </Link>
+                    </>
+                  )}
                 </nav>
 
                 <div className="p-4 border-t">
@@ -253,6 +299,23 @@ const Header = () => {
                 >
                   Browse
                 </NavLink>
+                {user?.role === "student" && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="py-2 px-4 transition-colors duration-200 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 text-lg">
+                      Applied Jobs
+                      <ChevronDown className="h-4 w-4 ml-1 inline-block" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent 
+                      className="w-[90vw] max-w-[800px] p-4"
+                      align="center"
+                      sideOffset={8}
+                    >
+                      <div className="max-h-[70vh] overflow-y-auto">
+                        <AppliedJobsTable />
+                      </div>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
                 <DropdownMenu>
                   <DropdownMenuTrigger className="flex items-center gap-1 py-2 px-4 transition-colors duration-200 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
                     More <ChevronDown className="h-4 w-4" />
@@ -304,18 +367,32 @@ const Header = () => {
                     </div>
                   </div>
 
-                  <div className="mt-4 w-full flex flex-col gap-2">
+                  <div className="mt-4 w-full flex flex-col gap-3">
+                    <Link to="/change-password">
+                      <Button 
+                        variant="none" 
+                        className="w-full flex items-center justify-start gap-3 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 border-0 focus:ring-0 focus:outline-none"
+                      >
+                        <Lock className="h-5 w-5" />
+                        <span className="font-medium">Change Password</span>
+                      </Button>
+                    </Link>
                     <Link to="/profile">
-                      <Button variant="outline" className="w-full">
-                        See Profile
+                      <Button 
+                        variant="none" 
+                        className="w-full flex items-center justify-start gap-3 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 border-0 focus:ring-0 focus:outline-none"
+                      >
+                        <User className="h-5 w-5" />
+                        <span className="font-medium">See Profile</span>
                       </Button>
                     </Link>
                     <Button
                       onClick={handleLogout}
-                      variant="destructive"
-                      className="w-full"
+                      variant="none"
+                      className="w-full flex items-center justify-start gap-3 bg-red-600 hover:bg-red-700 text-white dark:bg-red-600 dark:hover:bg-red-700 transition-all duration-200 border-0 focus:ring-0 focus:outline-none"
                     >
-                      Logout
+                      <LogOut className="h-5 w-5" />
+                      <span className="font-medium">Logout</span>
                     </Button>
                   </div>
                 </div>
@@ -324,6 +401,26 @@ const Header = () => {
           )}
         </div>
       </div>
+      {/* Full Screen Applied Jobs Sheet */}
+      <Sheet open={appliedJobsOpen} onOpenChange={setAppliedJobsOpen}>
+        <SheetContent side="bottom" className="h-[90vh] p-0" hideCloseButton>
+          <div className="flex flex-col h-full">
+            <div className="p-4 border-b flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Applied Jobs</h2>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setAppliedJobsOpen(false)}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <AppliedJobsTable />
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </header>
   );
 };
