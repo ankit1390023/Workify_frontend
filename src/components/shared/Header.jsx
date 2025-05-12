@@ -99,7 +99,7 @@ const Header = () => {
   ];
 
   return (
-    <header className="bg-background/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50 font-sans">
+    <header className="header-container">
       <div className="flex justify-between items-center px-4 py-3 md:px-10 space-x-4">
         <div className="flex items-center">
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
@@ -251,11 +251,7 @@ const Header = () => {
                 key={link}
                 to={`/admin/${link.toLowerCase()}`}
                 className={({ isActive }) =>
-                  `py-2 px-4 transition-colors duration-200 ${
-                    isActive
-                      ? "text-yellow-500 border-b-2 border-yellow-500"
-                      : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-                  }`
+                  `nav-link ${isActive ? 'nav-link-active' : 'nav-link-inactive'}`
                 }
               >
                 {link}
@@ -266,11 +262,7 @@ const Header = () => {
                 <NavLink
                   to="/"
                   className={({ isActive }) =>
-                    `py-2 px-4 transition-colors duration-200 ${
-                      isActive
-                        ? "text-yellow-500 border-b-2 border-yellow-500"
-                        : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-                    }`
+                    `nav-link ${isActive ? 'nav-link-active' : 'nav-link-inactive'}`
                   }
                 >
                   Home
@@ -278,11 +270,7 @@ const Header = () => {
                 <NavLink
                   to="/jobs"
                   className={({ isActive }) =>
-                    `py-2 px-4 transition-colors duration-200 ${
-                      isActive
-                        ? "text-yellow-500 border-b-2 border-yellow-500"
-                        : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-                    }`
+                    `nav-link ${isActive ? 'nav-link-active' : 'nav-link-inactive'}`
                   }
                 >
                   Jobs
@@ -290,11 +278,7 @@ const Header = () => {
                 <NavLink
                   to="/browse"
                   className={({ isActive }) =>
-                    `py-2 px-4 transition-colors duration-200 ${
-                      isActive
-                        ? "text-yellow-500 border-b-2 border-yellow-500"
-                        : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-                    }`
+                    `nav-link ${isActive ? 'nav-link-active' : 'nav-link-inactive'}`
                   }
                 >
                   Browse
@@ -302,8 +286,8 @@ const Header = () => {
                 {user?.role === "student" && (
                   <DropdownMenu>
                     <DropdownMenuTrigger className="py-2 px-4 transition-colors duration-200 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 text-lg">
-                      Applied Jobs
-                      <ChevronDown className="h-4 w-4 ml-1 inline-block" />
+                      AppliedJobs
+                     
                     </DropdownMenuTrigger>
                     <DropdownMenuContent 
                       className="w-[90vw] max-w-[800px] p-4"
@@ -318,7 +302,7 @@ const Header = () => {
                 )}
                 <DropdownMenu>
                   <DropdownMenuTrigger className="flex items-center gap-1 py-2 px-4 transition-colors duration-200 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
-                    More <ChevronDown className="h-4 w-4" />
+                    More 
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem>
