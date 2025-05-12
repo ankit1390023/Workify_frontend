@@ -51,7 +51,7 @@ const formSchema = z
         password: z
             .string()
             .min(6, "Password must be at least 6 characters")
-            .max(10, "Password max length is 10 characters"),
+            .max(14, "Password max length is 14 characters"),
         confirmPassword: z.string(),
         role: z.enum(["student", "recruiter"], "Role is required"),
         avatar: z

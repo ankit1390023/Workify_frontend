@@ -18,7 +18,8 @@ const formSchema = z.object({
     oldPassword: z.string().min(1, "Current password is required"),
     newPassword: z
         .string()
-        .min(8, "Password must be at least 8 characters")
+        .min(6, "Password must be at least 6 characters")
+        .max(14, "Password max length is 14 characters")
         .regex(
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
             "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"

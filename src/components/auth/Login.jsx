@@ -27,7 +27,7 @@ const formSchema = z.object({
     password: z
         .string()
         .min(6, "Password must be at least 6 characters")
-        .max(12, "Password max length is 12 characters"),
+        .max(14, "Password max length is 14 characters"),
     role: z.enum(["student", "recruiter"], { message: "Role is required" }),
 });
 
