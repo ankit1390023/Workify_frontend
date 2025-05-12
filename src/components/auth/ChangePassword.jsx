@@ -7,10 +7,9 @@ import { Button } from "../ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import axios from "axios";
-import Loader from "../ui/Loader";
+import { Loader, Lock, Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { Lock, Eye, EyeOff } from "lucide-react";
 
 const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 
@@ -119,7 +118,12 @@ const ChangePassword = () => {
 
                     {isSubmitting && (
                         <div className="fixed inset-0 bg-background/50 dark:bg-background/50 backdrop-blur-sm flex items-center justify-center z-50">
-                            <Loader message="Changing password..." />
+                            <div className="flex flex-col items-center space-y-4">
+                                <Loader className="h-8 w-8 animate-spin text-primary" />
+                                <span className="text-lg font-semibold text-primary animate-pulse">
+                                    Changing password...
+                                </span>
+                            </div>
                         </div>
                     )}
                     

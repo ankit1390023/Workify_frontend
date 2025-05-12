@@ -18,7 +18,7 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '@/redux/authSlice';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { MapPin, GraduationCap, Briefcase, Languages, Award, Link2, Heart, DollarSign, Plus, Trash2, FileText, Loader2 } from 'lucide-react';
+import { MapPin, GraduationCap, Briefcase, Languages, Award, Link2, Heart, DollarSign, Plus, Trash2, FileText, Loader } from 'lucide-react';
 
 const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 
@@ -389,7 +389,7 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
                                     />
                                     {parsingResume && (
                                         <div className="flex items-center space-x-2 text-blue-600 dark:text-blue-400">
-                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                            <Loader className="w-4 h-4 animate-spin" />
                                             <span>Parsing resume...</span>
                                         </div>
                                     )}

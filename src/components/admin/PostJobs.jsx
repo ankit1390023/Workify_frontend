@@ -12,13 +12,12 @@ import { toast } from "sonner";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { setLoading } from "@/redux/authSlice";
-import Loader from "../ui/Loader";
+import { Loader, Briefcase } from "lucide-react";
 import Header from "../shared/Header";
 import Footer from "../shared/Footer";
 import { useTheme } from '@/context/ThemeContext';
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Label } from "../ui/label";
-import { Briefcase } from "lucide-react";
 
 // Zod Schema for Validation
 const jobPostSchema = z.object({
@@ -267,22 +266,31 @@ const JobPost = () => {
                 )}
               </div>
 
-              {/* Buttons */}
+              {/* Submit Button */}
               <div className="flex justify-end gap-4 pt-4">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => navigate('/admin/jobs')}
-                  className="hover:bg-card"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
+                  className="gap-2"
                   disabled={isSubmitting}
-                  className="bg-primary hover:bg-primary/90"
                 >
-                  {isSubmitting ? "Posting..." : "Post Job"}
+                  {isSubmitting ? (
+                    <>
+                      <Loader className="h-4 w-4 animate-spin" />
+                      Posting...
+                    </>
+                  ) : (
+                    <>
+                      <Briefcase className="h-4 w-4" />
+                      Post Job
+                    </>
+                  )}
                 </Button>
               </div>
             </form>

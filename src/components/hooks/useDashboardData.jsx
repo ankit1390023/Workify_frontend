@@ -10,7 +10,7 @@ export const useDashboardData = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const MAX_RETRIES = 3;
-    const RETRY_DELAY =  100000; //  seconds
+    const RETRY_DELAY = 240000; // 4 minutes in milliseconds
 
     const fetchDashboardData = async () => {
         setLoading(true);
@@ -66,7 +66,7 @@ export const useDashboardData = () => {
 
     useEffect(() => {
         fetchDashboardData();
-        const interval = setInterval(fetchDashboardData, 15000);
+        const interval = setInterval(fetchDashboardData, RETRY_DELAY); // 4 minutes interval
         return () => clearInterval(interval);
     }, []);
 

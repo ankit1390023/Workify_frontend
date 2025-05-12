@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { motion, useSpring, useTransform } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import useGlobalStats from './hooks/useGlobalStats';
+import { Loader } from 'lucide-react';
 
 const AnimatedNumber = ({ value, duration = 2 }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -33,8 +34,11 @@ export default function GlobalStats() {
           </h2>
           
           {loading ? (
-            <div className="text-center py-10 text-lg text-muted-foreground">
-              Loading platform statistics...
+            <div className="flex flex-col items-center justify-center py-10 space-y-4">
+              <Loader className="h-8 w-8 animate-spin text-primary" />
+              <span className="text-lg text-muted-foreground">
+                Loading platform statistics...
+              </span>
             </div>
           ) : error ? (
             <div className="text-center py-10 text-destructive">

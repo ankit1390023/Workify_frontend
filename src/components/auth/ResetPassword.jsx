@@ -7,7 +7,7 @@ import { Button } from "../ui/button";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import axios from "axios";
-import Loader from "../ui/Loader";
+import { Loader } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -94,7 +94,12 @@ const ResetPassword = () => {
     if (isValidating) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <Loader message="Validating reset link..." />
+                <div className="flex flex-col items-center space-y-4">
+                    <Loader className="h-8 w-8 animate-spin text-primary" />
+                    <span className="text-lg font-semibold text-primary animate-pulse">
+                        Validating reset link...
+                    </span>
+                </div>
             </div>
         );
     }
@@ -124,7 +129,12 @@ const ResetPassword = () => {
 
                     {isSubmitting && (
                         <div className="fixed inset-0 bg-background/50 dark:bg-background/50 backdrop-blur-sm flex items-center justify-center z-50">
-                            <Loader message="Resetting password..." />
+                            <div className="flex flex-col items-center space-y-4">
+                                <Loader className="h-8 w-8 animate-spin text-primary" />
+                                <span className="text-lg font-semibold text-primary animate-pulse">
+                                    Resetting password...
+                                </span>
+                            </div>
                         </div>
                     )}
                     

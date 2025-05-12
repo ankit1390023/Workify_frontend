@@ -9,13 +9,12 @@ import axios from 'axios';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { toast } from 'sonner';
-import Loader from '../ui/Loader';
+import { Loader, Building2, Globe, MapPin, X } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoading } from '@/redux/authSlice';
 import Header from '../shared/Header';
 import Footer from '../shared/Footer';
 import { useTheme } from '@/context/ThemeContext';
-import { Building2, Globe, MapPin, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 
 // Define the schema using Zod
@@ -173,7 +172,7 @@ const CompaniesCreate = () => {
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader className="h-4 w-4" />
+                      <Loader className="h-4 w-4 animate-spin" />
                       Registering...
                     </>
                   ) : (

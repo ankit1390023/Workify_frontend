@@ -11,14 +11,13 @@ const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 import { toast } from "sonner";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import Loader from "../ui/Loader";
+import { Loader, Briefcase } from "lucide-react";
 import useGetSingleJobs from "../hooks/useGetSingleJob";
 import Header from "../shared/Header";
 import Footer from "../shared/Footer";
 import { useTheme } from '@/context/ThemeContext';
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Label } from "../ui/label";
-import { Briefcase } from "lucide-react";
 
 // Zod Schema for Validation
 const jobUpdateSchema = z.object({
@@ -284,16 +283,25 @@ const JobDetailsUpdate = () => {
                                     type="button"
                                     variant="outline"
                                     onClick={() => navigate('/admin/jobs')}
-                                    className="hover:bg-card"
                                 >
                                     Cancel
                                 </Button>
                                 <Button
                                     type="submit"
+                                    className="gap-2"
                                     disabled={isSubmitting}
-                                    className="bg-primary hover:bg-primary/90"
                                 >
-                                    {isSubmitting ? "Updating..." : "Update Job"}
+                                    {isSubmitting ? (
+                                        <>
+                                            <Loader className="h-4 w-4 animate-spin" />
+                                            Updating...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Briefcase className="h-4 w-4" />
+                                            Update Job
+                                        </>
+                                    )}
                                 </Button>
                             </div>
                         </form>

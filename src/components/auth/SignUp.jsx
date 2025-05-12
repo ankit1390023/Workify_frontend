@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 import { FcGoogle } from "react-icons/fc";
 import { GrLinkedin } from "react-icons/gr";
 import { FaGithub } from "react-icons/fa6";
-import Loader from "../ui/Loader";
+import { Loader } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 
 const API_END_POINT = import.meta.env.VITE_API_END_POINT;
@@ -140,7 +140,12 @@ const SignUp = () => {
 
                     {isSubmitting && (
                         <div className="fixed inset-0 bg-background/50 dark:bg-background/50 backdrop-blur-sm flex items-center justify-center z-50">
-                            <Loader message="Creating account..." />
+                            <div className="flex flex-col items-center space-y-4">
+                                <Loader className="h-8 w-8 animate-spin text-primary" />
+                                <span className="text-lg font-semibold text-primary animate-pulse">
+                                    Creating account...
+                                </span>
+                            </div>
                         </div>
                     )}
 

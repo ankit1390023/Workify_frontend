@@ -20,7 +20,36 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import AppliedJobsTable from "../AppliedJobsTable";
+
 const API_END_POINT = import.meta.env.VITE_API_END_POINT;
+
+// Navigation styles
+const navLinkStyles = {
+  base: "relative px-3 py-2 transition-all duration-300",
+  active: "text-primary after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-primary after:origin-left after:scale-x-100",
+  inactive: "text-muted-foreground hover:text-primary after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-primary after:origin-left after:scale-x-0 hover:after:scale-x-100"
+};
+
+// Navigation items configuration
+const navigationConfig = {
+  student: [
+    { path: "/", label: "Home" },
+    { path: "/jobs", label: "Jobs" },
+    { path: "/browse", label: "Browse" }
+  ],
+  recruiter: [
+    { path: "/admin/companies", label: "Companies" },
+    { path: "/admin/jobs", label: "Jobs" }
+  ]
+};
+
+// Mobile navigation items
+const mobileNavItems = [
+  { icon: <Home className="w-5 h-5" />, label: "Home", path: "/" },
+  { icon: <Briefcase className="w-5 h-5" />, label: "Jobs", path: "/jobs" },
+  { icon: <Compass className="w-5 h-5" />, label: "Browse", path: "/browse" },
+];
+
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [appliedJobsOpen, setAppliedJobsOpen] = useState(false);
@@ -66,24 +95,16 @@ const Header = () => {
       );
 
       if (response?.data?.success) {
-        // Remove all tokens from localStorage
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        
-        // Clear user from Redux store
         dispatch(setUser(null));
-        
-        // Show success message
         toast.success("Logged out successfully");
-        
-        // Navigate to login page
         navigate("/login");
       } else {
         toast.error("Failed to log out");
       }
     } catch (error) {
       console.error("Logout error:", error.response?.data || error.message);
-      // Even if the API call fails, we should still clear local state
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       dispatch(setUser(null));
@@ -92,27 +113,31 @@ const Header = () => {
     }
   };
 
-  const mobileNavItems = [
-    { icon: <Home className="w-5 h-5" />, label: "Home", path: "/" },
-    { icon: <Briefcase className="w-5 h-5" />, label: "Jobs", path: "/jobs" },
-    { icon: <Compass className="w-5 h-5" />, label: "Browse", path: "/browse" },
-  ];
+  // Navigation link component
+  const NavItem = ({ to, children }) => (
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        `${navLinkStyles.base} ${isActive ? navLinkStyles.active : navLinkStyles.inactive}`
+      }
+    >
+      {children}
+    </NavLink>
+  );
 
   return (
     <header className="header-container">
       <div className="flex justify-between items-center px-4 py-3 md:px-10 space-x-4">
+        {/* Mobile Menu Button and Logo */}
         <div className="flex items-center">
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="md:hidden"
-              >
+              <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-[300px] sm:w-[400px] p-0">
+              {/* Mobile Menu Content */}
               <div className="flex flex-col h-full">
                 <div className="p-4 border-b">
                   <Link to="/" className="text-2xl font-bold text-primary">
@@ -120,6 +145,7 @@ const Header = () => {
                   </Link>
                 </div>
                 
+                {/* Mobile Search */}
                 <div className="p-4">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -133,6 +159,7 @@ const Header = () => {
                   </div>
                 </div>
 
+                {/* Mobile Navigation */}
                 <nav className="flex-1 px-4 space-y-2">
                   {mobileNavItems.map((item) => (
                     <Link
@@ -183,6 +210,7 @@ const Header = () => {
                   )}
                 </nav>
 
+                {/* Mobile User Section */}
                 <div className="p-4 border-t">
                   {user ? (
                     <div className="space-y-4">
@@ -231,6 +259,7 @@ const Header = () => {
           </Link>
         </div>
 
+        {/* Desktop Search */}
         <div className="hidden md:flex items-center w-1/3">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -244,79 +273,49 @@ const Header = () => {
           </div>
         </div>
 
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-6 text-lg">
-          {user?.role === "recruiter"
-            ? ["Companies", "Jobs"].map((link) => (
-              <NavLink
-                key={link}
-                to={`/admin/${link.toLowerCase()}`}
-                className={({ isActive }) =>
-                  `nav-link ${isActive ? 'nav-link-active' : 'nav-link-inactive'}`
-                }
+          {navigationConfig[user?.role || 'student'].map((item) => (
+            <NavItem key={item.path} to={item.path}>
+              {item.label}
+            </NavItem>
+          ))}
+          {user?.role === "student" && (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className={`${navLinkStyles.base} ${navLinkStyles.inactive}`}
               >
-                {link}
-              </NavLink>
-            ))
-            : (
-              <>
-                <NavLink
-                  to="/"
-                  className={({ isActive }) =>
-                    `nav-link ${isActive ? 'nav-link-active' : 'nav-link-inactive'}`
-                  }
-                >
-                  Home
-                </NavLink>
-                <NavLink
-                  to="/jobs"
-                  className={({ isActive }) =>
-                    `nav-link ${isActive ? 'nav-link-active' : 'nav-link-inactive'}`
-                  }
-                >
-                  Jobs
-                </NavLink>
-                <NavLink
-                  to="/browse"
-                  className={({ isActive }) =>
-                    `nav-link ${isActive ? 'nav-link-active' : 'nav-link-inactive'}`
-                  }
-                >
-                  Browse
-                </NavLink>
-                {user?.role === "student" && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="py-2 px-4 transition-colors duration-200 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 text-lg">
-                      AppliedJobs
-                     
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent 
-                      className="w-[90vw] max-w-[800px] p-4"
-                      align="center"
-                      sideOffset={8}
-                    >
-                      <div className="max-h-[70vh] overflow-y-auto">
-                        <AppliedJobsTable />
-                      </div>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="flex items-center gap-1 py-2 px-4 transition-colors duration-200 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
-                    More 
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem>
-                      <Link to="/dashboard" className="w-full">Dashboard</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Link to="/contact" className="w-full">Contact</Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </>
-            )}
+                AppliedJobs
+              </DropdownMenuTrigger>
+              <DropdownMenuContent 
+                className="w-[90vw] max-w-[800px] p-4"
+                align="center"
+                sideOffset={8}
+              >
+                <div className="max-h-[70vh] overflow-y-auto">
+                  <AppliedJobsTable />
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              className={`${navLinkStyles.base} ${navLinkStyles.inactive}`}
+            >
+              More 
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem className="cursor-pointer hover:bg-primary/5">
+                <Link to="/dashboard" className="w-full">Dashboard</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer hover:bg-primary/5">
+                <Link to="/contact" className="w-full">Contact</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </nav>
 
+        {/* User Actions */}
         <div className="flex items-center space-x-4">
           <ThemeToggle />
           {!user ? (
@@ -385,6 +384,7 @@ const Header = () => {
           )}
         </div>
       </div>
+
       {/* Full Screen Applied Jobs Sheet */}
       <Sheet open={appliedJobsOpen} onOpenChange={setAppliedJobsOpen}>
         <SheetContent side="bottom" className="h-[90vh] p-0" hideCloseButton>

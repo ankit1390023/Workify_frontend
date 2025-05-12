@@ -14,16 +14,19 @@ import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Loader } from "lucide-react";
 
 const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 
 const AppliedJobsTable = () => {
     const navigate = useNavigate();
     const [appliedJobs, setAppliedJobs] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchAppliedJobs = async () => {
             try {
+                setLoading(true);
                 const response = await axios.get(
                     `${API_END_POINT}/application/getAppliedJobs`,
                     {
@@ -40,6 +43,8 @@ const AppliedJobsTable = () => {
             } catch (error) {
                 console.error(error);
                 toast.error("Something went wrong. Please try again.");
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -60,6 +65,22 @@ const AppliedJobsTable = () => {
                 return "bg-gray-400 dark:bg-gray-500 text-white";
         }
     };
+
+    if (loading) {
+        return (
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="max-w-7xl mx-auto p-6 bg-white dark:bg-black/80 rounded-xl shadow-sm border border-gray-200 dark:border-black/40 flex items-center justify-center min-h-[400px]"
+            >
+                <div className="flex flex-col items-center gap-4">
+                    <Loader className="h-8 w-8 animate-spin text-primary" />
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Loading applied jobs...</p>
+                </div>
+            </motion.div>
+        );
+    }
 
     return (
         <motion.div 
