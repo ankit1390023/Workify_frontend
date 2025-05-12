@@ -3,16 +3,13 @@
         {
             "source": "/(.*)",
             "destination": "/index.html"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/reset-password(.*)",
-            "dest": "/index.html"
         },
         {
-            "src": "/(.*)",
-            "dest": "/index.html"
+            "source": "/reset-password(.*)",
+            "destination": "/index.html"
         }
-    ]
+    ],
+    "buildCommand": "npm run build",
+    "outputDirectory": "dist",
+    "framework": "vite"
 }
