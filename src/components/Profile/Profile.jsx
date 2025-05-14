@@ -16,6 +16,7 @@ import { Progress } from "../ui/progress";
 import { toast } from "sonner";
 import { useDashboardData } from "../hooks/useDashboardData";
 import { setUser } from "@/redux/authSlice";
+import ResumeParsing from './ResumeParsing';
 
 const MAX_FILE_SIZE_MB = 5;
 const API_END_POINT = import.meta.env.VITE_API_END_POINT;
@@ -282,6 +283,15 @@ const Profile = () => {
                                         </p>
                                     </div>
                                 </div>
+
+                                {/* Resume Parsing Section */}
+                                <div className="mt-8 border-t pt-6">
+                                    <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Quick Profile Update</h3>
+                                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                                        Upload your resume to automatically update your profile information
+                                    </p>
+                                    <ResumeParsing />
+                                </div>
                             </motion.div>
 
                             {/* Skills Section */}
@@ -415,56 +425,6 @@ const Profile = () => {
                                 </div>
                             </motion.div>
 
-                            {/* Resume Section */}
-                            <motion.div 
-                                initial={{ y: 20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ duration: 0.5, delay: 0.6 }}
-                                className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300"
-                            >
-                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Resume</h2>
-                                {hasResume ? (
-                                    <div className="flex items-center justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300">
-                                        <div className="flex items-center gap-3">
-                                            <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                                            <span className="text-gray-700 dark:text-gray-300">
-                                                {user?.profile?.resumeOriginalName || "View Resume"}
-                                            </span>
-                                        </div>
-                                        <a
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            href={`${user?.profile?.resume}?fl_attachment=false&preview=true`}
-                                            className="text-blue-600 dark:text-blue-400 hover:underline"
-                                        >
-                                            View Resume
-                                        </a>
-                                    </div>
-                                ) : (
-                                    <div 
-                                        {...getRootProps()}
-                                        className={`text-center p-8 rounded-lg border-2 border-dashed transition-all duration-300 ${getDropzoneClasses()}`}
-                                    >
-                                        <input {...getInputProps()} />
-                                        {isUploading ? (
-                                            <div className="text-center">
-                                                <p className="text-gray-600 dark:text-gray-200 mb-2">Uploading...</p>
-                                                <Progress value={uploadProgress} className="w-full" />
-                                            </div>
-                                        ) : isDragActive ? (
-                                            <p className="text-blue-600 dark:text-blue-400">Drop your resume here...</p>
-                                        ) : (
-                                            <div className="space-y-4">
-                                                <Upload className="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500" />
-                                                <p className="text-gray-500 dark:text-gray-400">No resume uploaded yet</p>
-                                                <p className="text-gray-600 dark:text-gray-200">
-                                                    Drag and drop your resume here, or click to browse
-                                                </p>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </motion.div>
 
                             {/* Social Links Section */}
                             <motion.div 
@@ -567,9 +527,54 @@ const Profile = () => {
                                     ))}
                                 </div>
                             </motion.div>
-                            
 
-                             {/* Job Preferences Section */}
+                            {/* Languages Section */}
+                            <motion.div 
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ duration: 0.5, delay: 1.0 }}
+                                className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
+                            >
+                                <div className="flex items-center gap-2 mb-6">
+                                    <Languages className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Languages</h2>
+                                </div>
+                                <div className="grid grid-cols-1 gap-3">
+                                    {user?.profile?.languages?.map((item, index) => (
+                                        item.language && (
+                                            <div key={index} className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50">
+                                                        <span className="text-lg font-semibold text-blue-600 dark:text-blue-300">
+                                                            {item.language.charAt(0)}
+                                                        </span>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                                            {item.language}
+                                                        </h3>
+                                                    </div>
+                                                </div>
+                                                <Badge 
+                                                    className={`px-3 py-1 text-sm font-medium ${
+                                                        item.proficiency === 'Native' || item.proficiency === 'Fluent'
+                                                            ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300'
+                                                            : item.proficiency === 'Advanced'
+                                                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300'
+                                                            : item.proficiency === 'Intermediate'
+                                                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300'
+                                                            : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                                                    }`}
+                                                >
+                                                    {item.proficiency}
+                                                </Badge>
+                                            </div>
+                                        )
+                                    ))}
+                                </div>
+                            </motion.div>
+
+                            {/* Job Preferences Section */}
                             <motion.div 
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}

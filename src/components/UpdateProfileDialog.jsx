@@ -19,12 +19,12 @@ import { setUser } from '@/redux/authSlice';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { MapPin, GraduationCap, Briefcase, Languages, Award, Link2, Heart, DollarSign, Plus, Trash2, FileText, Loader } from 'lucide-react';
+import ResumeParsing from './Profile/ResumeParsing';
 
 const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 
 const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
     const [loading, setLoading] = useState(false);
-    const [parsingResume, setParsingResume] = useState(false);
     const { user } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const [activeTab, setActiveTab] = useState('basic');
@@ -302,56 +302,25 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
         }
     };
 
-    const parseResume = async (file) => {
-        setParsingResume(true);
-        try {
-            const formData = new FormData();
-            formData.append('resume', file);
-
-            const response = await axios.post(
-                `${API_END_POINT}/user/parse-resume`,
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
-                    },
-                }
-            );
-
-            if (response.data.success) {
-                const parsedData = response.data.data;
-                
-                // Update input state with parsed data
-                setInput(prev => ({
-                    ...prev,
-                    fullName: parsedData.name || prev.fullName,
-                    email: parsedData.email || prev.email,
-                    phoneNumber: parsedData.phone || prev.phoneNumber,
-                    bio: parsedData.summary || prev.bio,
-                    skills: parsedData.skills || prev.skills,
-                    education: parsedData.education || prev.education,
-                    experience: parsedData.experience || prev.experience,
-                    languages: parsedData.languages || prev.languages,
-                    certifications: parsedData.certifications || prev.certifications,
-                    socialLinks: {
-                        ...prev.socialLinks,
-                        linkedin: parsedData.linkedin || prev.socialLinks.linkedin,
-                        github: parsedData.github || prev.socialLinks.github,
-                        portfolio: parsedData.portfolio || prev.socialLinks.portfolio,
-                    },
-                    resume: file
-                }));
-
-                toast.success('Resume parsed successfully!');
-            } else {
-                toast.error(response.data.message || 'Failed to parse resume');
+    const handleResumeParsed = (parsedData) => {
+        setInput(prev => ({
+            ...prev,
+            fullName: parsedData.name || prev.fullName,
+            email: parsedData.email || prev.email,
+            phoneNumber: parsedData.phone || prev.phoneNumber,
+            bio: parsedData.summary || prev.bio,
+            skills: parsedData.skills || prev.skills,
+            education: parsedData.education || prev.education,
+            experience: parsedData.experience || prev.experience,
+            languages: parsedData.languages || prev.languages,
+            certifications: parsedData.certifications || prev.certifications,
+            socialLinks: {
+                ...prev.socialLinks,
+                linkedin: parsedData.linkedin || prev.socialLinks.linkedin,
+                github: parsedData.github || prev.socialLinks.github,
+                portfolio: parsedData.portfolio || prev.socialLinks.portfolio,
             }
-        } catch (error) {
-            toast.error(error.response?.data?.message || 'Error parsing resume');
-        } finally {
-            setParsingResume(false);
-        }
+        }));
     };
 
     return (
@@ -376,33 +345,7 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
 
                     <form onSubmit={handleFormSubmit} className="space-y-6 p-4">
                         <TabsContent value="basic" className="space-y-4">
-                            <div className="relative">
-                                <Label htmlFor="resume" className="text-gray-700 dark:text-gray-300">Resume</Label>
-                                <div className="mt-1 flex items-center space-x-4">
-                                    <Input
-                                        id="resume"
-                                        name="resume"
-                                        type="file"
-                                        accept=".pdf,.doc,.docx"
-                                        onChange={handleFileChange}
-                                        className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400"
-                                    />
-                                    {parsingResume && (
-                                        <div className="flex items-center space-x-2 text-blue-600 dark:text-blue-400">
-                                            <Loader className="w-4 h-4 animate-spin" />
-                                            <span>Parsing resume...</span>
-                                        </div>
-                                    )}
-                                </div>
-                                {user?.profile?.resumeOriginalName && (
-                                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                                        Current Resume: {user.profile.resumeOriginalName}
-                                    </p>
-                                )}
-                                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                    Upload your resume to automatically fill your profile information
-                                </p>
-                            </div>
+                            <ResumeParsing onResumeParsed={handleResumeParsed} />
 
                             <div>
                                 <Label htmlFor="fullName">Name</Label>
