@@ -139,13 +139,15 @@ const AppliedJobsTable = () => {
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="text-right py-4 px-4">
-                                    <Button
-                                        onClick={() => navigate(`/jobDescription/${item?.job?._id}`)}
-                                        aria-label={`View details for ${item?.job?.title || "N/A"}`}
-                                        className="bg-blue-600 dark:bg-blue-600 text-white hover:bg-blue-700 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 transition-all duration-200"
-                                    >
-                                        View
-                                    </Button>
+                                    <div className="flex items-center justify-end gap-2">
+                                        <Button
+                                            onClick={() => navigate(`/jobDescription/${item?.job?._id}`)}
+                                            aria-label={`View details for ${item?.job?.title || "N/A"}`}
+                                            className="bg-blue-600 dark:bg-blue-600 text-white hover:bg-blue-700 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 transition-all duration-200"
+                                        >
+                                            View
+                                        </Button>
+                                    </div>
                                 </TableCell>
                             </motion.tr>
                         ))

@@ -5,12 +5,19 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import { Textarea } from '../ui/textarea';
+import { Label } from '../ui/label';
+import { toast } from 'sonner';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLoading } from '@/redux/authSlice';
+import useGetSingleCompany from '../hooks/useGetSigleCompany';
+import Header from '../shared/Header';
+import Footer from '../shared/Footer';
 import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
-
 const API_END_POINT = import.meta.env.VITE_API_END_POINT;
-
 // Define the schema using Zod
 const companySchema = z.object({
   companyName: z.string().nonempty('Company name is required'),
@@ -19,15 +26,17 @@ const companySchema = z.object({
   description: z.string().optional(),
   logo: z
     .instanceof(FileList)
+    .optional()
     .refine(
-      (fileList) => fileList.length > 0 && fileList[0].type.startsWith('image/'),
-      { message: 'A logo is required, and it must be an image file.' }
+      (fileList) => !fileList || fileList.length === 0 || fileList[0].type.startsWith('image/'),
+      { message: 'Logo must be an image file.' }
     ),
 });
 
 const CompanyDetailsUpdate = () => {
   const params = useParams();
   const companyId = params?.id;
+  console.log("companyId", companyId);
   useGetSingleCompany(companyId);
   const company = useSelector((store) => store.company?.singleCompany);
   const { theme } = useTheme();
@@ -65,30 +74,32 @@ const CompanyDetailsUpdate = () => {
   };
 
   const onSubmit = async (data) => {
-    const formData = new FormData();
-    formData.append('companyName', data.companyName);
-    formData.append('location', data.location);
-    formData.append('website', data.website);
-    if (data.description) formData.append('description', data.description);
-    if (data?.logo && data?.logo[0]) formData.append('logo', data.logo[0]);
-
     try {
-      const res = await axios.post(`${API_END_POINT}/company/update/${companyId}`, formData, {
+      const formData = new FormData();
+      formData.append('companyName', data.companyName);
+      formData.append('location', data.location);
+      formData.append('website', data.website);
+      if (data.description) formData.append('description', data.description);
+      if (data?.logo && data?.logo[0]) {
+        formData.append('logo', data.logo[0]);
+      }
+
+      const res = await axios.put(`${API_END_POINT}/company/update/${companyId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
         },
       });
 
-      if (res.data.success) {
-        toast.success('Company details updated successfully.');
+      if (res.data.statusCode === 200) {
+        toast.success("Company details updated successfully");
         navigate('/admin/companies');
       } else {
-        toast.error(`Failed to update company details: ${res.data.message}`);
+        toast.error(res.data.message || "Failed to update company details");
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || 'An error occurred during update';
-      toast.error(errorMessage);
+      console.error("Error updating company:", error);
+      toast.error(error.response?.data?.message || "Failed to update company details");
     }
   };
 
@@ -269,7 +280,7 @@ const CompanyDetailsUpdate = () => {
                 >
                   Cancel
                 </Button>
-                <Button
+                   <Button
                   type="submit"
                   disabled={isSubmitting}
                   className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"

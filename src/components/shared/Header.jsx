@@ -38,17 +38,24 @@ const navigationConfig = {
     { path: "/browse", label: "Browse" }
   ],
   recruiter: [
-    { path: "/admin/companies", label: "Companies" },
-    { path: "/admin/jobs", label: "Jobs" }
+    { path: "/admin/companies", label: "Register Company", className: "mr-8" },
+    { path: "/admin/jobs", label: "Post Job" }
   ]
 };
 
 // Mobile navigation items
-const mobileNavItems = [
-  { icon: <Home className="w-5 h-5" />, label: "Home", path: "/" },
-  { icon: <Briefcase className="w-5 h-5" />, label: "Jobs", path: "/jobs" },
-  { icon: <Compass className="w-5 h-5" />, label: "Browse", path: "/browse" },
-];
+const mobileNavItems = {
+  student: [
+    { icon: <Home className="w-5 h-5" />, label: "Home", path: "/" },
+    { icon: <Briefcase className="w-5 h-5" />, label: "Jobs", path: "/jobs" },
+    { icon: <Compass className="w-5 h-5" />, label: "Browse", path: "/browse" },
+  ],
+  recruiter: [
+    { icon: <Home className="w-5 h-5" />, label: "Home", path: "/" },
+    { icon: <Briefcase className="w-5 h-5" />, label: "Register Company", path: "/admin/companies" },
+    { icon: <Compass className="w-5 h-5" />, label: "Post Job", path: "/admin/jobs" },
+  ]
+};
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -114,11 +121,11 @@ const Header = () => {
   };
 
   // Navigation link component
-  const NavItem = ({ to, children }) => (
+  const NavItem = ({ to, children, className }) => (
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `${navLinkStyles.base} ${isActive ? navLinkStyles.active : navLinkStyles.inactive}`
+        `${navLinkStyles.base} ${isActive ? navLinkStyles.active : navLinkStyles.inactive} ${className || ''}`
       }
     >
       {children}
@@ -161,7 +168,7 @@ const Header = () => {
 
                 {/* Mobile Navigation */}
                 <nav className="flex-1 px-4 space-y-2">
-                  {mobileNavItems.map((item) => (
+                  {mobileNavItems[user?.role || 'student'].map((item) => (
                     <Link
                       key={item.path}
                       to={item.path}
@@ -276,7 +283,7 @@ const Header = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-6 text-lg">
           {navigationConfig[user?.role || 'student'].map((item) => (
-            <NavItem key={item.path} to={item.path}>
+            <NavItem key={item.path} to={item.path} className={item.className}>
               {item.label}
             </NavItem>
           ))}
@@ -298,21 +305,23 @@ const Header = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              className={`${navLinkStyles.base} ${navLinkStyles.inactive}`}
-            >
-              More 
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem className="cursor-pointer hover:bg-primary/5">
-                <Link to="/dashboard" className="w-full">Dashboard</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer hover:bg-primary/5">
-                <Link to="/contact" className="w-full">Contact</Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {user?.role === "student" && (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className={`${navLinkStyles.base} ${navLinkStyles.inactive}`}
+              >
+                More 
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem className="cursor-pointer hover:bg-primary/5">
+                  <Link to="/dashboard" className="w-full">Dashboard</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer hover:bg-primary/5">
+                  <Link to="/contact" className="w-full">Contact</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </nav>
 
         {/* User Actions */}
@@ -325,62 +334,69 @@ const Header = () => {
               </Button>
             </Link>
           ) : (
-            <Popover>
-              <PopoverTrigger asChild>
-                <Avatar className="cursor-pointer ring-2 ring-blue-500 dark:ring-blue-400">
-                  <AvatarImage src={user.profile?.avatar} alt="User Avatar" />
-                  <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
-                </Avatar>
-              </PopoverTrigger>
-              <PopoverContent className="w-64 p-4 bg-background border border-gray-200 dark:border-gray-800 rounded-md shadow-lg">
-                <div className="flex flex-col items-center">
-                  <Avatar className="w-16 h-16 ring-2 ring-blue-500 dark:ring-blue-400">
-                    <AvatarImage src={user.profile?.avatar} alt="Profile Avatar" />
+            <>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Avatar className="hidden md:flex cursor-pointer ring-2 ring-blue-500 dark:ring-blue-400">
+                    <AvatarImage src={user.profile?.avatar} alt="User Avatar" />
                     <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
                   </Avatar>
-                  <h4 className="mt-2 text-lg font-semibold text-foreground">
-                    {user?.fullName}
-                  </h4>
-                  <p className="text-sm text-muted-foreground">{user?.email}</p>
+                </PopoverTrigger>
+                <PopoverContent className="w-64 p-4 bg-background border border-gray-200 dark:border-gray-800 rounded-md shadow-lg">
+                  <div className="flex flex-col items-center">
+                    <Avatar className="w-16 h-16 ring-2 ring-blue-500 dark:ring-blue-400">
+                      <AvatarImage src={user.profile?.avatar} alt="Profile Avatar" />
+                      <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <h4 className="mt-2 text-lg font-semibold text-foreground">
+                      {user?.fullName}
+                    </h4>
+                    <p className="text-sm text-muted-foreground">{user?.email}</p>
 
-                  <div className="w-full mt-4 space-y-2 text-sm text-foreground">
-                    <div className="flex justify-between">
-                      <span className="font-medium">Role:</span>
-                      <span>{user.role}</span>
+                    <div className="w-full mt-4 space-y-2 text-sm text-foreground">
+                      <div className="flex justify-between">
+                        <span className="font-medium">Role:</span>
+                        <span>{user.role}</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 w-full flex flex-col gap-3">
+                      <Link to="/change-password">
+                        <Button 
+                          variant="none" 
+                          className="w-full flex items-center justify-start gap-3 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 border-0 focus:ring-0 focus:outline-none"
+                        >
+                          <Lock className="h-5 w-5" />
+                          <span className="font-medium">Change Password</span>
+                        </Button>
+                      </Link>
+                      <Link to="/profile">
+                        <Button 
+                          variant="none" 
+                          className="w-full flex items-center justify-start gap-3 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 border-0 focus:ring-0 focus:outline-none"
+                        >
+                          <User className="h-5 w-5" />
+                          <span className="font-medium">See Profile</span>
+                        </Button>
+                      </Link>
+                      <Button
+                        onClick={handleLogout}
+                        variant="none"
+                        className="w-full flex items-center justify-start gap-3 bg-red-600 hover:bg-red-700 text-white dark:bg-red-600 dark:hover:bg-red-700 transition-all duration-200 border-0 focus:ring-0 focus:outline-none"
+                      >
+                        <LogOut className="h-5 w-5" />
+                        <span className="font-medium">Logout</span>
+                      </Button>
                     </div>
                   </div>
-
-                  <div className="mt-4 w-full flex flex-col gap-3">
-                    <Link to="/change-password">
-                      <Button 
-                        variant="none" 
-                        className="w-full flex items-center justify-start gap-3 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 border-0 focus:ring-0 focus:outline-none"
-                      >
-                        <Lock className="h-5 w-5" />
-                        <span className="font-medium">Change Password</span>
-                      </Button>
-                    </Link>
-                    <Link to="/profile">
-                      <Button 
-                        variant="none" 
-                        className="w-full flex items-center justify-start gap-3 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 border-0 focus:ring-0 focus:outline-none"
-                      >
-                        <User className="h-5 w-5" />
-                        <span className="font-medium">See Profile</span>
-                      </Button>
-                    </Link>
-                    <Button
-                      onClick={handleLogout}
-                      variant="none"
-                      className="w-full flex items-center justify-start gap-3 bg-red-600 hover:bg-red-700 text-white dark:bg-red-600 dark:hover:bg-red-700 transition-all duration-200 border-0 focus:ring-0 focus:outline-none"
-                    >
-                      <LogOut className="h-5 w-5" />
-                      <span className="font-medium">Logout</span>
-                    </Button>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
+                </PopoverContent>
+              </Popover>
+              {/* Mobile Avatar - Non-interactive */}
+              <Avatar className="md:hidden ring-2 ring-blue-500 dark:ring-blue-400">
+                <AvatarImage src={user.profile?.avatar} alt="User Avatar" />
+                <AvatarFallback>{user.fullName?.charAt(0)}</AvatarFallback>
+              </Avatar>
+            </>
           )}
         </div>
       </div>

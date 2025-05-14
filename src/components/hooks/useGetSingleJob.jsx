@@ -1,34 +1,67 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { toast } from "sonner"
 const API_END_POINT = import.meta.env.VITE_API_END_POINT;
-import { setSingleJob } from "@/redux/jobSlice";
+import { setSingleJob, setLoading, setError } from "@/redux/jobSlice";
 
 const useGetSingleJobs = (jobId) => {
     const dispatch = useDispatch();
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchSingleJobs = async () => {
+            if (!jobId) {
+                setIsLoading(false);
+                return;
+            }
 
-            const response = await axios.get(`${API_END_POINT}//job/getJobById/${jobId}`,
-                {
+            try {
+                setIsLoading(true);
+                dispatch(setLoading(true));
+                dispatch(setError(null));
+
+                const response = await axios.get(`${API_END_POINT}/job/getJobById/${jobId}`, {
                     headers: {
                         "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
                     }
-                 });
-            // console.log("response from customHooks is", response);
-            if (response.data.success) {
-                dispatch(setSingleJob(response.data.data)); // Dispatch jobs to Redux
-                toast.success("Single Jobs fetched successfully!"); // Success toast
-            } else {
-                toast.error(`Failed to fetch Single jobs: ${response.data.message}`); // Error toast for API failure
-            }
+                });
 
+                if (response.data.success) {
+                    // Format the job data before dispatching
+                    const formattedJob = {
+                        ...response.data.data,
+                        requirements: Array.isArray(response.data.data.requirements) 
+                            ? response.data.data.requirements 
+                            : response.data.data.requirements?.split(',').map(req => req.trim()) || [],
+                        location: Array.isArray(response.data.data.location)
+                            ? response.data.data.location
+                            : response.data.data.location?.split(',').map(loc => loc.trim()) || [],
+                    };
+
+                    dispatch(setSingleJob(formattedJob));
+                    toast.success("Job details loaded successfully!");
+                } else {
+                    dispatch(setSingleJob({}));
+                    dispatch(setError(response.data.message));
+                    toast.error(`Failed to fetch job details: ${response.data.message}`);
+                }
+            } catch (error) {
+                console.error("Error fetching job details:", error);
+                dispatch(setSingleJob({}));
+                const errorMessage = error.response?.data?.message || error.message || "Failed to fetch job details";
+                dispatch(setError(errorMessage));
+                toast.error(errorMessage);
+            } finally {
+                setIsLoading(false);
+                dispatch(setLoading(false));
+            }
         };
 
         fetchSingleJobs();
-    }, [dispatch]); // Ensure no stale dispatch
+    }, [dispatch, jobId]);
+
+    return { isLoading };
 };
 
 export default useGetSingleJobs;

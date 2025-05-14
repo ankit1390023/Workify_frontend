@@ -68,7 +68,8 @@ const appRouter = createBrowserRouter([
   { path: '/admin/companies/:id', element: <ProtectedRoute><CompanyDetailsUpdate /></ProtectedRoute> },
   { path: '/admin/jobs', element: <ProtectedRoute><AdminJobs /></ProtectedRoute> },
   { path: '/admin/postJobs', element: <ProtectedRoute><PostJobs /></ProtectedRoute> },
-  { path: '/admin/companyUpdateDetails/:id', element: <ProtectedRoute><JobDetailsUpdate /></ProtectedRoute> },
+  { path: '/admin/jobUpdateDetails/:id', element: <ProtectedRoute><JobDetailsUpdate /></ProtectedRoute> },
+  { path: '/admin/companyUpdateDetails/:id', element: <ProtectedRoute><CompanyDetailsUpdate /></ProtectedRoute> },  
   { path: '/admin/jobs/:id/applicants', element: <ProtectedRoute><Applicants /></ProtectedRoute> },
   { path: '/admin/jobs/view-application/:id', element: <ProtectedRoute><ApplicantsCards /></ProtectedRoute> }
 ]);

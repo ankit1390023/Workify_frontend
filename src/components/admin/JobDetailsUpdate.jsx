@@ -35,8 +35,8 @@ const jobUpdateSchema = z.object({
 const JobDetailsUpdate = () => {
     const params = useParams();
     const jobId = params.id;
-    useGetSingleJobs(jobId);
-    const singleJob = useSelector(state => state.singleJob);
+    const { isLoading } = useGetSingleJobs(jobId);
+    const singleJob = useSelector(state => state.job.singleJob); // Updated to access from job slice
     const { allCompanies } = useSelector((state) => state.company);
     const { theme } = useTheme();
     const navigate = useNavigate();
@@ -52,34 +52,52 @@ const JobDetailsUpdate = () => {
 
     // Set form default values once job data is fetched
     useEffect(() => {
-        if (singleJob) {
-            setValue('title', singleJob?.title || '');
-            setValue('requirements', singleJob?.requirements?.join(', ') || '');
-            setValue('salary', singleJob?.salary || '');
-            setValue('description', singleJob?.description || '');
-            setValue('experience', singleJob?.experience || '');
-            setValue('location', singleJob?.location?.join(', ') || '');
-            setValue('jobType', singleJob?.jobType || '');
-            setValue('position', singleJob?.position || '');
-            setValue('companyId', singleJob?.company?._id || '');
+        if (singleJob && Object.keys(singleJob).length > 0) {
+            console.log("Setting form values with job data:", singleJob);
+            setValue('title', singleJob.title || '');
+            setValue('requirements', Array.isArray(singleJob.requirements) 
+                ? singleJob.requirements.join(', ') 
+                : singleJob.requirements || '');
+            setValue('salary', singleJob.salary || '');
+            setValue('description', singleJob.description || '');
+            setValue('experience', singleJob.experience || '');
+            setValue('location', Array.isArray(singleJob.location)
+                ? singleJob.location.join(', ')
+                : singleJob.location || '');
+            setValue('jobType', singleJob.jobType || '');
+            setValue('position', singleJob.position || '');
+            setValue('companyId', singleJob.company?._id || '');
         }
     }, [singleJob, setValue]);
 
     const onSubmit = async (data) => {
         try {
-            // Format the data to match backend expectations
+            // Format the data to match backend expectations exactly
             const formattedData = {
-                ...data,
-                requirements: data.requirements.split(',').map(req => req.trim()),
-                location: data.location.split(',').map(loc => loc.trim()),
+                title: data.title,
+                description: data.description,
+                requirements: Array.isArray(data.requirements) 
+                    ? data.requirements.join(',') 
+                    : data.requirements,
+                salary: Number(data.salary),
+                location: Array.isArray(data.location)
+                    ? data.location.join(',')
+                    : data.location,
+                jobType: data.jobType,
+                experience: Number(data.experience),
+                position: Number(data.position),
+                companyId: data.companyId
             };
 
-            const response = await axios.post(`${API_END_POINT}/job/update/${jobId}`, formattedData, {
+            console.log('Sending update data:', formattedData); // Debug log
+
+            const response = await axios.put(`${API_END_POINT}/job/update/${jobId}`, formattedData, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
                 },
             });
+            console.log("response from update job", response);
 
             if (response.data.success) {
                 toast.success('Job updated successfully');
@@ -88,6 +106,7 @@ const JobDetailsUpdate = () => {
                 toast.error(`Failed to update job: ${response.data.message}`);
             }
         } catch (error) {
+            console.error('Update error:', error.response?.data || error); // Debug log
             const errorMessage = error.response?.data?.message || error.message || "An error occurred during job update";
             toast.error(errorMessage);
         }
@@ -101,6 +120,21 @@ const JobDetailsUpdate = () => {
             setValue("companyId", selectedCompany._id, { shouldValidate: true });
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-background">
+                <Header />
+                <div className="flex items-center justify-center min-h-[400px]">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                        <p className="mt-4 text-muted-foreground">Loading job details...</p>
+                    </div>
+                </div>
+                <Footer />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-background">
@@ -142,7 +176,7 @@ const JobDetailsUpdate = () => {
                                 <div className="space-y-2">
                                     <Label htmlFor="companyId" className="text-foreground">Select Company</Label>
                                     {allCompanies.length > 0 ? (
-                                        <Select onValueChange={selectChangeHandler}>
+                                        <Select onValueChange={selectChangeHandler} defaultValue={singleJob?.company?._id}>
                                             <SelectTrigger className="bg-background">
                                                 <SelectValue placeholder="Select a company" />
                                             </SelectTrigger>
@@ -232,6 +266,7 @@ const JobDetailsUpdate = () => {
                                     <Label htmlFor="jobType" className="text-foreground">Job Type</Label>
                                     <Select
                                         onValueChange={(value) => setValue("jobType", value, { shouldValidate: true })}
+                                        defaultValue={singleJob?.jobType}
                                     >
                                         <SelectTrigger className="bg-background">
                                             <SelectValue placeholder="Select job type" />
