@@ -22,6 +22,7 @@ import Dashboard from './components/Dashboard';
 import ForgotPassword from './components/auth/ForgotPassword';
 import ResetPassword from './components/auth/ResetPassword';
 import ChangePassword from './components/auth/ChangePassword';
+import ATSChecker from './components/Resume_parser/ATSChecker';
 
 // Error boundary component
 const ErrorBoundary = ({ error }) => {
@@ -71,7 +72,10 @@ const appRouter = createBrowserRouter([
   { path: '/admin/jobUpdateDetails/:id', element: <ProtectedRoute><JobDetailsUpdate /></ProtectedRoute> },
   { path: '/admin/companyUpdateDetails/:id', element: <ProtectedRoute><CompanyDetailsUpdate /></ProtectedRoute> },  
   { path: '/admin/jobs/:id/applicants', element: <ProtectedRoute><Applicants /></ProtectedRoute> },
-  { path: '/admin/jobs/view-application/:id', element: <ProtectedRoute><ApplicantsCards /></ProtectedRoute> }
+  { path: '/admin/jobs/view-application/:id', element: <ProtectedRoute><ApplicantsCards /></ProtectedRoute> },
+
+  // ATS Checker Routes
+  { path: '/ats-checker', element: <ProtectedRoute><ATSChecker /></ProtectedRoute> }
 ]);
 
 const App = () => {

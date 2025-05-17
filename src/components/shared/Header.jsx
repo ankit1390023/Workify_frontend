@@ -312,12 +312,24 @@ const Header = () => {
               >
                 More 
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem className="cursor-pointer hover:bg-primary/5">
-                  <Link to="/dashboard" className="w-full">Dashboard</Link>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuItem asChild>
+                  <Link to="/dashboard" className="flex items-center w-full cursor-pointer">
+                    <User className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer hover:bg-primary/5">
-                  <Link to="/contact" className="w-full">Contact</Link>
+                <DropdownMenuItem asChild>
+                  <Link to="/ats-checker" className="flex items-center w-full cursor-pointer">
+                    <Briefcase className="w-4 h-4 mr-2" />
+                    ATS Checker
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/contact" className="flex items-center w-full cursor-pointer">
+                    <Compass className="w-4 h-4 mr-2" />
+                    Contact
+                  </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
