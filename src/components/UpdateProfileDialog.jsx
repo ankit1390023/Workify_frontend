@@ -19,7 +19,6 @@ import { setUser } from '@/redux/authSlice';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { MapPin, GraduationCap, Briefcase, Languages, Award, Link2, Heart, DollarSign, Plus, Trash2, FileText, Loader } from 'lucide-react';
-import ResumeParsing from './Profile/ResumeParsing';
 
 const API_END_POINT = import.meta.env.VITE_API_END_POINT;
 
@@ -67,11 +66,192 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
             if (file.type === 'application/pdf' || 
                 file.type === 'application/msword' || 
                 file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-                await parseResume(file);
+                
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    toast.error('File size should be less than 5MB');
+                    return;
+                }
+
+                setLoading(true);
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    // First, parse the resume
+                    const parseResponse = await axios.post('http://localhost:8000/parse-resume', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                        withCredentials: false,
+                    });
+
+                    console.log("Response from parse resume:", parseResponse.data);
+                    
+                    if (parseResponse.data.error) {
+                        toast.error(parseResponse.data.details || parseResponse.data.error);
+                        return;
+                    }
+
+                    // Update the form with parsed data
+                    const parsedData = parseResponse.data;
+                    updateProfileWithParsedData(parsedData);
+
+                    // Create a new FormData for profile update
+                    const updateFormData = new FormData();
+                    
+                    // Add all profile fields
+                    updateFormData.append('fullName', input.fullName);
+                    updateFormData.append('email', input.email);
+                    updateFormData.append('phoneNumber', input.phoneNumber);
+                    updateFormData.append('bio', input.bio);
+                    updateFormData.append('skills', input.skills.join(','));
+                    updateFormData.append('location', JSON.stringify(input.location));
+                    updateFormData.append('education', JSON.stringify(input.education));
+                    updateFormData.append('experience', JSON.stringify(input.experience));
+                    updateFormData.append('languages', JSON.stringify(input.languages));
+                    updateFormData.append('certifications', JSON.stringify(input.certifications));
+                    updateFormData.append('socialLinks', JSON.stringify(input.socialLinks));
+                    updateFormData.append('interests', JSON.stringify(input.interests));
+                    updateFormData.append('preferredJobTypes', JSON.stringify(input.preferredJobTypes));
+                    updateFormData.append('expectedSalary', JSON.stringify(input.expectedSalary));
+                    updateFormData.append('resume', file); // Add resume to the same request
+
+                    // Update profile with resume
+                    const updateResponse = await axios.patch(
+                        `${API_END_POINT}/user/update-account`,
+                        updateFormData,
+                        {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                                "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
+                            },
+                        }
+                    );
+
+                    if (updateResponse.data.success) {
+                        // Update Redux store with new user data
+                        dispatch(setUser(updateResponse.data.user));
+                        toast.success('Resume parsed and profile updated successfully!');
+                        onSave && onSave(updateResponse.data.user);
+                        setOpen(false);
+                    } else {
+                        toast.error(updateResponse.data.message || 'Failed to update profile.');
+                    }
+                } catch (error) {
+                    console.error('Error details:', error);
+                    if (!error.response) {
+                        toast.error('Network error: Please check if the backend server is running at http://localhost:8000');
+                    } else if (error.response.status === 413) {
+                        toast.error('File size too large. Please upload a smaller file.');
+                    } else if (error.response.status === 415) {
+                        toast.error('Unsupported file type. Please upload a PDF or Word document.');
+                    } else {
+                        const errorMessage = error.response?.data?.details || 
+                                           error.response?.data?.error || 
+                                           error.message || 
+                                           'Error parsing resume. Please try again.';
+                        toast.error(errorMessage);
+                    }
+                } finally {
+                    setLoading(false);
+                }
             } else {
                 toast.error('Please upload a PDF or Word document');
             }
         }
+    };
+
+    const updateProfileWithParsedData = (parsedData) => {
+        if (!parsedData) return;
+
+        const newInput = { ...input };
+
+        // Update personal information
+        if (parsedData.personal_info) {
+            const { full_name, location, contact } = parsedData.personal_info;
+            if (full_name) newInput.fullName = full_name;
+            if (location) newInput.location = { ...newInput.location, address: location };
+            if (contact) {
+                if (contact.email) newInput.email = contact.email;
+                if (contact.phone) newInput.phoneNumber = contact.phone;
+                if (contact.professional_links) {
+                    newInput.socialLinks = {
+                        ...newInput.socialLinks,
+                        linkedin: contact.professional_links.linkedin || '',
+                        github: contact.professional_links.github || '',
+                        portfolio: contact.professional_links.portfolio || '',
+                        twitter: contact.professional_links.twitter || ''
+                    };
+                }
+            }
+        }
+
+        // Update education
+        if (parsedData.education && Array.isArray(parsedData.education)) {
+            newInput.education = parsedData.education.map(edu => ({
+                institution: edu.institute || '',
+                degree: edu.degree || '',
+                fieldOfStudy: edu.board_university || '',
+                startDate: edu.year ? edu.year.split('-')[0] : '',
+                endDate: edu.year ? edu.year.split('-')[1] || '' : '',
+                current: edu.year?.includes('Present') || false,
+                description: edu.score ? `Score: ${edu.score}` : ''
+            }));
+        }
+
+        // Update skills
+        if (parsedData.skills && typeof parsedData.skills === 'object') {
+            const allSkills = [];
+            Object.entries(parsedData.skills).forEach(([category, skills]) => {
+                if (Array.isArray(skills)) {
+                    allSkills.push(...skills);
+                }
+            });
+            newInput.skills = [...new Set(allSkills)];
+        }
+
+        // Update experience
+        if (parsedData.experience && Array.isArray(parsedData.experience)) {
+            newInput.experience = parsedData.experience.map(exp => ({
+                company: exp.company || '',
+                position: exp.title || '',
+                startDate: exp.duration ? exp.duration.split('-')[0].trim() : '',
+                endDate: exp.duration ? exp.duration.split('-')[1]?.trim() || '' : '',
+                current: exp.duration?.includes('Present') || false,
+                description: exp.achievements ? exp.achievements.join('\n') : ''
+            }));
+        }
+
+        // Update achievements
+        if (parsedData.achievements && Array.isArray(parsedData.achievements)) {
+            // Add achievements to bio or create a new section
+            const achievementsText = parsedData.achievements.join('\n');
+            newInput.bio = newInput.bio ? `${newInput.bio}\n\nAchievements:\n${achievementsText}` : `Achievements:\n${achievementsText}`;
+        }
+
+        // Update positions of responsibility
+        if (parsedData.positions_of_responsibility && Array.isArray(parsedData.positions_of_responsibility)) {
+            const positionsText = parsedData.positions_of_responsibility.join('\n');
+            newInput.bio = newInput.bio ? `${newInput.bio}\n\nPositions of Responsibility:\n${positionsText}` : `Positions of Responsibility:\n${positionsText}`;
+        }
+
+        // Update projects
+        if (parsedData.projects && Array.isArray(parsedData.projects)) {
+            const projectsText = parsedData.projects.map(project => {
+                let projectText = `Project: ${project.name || 'N/A'}\n`;
+                if (project.technologies) {
+                    projectText += `Technologies: ${project.technologies.join(', ')}\n`;
+                }
+                if (project.achievements) {
+                    projectText += `Achievements:\n${project.achievements.join('\n')}\n`;
+                }
+                return projectText;
+            }).join('\n');
+            newInput.bio = newInput.bio ? `${newInput.bio}\n\nProjects:\n${projectsText}` : `Projects:\n${projectsText}`;
+        }
+
+        setInput(newInput);
     };
 
     const handleLocationChange = (e) => {
@@ -302,27 +482,6 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
         }
     };
 
-    const handleResumeParsed = (parsedData) => {
-        setInput(prev => ({
-            ...prev,
-            fullName: parsedData.name || prev.fullName,
-            email: parsedData.email || prev.email,
-            phoneNumber: parsedData.phone || prev.phoneNumber,
-            bio: parsedData.summary || prev.bio,
-            skills: parsedData.skills || prev.skills,
-            education: parsedData.education || prev.education,
-            experience: parsedData.experience || prev.experience,
-            languages: parsedData.languages || prev.languages,
-            certifications: parsedData.certifications || prev.certifications,
-            socialLinks: {
-                ...prev.socialLinks,
-                linkedin: parsedData.linkedin || prev.socialLinks.linkedin,
-                github: parsedData.github || prev.socialLinks.github,
-                portfolio: parsedData.portfolio || prev.socialLinks.portfolio,
-            }
-        }));
-    };
-
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-2xl bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-xl shadow-lg transition-all ease-in-out transform duration-300 max-h-[85vh] overflow-y-auto">
@@ -345,7 +504,29 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
 
                     <form onSubmit={handleFormSubmit} className="space-y-6 p-4">
                         <TabsContent value="basic" className="space-y-4">
-                            <ResumeParsing onResumeParsed={handleResumeParsed} />
+                            <div>
+                                <Label htmlFor="resume" className="text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                    <FileText className="w-5 h-5" /> Upload Resume
+                                </Label>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <Input
+                                        id="resume"
+                                        name="resume"
+                                        type="file"
+                                        accept=".pdf,.doc,.docx"
+                                        onChange={handleFileChange}
+                                        className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400"
+                                    />
+                                    {input.resume && (
+                                        <span className="text-sm text-gray-600 dark:text-gray-300">
+                                            {input.resume.name}
+                                        </span>
+                                    )}
+                                </div>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    Upload your resume to automatically update your profile information.
+                                </p>
+                            </div>
 
                             <div>
                                 <Label htmlFor="fullName">Name</Label>
