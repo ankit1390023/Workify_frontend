@@ -737,6 +737,82 @@ const ATSChecker = () => {
                   </div>
                 </div>
 
+                {/* Best Practices Section - Moved here for mobile */}
+                <div className="lg:hidden mt-8 space-y-6">
+                  <h3 className="text-2xl font-bold text-primary mb-6">Best Practices & Tips</h3>
+                  <div className="grid gap-6">
+                    {[
+                      {
+                        title: "Content Quality",
+                        icon: <FiCheckCircle className="w-5 h-5 text-primary" />,
+                        tips: [
+                          "Use clear, concise language",
+                          "Focus on achievements, not just responsibilities",
+                          "Include relevant keywords from the job description",
+                          "Maintain a professional tone throughout"
+                        ]
+                      },
+                      {
+                        title: "Format & Structure",
+                        icon: <FiAlertCircle className="w-5 h-5 text-primary" />,
+                        tips: [
+                          "Use consistent formatting",
+                          "Include clear section headers",
+                          "Maintain proper spacing and margins",
+                          "Use bullet points for better readability"
+                        ]
+                      },
+                      {
+                        title: "Keywords & Skills",
+                        icon: <FiLock className="w-5 h-5 text-primary" />,
+                        tips: [
+                          "Include industry-specific keywords",
+                          "List relevant technical skills",
+                          "Use standard job title terminology",
+                          "Highlight transferable skills"
+                        ]
+                      },
+                      {
+                        title: "Achievements",
+                        icon: <FiCheckCircle className="w-5 h-5 text-primary" />,
+                        tips: [
+                          "Quantify your accomplishments",
+                          "Use action verbs to start bullet points",
+                          "Focus on results and impact",
+                          "Include relevant metrics and numbers"
+                        ]
+                      }
+                    ].map((section, index) => (
+                      <motion.div
+                        key={section.title}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="bg-background border border-border rounded-xl p-6 shadow-sm"
+                      >
+                        <div className="flex items-center space-x-3 mb-4">
+                          {section.icon}
+                          <h5 className="text-lg font-semibold text-primary">{section.title}</h5>
+                        </div>
+                        <ul className="space-y-1">
+                          {section.tips.map((tip, idx) => (
+                            <motion.li
+                              key={idx}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: idx * 0.1 }}
+                              className="flex items-start space-x-3"
+                            >
+                              <span className="text-primary">•</span>
+                              <span className="text-foreground text-sm">{tip}</span>
+                            </motion.li>
+                          ))}
+                        </ul>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Additional Analysis Section */}
                 {result?.additional_analysis && (
                   <div className="bg-white/80 rounded-2xl p-8 shadow-sm mt-8">
