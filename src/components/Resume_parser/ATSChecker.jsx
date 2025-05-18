@@ -4,7 +4,8 @@ import { FiUpload, FiCheck, FiAlertCircle, FiLock, FiCheckCircle, FiXCircle, FiC
 import { useTheme } from '@/context/ThemeContext';
 import Header from '../shared/Header';
 import Footer from '../shared/Footer';
-
+import axios from 'axios';
+const RESUME_PARSER_API_END_POINT = import.meta.env.VITE_RESUME_PARSER_API_END_POINT;
 // Modern Gauge Component with Framer Motion
 const ModernGauge = ({ value, size = 200 }) => {
   const ranges = [
@@ -474,28 +475,25 @@ const ATSChecker = () => {
     formData.append('pdf_doc', file)
 
     try {
-      const response = await fetch('http://localhost:8000/process', {
-        method: 'POST',
-        body: formData,
-      })
-      const data = await response.json()
-      if (response.ok) {
-        setResult(data)
-        // Parse and set detailed scores
-        if (data.detailed_scores) {
-          setDetailedScores(data.detailed_scores)
-        }
-        // Parse and set recommendations
-        if (data.recommendations) {
-          setRecommendations(data.recommendations)
-        }
-      } else {
-        setError(data.message || 'Failed to process resume')
+      const response = await axios.post(`${RESUME_PARSER_API_END_POINT}/process`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      const data = response.data;
+      setResult(data);
+      // Parse and set detailed scores
+      if (data.detailed_scores) {
+        setDetailedScores(data.detailed_scores);
+      }
+      // Parse and set recommendations
+      if (data.recommendations) {
+        setRecommendations(data.recommendations);
       }
     } catch (err) {
-      setError('Failed to connect to the server')
+      setError(err.response?.data?.message || 'Failed to process resume');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 

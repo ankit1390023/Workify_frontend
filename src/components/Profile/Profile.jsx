@@ -16,7 +16,7 @@ import { Progress } from "../ui/progress";
 import { toast } from "sonner";
 import { useDashboardData } from "../hooks/useDashboardData";
 import { setUser } from "@/redux/authSlice";
-import ResumeParsing from './ResumeParsing';
+
 
 const MAX_FILE_SIZE_MB = 5;
 const API_END_POINT = import.meta.env.VITE_API_END_POINT;
@@ -282,15 +282,6 @@ const Profile = () => {
                                                 : "Salary not specified"}
                                         </p>
                                     </div>
-                                </div>
-
-                                {/* Resume Parsing Section */}
-                                <div className="mt-8 border-t pt-6">
-                                    <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Quick Profile Update</h3>
-                                    <p className="text-gray-600 dark:text-gray-400 mb-4">
-                                        Upload your resume to automatically update your profile information
-                                    </p>
-                                    <ResumeParsing />
                                 </div>
                             </motion.div>
 

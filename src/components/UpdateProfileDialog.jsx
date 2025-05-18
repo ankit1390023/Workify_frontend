@@ -21,9 +21,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { MapPin, GraduationCap, Briefcase, Languages, Award, Link2, Heart, DollarSign, Plus, Trash2, FileText, Loader } from 'lucide-react';
 
 const API_END_POINT = import.meta.env.VITE_API_END_POINT;
-
+const RESUME_PARSER_API_END_POINT = import.meta.env.VITE_RESUME_PARSER_API_END_POINT;
 const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
     const [loading, setLoading] = useState(false);
+    const [parsing, setParsing] = useState(false);
     const { user } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const [activeTab, setActiveTab] = useState('basic');
@@ -73,13 +74,14 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
                     return;
                 }
 
-                setLoading(true);
+                setParsing(true);
                 const formData = new FormData();
                 formData.append('file', file);
 
                 try {
                     // First, parse the resume
-                    const parseResponse = await axios.post('http://localhost:8000/parse-resume', formData, {
+                    console.log('Sending resume for parsing...');
+                    const parseResponse = await axios.post(`${RESUME_PARSER_API_END_POINT}/parse-resume`, formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data',
                         },
@@ -89,35 +91,112 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
                     console.log("Response from parse resume:", parseResponse.data);
                     
                     if (parseResponse.data.error) {
+                        console.error('Parse error:', parseResponse.data.error);
                         toast.error(parseResponse.data.details || parseResponse.data.error);
                         return;
                     }
 
                     // Update the form with parsed data
                     const parsedData = parseResponse.data;
+                    console.log('Parsed data:', parsedData);
                     updateProfileWithParsedData(parsedData);
 
                     // Create a new FormData for profile update
                     const updateFormData = new FormData();
                     
-                    // Add all profile fields
-                    updateFormData.append('fullName', input.fullName);
-                    updateFormData.append('email', input.email);
-                    updateFormData.append('phoneNumber', input.phoneNumber);
-                    updateFormData.append('bio', input.bio);
-                    updateFormData.append('skills', input.skills.join(','));
-                    updateFormData.append('location', JSON.stringify(input.location));
-                    updateFormData.append('education', JSON.stringify(input.education));
-                    updateFormData.append('experience', JSON.stringify(input.experience));
-                    updateFormData.append('languages', JSON.stringify(input.languages));
-                    updateFormData.append('certifications', JSON.stringify(input.certifications));
-                    updateFormData.append('socialLinks', JSON.stringify(input.socialLinks));
-                    updateFormData.append('interests', JSON.stringify(input.interests));
-                    updateFormData.append('preferredJobTypes', JSON.stringify(input.preferredJobTypes));
-                    updateFormData.append('expectedSalary', JSON.stringify(input.expectedSalary));
-                    updateFormData.append('resume', file); // Add resume to the same request
+                    // Add all profile fields with default values
+                    updateFormData.append('fullName', input.fullName || 'N/A');
+                    updateFormData.append('email', input.email || 'N/A');
+                    updateFormData.append('phoneNumber', input.phoneNumber || 'N/A');
+                    updateFormData.append('bio', input.bio || 'N/A');
+                    updateFormData.append('skills', (input.skills || ['N/A']).join(','));
+                    updateFormData.append('location', JSON.stringify({
+                        address: input.location?.address || 'N/A',
+                        city: input.location?.city || 'N/A',
+                        country: input.location?.country || 'N/A'
+                    }));
+                    updateFormData.append('education', JSON.stringify(
+                        (input.education || []).map(edu => ({
+                            institution: edu.institution || 'N/A',
+                            degree: edu.degree || 'N/A',
+                            fieldOfStudy: edu.fieldOfStudy || 'N/A',
+                            startDate: edu.startDate || 'N/A',
+                            endDate: edu.endDate || 'N/A',
+                            current: edu.current || false,
+                            description: edu.description || 'N/A'
+                        }))
+                    ));
+                    updateFormData.append('experience', JSON.stringify(
+                        (input.experience || []).map(exp => ({
+                            company: exp.company || 'N/A',
+                            position: exp.position || 'N/A',
+                            startDate: exp.startDate || 'N/A',
+                            endDate: exp.endDate || 'N/A',
+                            current: exp.current || false,
+                            description: exp.description || 'N/A'
+                        }))
+                    ));
+                    updateFormData.append('languages', JSON.stringify(
+                        (input.languages || []).map(lang => ({
+                            language: lang.language || 'N/A',
+                            proficiency: lang.proficiency || 'Beginner'
+                        }))
+                    ));
+                    updateFormData.append('certifications', JSON.stringify(
+                        (input.certifications || []).map(cert => ({
+                            name: cert.name || 'N/A',
+                            issuer: cert.issuer || 'N/A',
+                            date: cert.date || 'N/A',
+                            expiryDate: cert.expiryDate || 'N/A',
+                            credentialId: cert.credentialId || 'N/A',
+                            credentialUrl: cert.credentialUrl || 'N/A'
+                        }))
+                    ));
+                    updateFormData.append('socialLinks', JSON.stringify({
+                        linkedin: input.socialLinks?.linkedin || 'N/A',
+                        github: input.socialLinks?.github || 'N/A',
+                        portfolio: input.socialLinks?.portfolio || 'N/A',
+                        twitter: input.socialLinks?.twitter || 'N/A'
+                    }));
+                    updateFormData.append('interests', JSON.stringify(input.interests || ['N/A']));
+                    updateFormData.append('preferredJobTypes', JSON.stringify(input.preferredJobTypes || ['N/A']));
+                    updateFormData.append('expectedSalary', JSON.stringify({
+                        amount: input.expectedSalary?.amount || 'N/A',
+                        currency: input.expectedSalary?.currency || 'USD'
+                    }));
 
-                    // Update profile with resume
+                    // Handle resume upload separately
+                    try {
+                        // First, upload the resume file
+                        const resumeFormData = new FormData();
+                        resumeFormData.append('resume', file);
+                        
+                        console.log('Uploading resume to cloud storage...');
+                        const resumeUploadResponse = await axios.post(
+                            `${API_END_POINT}/user/upload-resume`,
+                            resumeFormData,
+                            {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data',
+                                    "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
+                                }
+                            }
+                        );
+
+                        if (resumeUploadResponse.data.success) {
+                            // Add the resume URL to the profile update
+                            updateFormData.append('resumeUrl', resumeUploadResponse.data.resumeUrl);
+                        } else {
+                            throw new Error(resumeUploadResponse.data.message || 'Failed to upload resume');
+                        }
+                    } catch (uploadError) {
+                        console.error('Resume upload error:', uploadError);
+                        throw new Error('Failed to upload resume to cloud storage: ' + 
+                            (uploadError.response?.data?.message || uploadError.message));
+                    }
+
+                    console.log('Updating profile with data...');
+                    // Update profile with resume URL
                     const updateResponse = await axios.patch(
                         `${API_END_POINT}/user/update-account`,
                         updateFormData,
@@ -125,36 +204,103 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
                             headers: {
                                 'Content-Type': 'multipart/form-data',
                                 "Authorization": `Bearer ${localStorage.getItem('accessToken')}`
-                            },
+                            }
                         }
                     );
 
+                    console.log('Profile update response:', updateResponse.data);
+
                     if (updateResponse.data.success) {
                         // Update Redux store with new user data
-                        dispatch(setUser(updateResponse.data.user));
+                        const updatedUser = {
+                            ...updateResponse.data.user,
+                            profile: {
+                                ...updateResponse.data.user.profile,
+                                bio: updateResponse.data.user.profile?.bio || 'N/A',
+                                skills: updateResponse.data.user.profile?.skills || ['N/A'],
+                                location: {
+                                    address: updateResponse.data.user.profile?.location?.address || 'N/A',
+                                    city: updateResponse.data.user.profile?.location?.city || 'N/A',
+                                    country: updateResponse.data.user.profile?.location?.country || 'N/A'
+                                },
+                                education: updateResponse.data.user.profile?.education || [{
+                                    institution: 'N/A',
+                                    degree: 'N/A',
+                                    fieldOfStudy: 'N/A',
+                                    startDate: 'N/A',
+                                    endDate: 'N/A',
+                                    current: false,
+                                    description: 'N/A'
+                                }],
+                                experience: updateResponse.data.user.profile?.experience || [{
+                                    company: 'N/A',
+                                    position: 'N/A',
+                                    startDate: 'N/A',
+                                    endDate: 'N/A',
+                                    current: false,
+                                    description: 'N/A'
+                                }],
+                                languages: updateResponse.data.user.profile?.languages || [{
+                                    language: 'N/A',
+                                    proficiency: 'Beginner'
+                                }],
+                                certifications: updateResponse.data.user.profile?.certifications || [{
+                                    name: 'N/A',
+                                    issuer: 'N/A',
+                                    date: 'N/A',
+                                    expiryDate: 'N/A',
+                                    credentialId: 'N/A',
+                                    credentialUrl: 'N/A'
+                                }],
+                                socialLinks: {
+                                    linkedin: updateResponse.data.user.profile?.socialLinks?.linkedin || 'N/A',
+                                    github: updateResponse.data.user.profile?.socialLinks?.github || 'N/A',
+                                    portfolio: updateResponse.data.user.profile?.socialLinks?.portfolio || 'N/A',
+                                    twitter: updateResponse.data.user.profile?.socialLinks?.twitter || 'N/A'
+                                },
+                                interests: updateResponse.data.user.profile?.interests || ['N/A'],
+                                preferredJobTypes: updateResponse.data.user.profile?.preferredJobTypes || ['N/A'],
+                                expectedSalary: {
+                                    amount: updateResponse.data.user.profile?.expectedSalary?.amount || 'N/A',
+                                    currency: updateResponse.data.user.profile?.expectedSalary?.currency || 'USD'
+                                }
+                            }
+                        };
+                        
+                        dispatch(setUser(updatedUser));
                         toast.success('Resume parsed and profile updated successfully!');
-                        onSave && onSave(updateResponse.data.user);
+                        onSave && onSave(updatedUser);
                         setOpen(false);
                     } else {
+                        console.error('Profile update failed:', updateResponse.data);
                         toast.error(updateResponse.data.message || 'Failed to update profile.');
                     }
                 } catch (error) {
                     console.error('Error details:', error);
+                    console.error('Error response:', error.response?.data);
+                    console.error('Error status:', error.response?.status);
+                    console.error('Error headers:', error.response?.headers);
+
                     if (!error.response) {
                         toast.error('Network error: Please check if the backend server is running at http://localhost:8000');
                     } else if (error.response.status === 413) {
                         toast.error('File size too large. Please upload a smaller file.');
                     } else if (error.response.status === 415) {
                         toast.error('Unsupported file type. Please upload a PDF or Word document.');
+                    } else if (error.response.status === 500) {
+                        const errorMessage = error.response.data?.message || 'Server error occurred while uploading resume';
+                        console.error('Server error details:', error.response.data);
+                        toast.error(errorMessage);
                     } else {
                         const errorMessage = error.response?.data?.details || 
                                            error.response?.data?.error || 
+                                           error.response?.data?.message ||
                                            error.message || 
-                                           'Error parsing resume. Please try again.';
+                                           'Error uploading resume. Please try again.';
                         toast.error(errorMessage);
                     }
                 } finally {
-                    setLoading(false);
+                    setParsing(false);
                 }
             } else {
                 toast.error('Please upload a PDF or Word document');
@@ -170,34 +316,45 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
         // Update personal information
         if (parsedData.personal_info) {
             const { full_name, location, contact } = parsedData.personal_info;
-            if (full_name) newInput.fullName = full_name;
-            if (location) newInput.location = { ...newInput.location, address: location };
+            newInput.fullName = full_name || 'N/A';
+            newInput.location = {
+                address: location || 'N/A',
+                city: 'N/A',
+                country: 'N/A'
+            };
             if (contact) {
-                if (contact.email) newInput.email = contact.email;
-                if (contact.phone) newInput.phoneNumber = contact.phone;
-                if (contact.professional_links) {
-                    newInput.socialLinks = {
-                        ...newInput.socialLinks,
-                        linkedin: contact.professional_links.linkedin || '',
-                        github: contact.professional_links.github || '',
-                        portfolio: contact.professional_links.portfolio || '',
-                        twitter: contact.professional_links.twitter || ''
-                    };
-                }
+                newInput.email = contact.email || 'N/A';
+                newInput.phoneNumber = contact.phone || 'N/A';
+                newInput.socialLinks = {
+                    linkedin: contact.professional_links?.linkedin || 'N/A',
+                    github: contact.professional_links?.github || 'N/A',
+                    portfolio: contact.professional_links?.portfolio || 'N/A',
+                    twitter: contact.professional_links?.twitter || 'N/A'
+                };
             }
         }
 
         // Update education
         if (parsedData.education && Array.isArray(parsedData.education)) {
             newInput.education = parsedData.education.map(edu => ({
-                institution: edu.institute || '',
-                degree: edu.degree || '',
-                fieldOfStudy: edu.board_university || '',
-                startDate: edu.year ? edu.year.split('-')[0] : '',
-                endDate: edu.year ? edu.year.split('-')[1] || '' : '',
+                institution: edu.institute || 'N/A',
+                degree: edu.degree || 'N/A',
+                fieldOfStudy: edu.board_university || 'N/A',
+                startDate: edu.year ? edu.year.split('-')[0] : 'N/A',
+                endDate: edu.year ? edu.year.split('-')[1] || 'N/A' : 'N/A',
                 current: edu.year?.includes('Present') || false,
-                description: edu.score ? `Score: ${edu.score}` : ''
+                description: edu.score ? `Score: ${edu.score}` : 'N/A'
             }));
+        } else {
+            newInput.education = [{
+                institution: 'N/A',
+                degree: 'N/A',
+                fieldOfStudy: 'N/A',
+                startDate: 'N/A',
+                endDate: 'N/A',
+                current: false,
+                description: 'N/A'
+            }];
         }
 
         // Update skills
@@ -208,37 +365,79 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
                     allSkills.push(...skills);
                 }
             });
-            newInput.skills = [...new Set(allSkills)];
+            newInput.skills = allSkills.length > 0 ? [...new Set(allSkills)] : ['N/A'];
+        } else {
+            newInput.skills = ['N/A'];
         }
 
         // Update experience
         if (parsedData.experience && Array.isArray(parsedData.experience)) {
             newInput.experience = parsedData.experience.map(exp => ({
-                company: exp.company || '',
-                position: exp.title || '',
-                startDate: exp.duration ? exp.duration.split('-')[0].trim() : '',
-                endDate: exp.duration ? exp.duration.split('-')[1]?.trim() || '' : '',
+                company: exp.company || 'N/A',
+                position: exp.title || 'N/A',
+                startDate: exp.duration ? exp.duration.split('-')[0].trim() : 'N/A',
+                endDate: exp.duration ? exp.duration.split('-')[1]?.trim() || 'N/A' : 'N/A',
                 current: exp.duration?.includes('Present') || false,
-                description: exp.achievements ? exp.achievements.join('\n') : ''
+                description: exp.achievements ? exp.achievements.join('\n') : 'N/A'
             }));
+        } else {
+            newInput.experience = [{
+                company: 'N/A',
+                position: 'N/A',
+                startDate: 'N/A',
+                endDate: 'N/A',
+                current: false,
+                description: 'N/A'
+            }];
         }
 
-        // Update achievements
+        // Update languages
+        if (parsedData.languages && Array.isArray(parsedData.languages)) {
+            newInput.languages = parsedData.languages.map(lang => ({
+                language: lang.language || 'N/A',
+                proficiency: lang.proficiency || 'Beginner'
+            }));
+        } else {
+            newInput.languages = [{
+                language: 'N/A',
+                proficiency: 'Beginner'
+            }];
+        }
+
+        // Update certifications
+        if (parsedData.certifications && Array.isArray(parsedData.certifications)) {
+            newInput.certifications = parsedData.certifications.map(cert => ({
+                name: cert.name || 'N/A',
+                issuer: cert.issuer || 'N/A',
+                date: cert.date || 'N/A',
+                expiryDate: cert.expiryDate || 'N/A',
+                credentialId: cert.credentialId || 'N/A',
+                credentialUrl: cert.credentialUrl || 'N/A'
+            }));
+        } else {
+            newInput.certifications = [{
+                name: 'N/A',
+                issuer: 'N/A',
+                date: 'N/A',
+                expiryDate: 'N/A',
+                credentialId: 'N/A',
+                credentialUrl: 'N/A'
+            }];
+        }
+
+        // Update bio with achievements and positions
+        let bioText = '';
+        
         if (parsedData.achievements && Array.isArray(parsedData.achievements)) {
-            // Add achievements to bio or create a new section
-            const achievementsText = parsedData.achievements.join('\n');
-            newInput.bio = newInput.bio ? `${newInput.bio}\n\nAchievements:\n${achievementsText}` : `Achievements:\n${achievementsText}`;
+            bioText += 'Achievements:\n' + parsedData.achievements.join('\n') + '\n\n';
         }
-
-        // Update positions of responsibility
+        
         if (parsedData.positions_of_responsibility && Array.isArray(parsedData.positions_of_responsibility)) {
-            const positionsText = parsedData.positions_of_responsibility.join('\n');
-            newInput.bio = newInput.bio ? `${newInput.bio}\n\nPositions of Responsibility:\n${positionsText}` : `Positions of Responsibility:\n${positionsText}`;
+            bioText += 'Positions of Responsibility:\n' + parsedData.positions_of_responsibility.join('\n') + '\n\n';
         }
-
-        // Update projects
+        
         if (parsedData.projects && Array.isArray(parsedData.projects)) {
-            const projectsText = parsedData.projects.map(project => {
+            bioText += 'Projects:\n' + parsedData.projects.map(project => {
                 let projectText = `Project: ${project.name || 'N/A'}\n`;
                 if (project.technologies) {
                     projectText += `Technologies: ${project.technologies.join(', ')}\n`;
@@ -248,8 +447,17 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
                 }
                 return projectText;
             }).join('\n');
-            newInput.bio = newInput.bio ? `${newInput.bio}\n\nProjects:\n${projectsText}` : `Projects:\n${projectsText}`;
         }
+
+        newInput.bio = bioText || 'N/A';
+
+        // Set default values for other fields if not present
+        newInput.interests = newInput.interests.length > 0 ? newInput.interests : ['N/A'];
+        newInput.preferredJobTypes = newInput.preferredJobTypes.length > 0 ? newInput.preferredJobTypes : ['N/A'];
+        newInput.expectedSalary = {
+            amount: newInput.expectedSalary?.amount || 'N/A',
+            currency: newInput.expectedSalary?.currency || 'USD'
+        };
 
         setInput(newInput);
     };
@@ -420,28 +628,69 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
             }
 
             const formData = new FormData();
-            formData.append('fullName', input.fullName);
-            formData.append('email', input.email);
-            formData.append('phoneNumber', input.phoneNumber);
-            formData.append('bio', input.bio);
-            formData.append('skills', input.skills.join(','));
-            formData.append('location', JSON.stringify(input.location));
-            formData.append('education', JSON.stringify(input.education));
-            formData.append('experience', JSON.stringify(input.experience));
-            formData.append('languages', JSON.stringify(input.languages));
-            formData.append('certifications', JSON.stringify(input.certifications));
-            formData.append('socialLinks', JSON.stringify(input.socialLinks));
-            formData.append('interests', JSON.stringify(input.interests));
-            formData.append('preferredJobTypes', JSON.stringify(input.preferredJobTypes));
-            formData.append('expectedSalary', JSON.stringify(input.expectedSalary));
+            
+            // Ensure all fields have values, defaulting to 'N/A' if empty
+            formData.append('fullName', input.fullName || 'N/A');
+            formData.append('email', input.email || 'N/A');
+            formData.append('phoneNumber', input.phoneNumber || 'N/A');
+            formData.append('bio', input.bio || 'N/A');
+            formData.append('skills', (input.skills || ['N/A']).join(','));
+            formData.append('location', JSON.stringify({
+                address: input.location?.address || 'N/A',
+                city: input.location?.city || 'N/A',
+                country: input.location?.country || 'N/A'
+            }));
+            formData.append('education', JSON.stringify(
+                (input.education || []).map(edu => ({
+                    institution: edu.institution || 'N/A',
+                    degree: edu.degree || 'N/A',
+                    fieldOfStudy: edu.fieldOfStudy || 'N/A',
+                    startDate: edu.startDate || 'N/A',
+                    endDate: edu.endDate || 'N/A',
+                    current: edu.current || false,
+                    description: edu.description || 'N/A'
+                }))
+            ));
+            formData.append('experience', JSON.stringify(
+                (input.experience || []).map(exp => ({
+                    company: exp.company || 'N/A',
+                    position: exp.position || 'N/A',
+                    startDate: exp.startDate || 'N/A',
+                    endDate: exp.endDate || 'N/A',
+                    current: exp.current || false,
+                    description: exp.description || 'N/A'
+                }))
+            ));
+            formData.append('languages', JSON.stringify(
+                (input.languages || []).map(lang => ({
+                    language: lang.language || 'N/A',
+                    proficiency: lang.proficiency || 'Beginner'
+                }))
+            ));
+            formData.append('certifications', JSON.stringify(
+                (input.certifications || []).map(cert => ({
+                    name: cert.name || 'N/A',
+                    issuer: cert.issuer || 'N/A',
+                    date: cert.date || 'N/A',
+                    expiryDate: cert.expiryDate || 'N/A',
+                    credentialId: cert.credentialId || 'N/A',
+                    credentialUrl: cert.credentialUrl || 'N/A'
+                }))
+            ));
+            formData.append('socialLinks', JSON.stringify({
+                linkedin: input.socialLinks?.linkedin || 'N/A',
+                github: input.socialLinks?.github || 'N/A',
+                portfolio: input.socialLinks?.portfolio || 'N/A',
+                twitter: input.socialLinks?.twitter || 'N/A'
+            }));
+            formData.append('interests', JSON.stringify(input.interests || ['N/A']));
+            formData.append('preferredJobTypes', JSON.stringify(input.preferredJobTypes || ['N/A']));
+            formData.append('expectedSalary', JSON.stringify({
+                amount: input.expectedSalary?.amount || 'N/A',
+                currency: input.expectedSalary?.currency || 'USD'
+            }));
 
             if (input.resume) {
-                // Validate file size (max 5MB)
-                if (input.resume.size > 5 * 1024 * 1024) {
-                    toast.error('Resume file size should be less than 5MB');
-                    setLoading(false);
-                    return;
-                }
                 formData.append('resume', input.resume);
             }
 
@@ -457,26 +706,73 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
             );
 
             if (response.data.success) {
-                dispatch(setUser(response.data.user));
+                // Update Redux store with new user data, ensuring all fields have values
+                const updatedUser = {
+                    ...response.data.user,
+                    profile: {
+                        ...response.data.user.profile,
+                        bio: response.data.user.profile?.bio || 'N/A',
+                        skills: response.data.user.profile?.skills || ['N/A'],
+                        location: {
+                            address: response.data.user.profile?.location?.address || 'N/A',
+                            city: response.data.user.profile?.location?.city || 'N/A',
+                            country: response.data.user.profile?.location?.country || 'N/A'
+                        },
+                        education: response.data.user.profile?.education || [{
+                            institution: 'N/A',
+                            degree: 'N/A',
+                            fieldOfStudy: 'N/A',
+                            startDate: 'N/A',
+                            endDate: 'N/A',
+                            current: false,
+                            description: 'N/A'
+                        }],
+                        experience: response.data.user.profile?.experience || [{
+                            company: 'N/A',
+                            position: 'N/A',
+                            startDate: 'N/A',
+                            endDate: 'N/A',
+                            current: false,
+                            description: 'N/A'
+                        }],
+                        languages: response.data.user.profile?.languages || [{
+                            language: 'N/A',
+                            proficiency: 'Beginner'
+                        }],
+                        certifications: response.data.user.profile?.certifications || [{
+                            name: 'N/A',
+                            issuer: 'N/A',
+                            date: 'N/A',
+                            expiryDate: 'N/A',
+                            credentialId: 'N/A',
+                            credentialUrl: 'N/A'
+                        }],
+                        socialLinks: {
+                            linkedin: response.data.user.profile?.socialLinks?.linkedin || 'N/A',
+                            github: response.data.user.profile?.socialLinks?.github || 'N/A',
+                            portfolio: response.data.user.profile?.socialLinks?.portfolio || 'N/A',
+                            twitter: response.data.user.profile?.socialLinks?.twitter || 'N/A'
+                        },
+                        interests: response.data.user.profile?.interests || ['N/A'],
+                        preferredJobTypes: response.data.user.profile?.preferredJobTypes || ['N/A'],
+                        expectedSalary: {
+                            amount: response.data.user.profile?.expectedSalary?.amount || 'N/A',
+                            currency: response.data.user.profile?.expectedSalary?.currency || 'USD'
+                        }
+                    }
+                };
+                
+                dispatch(setUser(updatedUser));
                 toast.success('Profile updated successfully!');
-                onSave && onSave(response.data.user);
+                onSave && onSave(updatedUser);
                 setOpen(false);
             } else {
                 toast.error(response.data.message || 'Failed to update profile.');
             }
         } catch (error) {
+            console.error('Error updating profile:', error);
             const errorMessage = error.response?.data?.message || error.message || 'Something went wrong while updating the profile.';
             toast.error(errorMessage);
-            
-            // Handle specific error cases
-            if (error.response?.status === 400) {
-                toast.error('Please check your input data and try again.');
-            } else if (error.response?.status === 401) {
-                toast.error('Your session has expired. Please log in again.');
-                // Optionally redirect to login page
-            } else if (error.response?.status === 413) {
-                toast.error('File size too large. Please upload a smaller file.');
-            }
         } finally {
             setLoading(false);
         }
@@ -491,6 +787,12 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
                         Update your profile information below. Click "Save" when you're done.
                     </DialogDescription>
                 </DialogHeader>
+
+                {parsing && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                        <Loader className="w-8 h-8 animate-spin text-blue-600" />
+                    </div>
+                )}
 
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className="grid w-full grid-cols-6 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
@@ -996,7 +1298,14 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
                                 disabled={loading}
                                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:from-blue-500 dark:to-purple-500 dark:hover:from-blue-600 dark:hover:to-purple-600 text-white"
                             >
-                                {loading ? 'Saving...' : 'Save Changes'}
+                                {loading ? (
+                                    <div className="flex items-center gap-2">
+                                        <Loader className="w-4 h-4 animate-spin" />
+                                        <span>Saving...</span>
+                                    </div>
+                                ) : (
+                                    'Save Changes'
+                                )}
                             </Button>
                         </DialogFooter>
                     </form>
