@@ -195,6 +195,34 @@ const Header = () => {
                       <span>Applied Jobs</span>
                     </button>
                   )}
+                  {user?.role === "student" && (
+                    <>
+                      <Link
+                        to="/dashboard"
+                        className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:bg-muted w-full"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        <User className="w-5 h-5" />
+                        <span>Dashboard</span>
+                      </Link>
+                      <Link
+                        to="/ats-checker"
+                        className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:bg-muted w-full"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        <Briefcase className="w-5 h-5" />
+                        <span>ATS Checker</span>
+                      </Link>
+                      <Link
+                        to="/contact"
+                        className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:bg-muted w-full"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        <Compass className="w-5 h-5" />
+                        <span>Contact</span>
+                      </Link>
+                    </>
+                  )}
                   {user && (
                     <>
                       <Link

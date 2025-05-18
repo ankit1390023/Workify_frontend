@@ -886,6 +886,47 @@ const UpdateProfileDialog = ({ open, setOpen, onSave }) => {
                                     placeholder="Enter your skills (comma-separated)"
                                 />
                             </div>
+
+                            <div className="space-y-4">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Location</h3>
+                                <div className="grid grid-cols-1 gap-4">
+                                    <div>
+                                        <Label htmlFor="address">Address</Label>
+                                        <Input
+                                            id="address"
+                                            name="address"
+                                            value={input.location.address}
+                                            onChange={handleLocationChange}
+                                            placeholder="Enter your address"
+                                            className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <Label htmlFor="city">City</Label>
+                                            <Input
+                                                id="city"
+                                                name="city"
+                                                value={input.location.city}
+                                                onChange={handleLocationChange}
+                                                placeholder="Enter your city"
+                                                className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label htmlFor="country">Country</Label>
+                                            <Input
+                                                id="country"
+                                                name="country"
+                                                value={input.location.country}
+                                                onChange={handleLocationChange}
+                                                placeholder="Enter your country"
+                                                className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </TabsContent>
 
                         <TabsContent value="education" className="space-y-4">
