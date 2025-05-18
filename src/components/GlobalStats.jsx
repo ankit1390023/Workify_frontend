@@ -4,6 +4,7 @@ import { motion, useSpring, useTransform } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import useGlobalStats from './hooks/useGlobalStats';
 import { Loader } from 'lucide-react';
+import { useDashboardData } from './hooks/useDashboardData';
 
 const AnimatedNumber = ({ value, duration = 2 }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -20,7 +21,7 @@ const AnimatedNumber = ({ value, duration = 2 }) => {
 
 export default function GlobalStats() {
   useGlobalStats();
-  
+  useDashboardData();
   const { totalJobs, totalUsers, totalApplications, totalCompanies, averageProfileScore, loading, error } = useSelector((state) => state.globalStats);
   const { stats: { totalAppliedJobs, totalInterviews, totalPending, totalRejected, totalSelected, profileScore } } = useSelector((state) => state.dashboard);
   const { user } = useSelector((state) => state.auth);
