@@ -219,7 +219,7 @@ const Header = () => {
                         onClick={() => setMenuOpen(false)}
                       >
                         <Compass className="w-5 h-5" />
-                        <span>Contact</span>
+                        <span>Help & Support</span>
                       </Link>
                     </>
                   )}
@@ -356,7 +356,7 @@ const Header = () => {
                 <DropdownMenuItem asChild>
                   <Link to="/contact" className="flex items-center w-full cursor-pointer">
                     <Compass className="w-4 h-4 mr-2" />
-                    Contact
+                    Help & Support
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>

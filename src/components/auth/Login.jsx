@@ -77,8 +77,11 @@ const Login = () => {
                     transition={{ duration: 0.5, delay: 0.2 }}
                 >
                     <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-primary mb-2">Welcome Back</h1>
-                        <p className="text-muted-foreground">Sign in to continue to your account</p>
+                        <h1 className="text-3xl font-bold text-primary mb-2">Welcome to Workify</h1>
+                        <p className="text-xl font-semibold text-primary/80 mb-3">AI-Powered Career Platform</p>
+                        <p className="text-muted-foreground max-w-sm mx-auto">
+                            Your intelligent partner for career growth. Get personalized insights, ATS optimization, and smart job matching.
+                        </p>
                     </div>
 
                     {isSubmitting && (

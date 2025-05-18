@@ -7,8 +7,22 @@ import { setSingleJob } from '@/redux/jobSlice';
 import Header from './shared/Header';
 import Footer from './shared/Footer';
 import Chat from './ai/Chat';
+import { Loader } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const API_END_POINT = import.meta.env.VITE_API_END_POINT;
+
+// Loading Animation Component
+const LoadingAnimation = () => (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+        <div className="flex flex-col items-center space-y-4">
+            <Loader className="h-8 w-8 animate-spin text-primary" />
+            <span className="text-lg font-semibold text-primary animate-pulse">
+                Loading job details...
+            </span>
+        </div>
+    </div>
+);
 
 const JobDescription = () => {
     const params = useParams();
@@ -102,10 +116,28 @@ const JobDescription = () => {
     }, [dispatch, jobId, user?._id]);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+            <>
+                <Header />
+                <LoadingAnimation />
+                <Footer />
+            </>
+        );
     }
+
     if (error) {
-        return <div>Error: {error}</div>;
+        return (
+            <>
+                <Header />
+                <div className="min-h-screen flex items-center justify-center bg-background">
+                    <div className="text-center space-y-4">
+                        <h2 className="text-2xl font-semibold text-destructive">Error Loading Job</h2>
+                        <p className="text-muted-foreground">{error}</p>
+                    </div>
+                </div>
+                <Footer />
+            </>
+        );
     }
 
     return (

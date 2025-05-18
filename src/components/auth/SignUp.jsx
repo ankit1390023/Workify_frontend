@@ -134,8 +134,11 @@ const SignUp = () => {
                     transition={{ duration: 0.5, delay: 0.2 }}
                 >
                     <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-primary mb-2">Create Account</h1>
-                        <p className="text-muted-foreground">Join us and start your journey</p>
+                        <h1 className="text-3xl font-bold text-primary mb-2">Join Workify</h1>
+                        <p className="text-xl font-semibold text-primary/80 mb-3">AI-Powered Career Platform</p>
+                        <p className="text-muted-foreground max-w-sm mx-auto">
+                            Start your journey with intelligent career guidance. Experience AI-driven resume optimization, personalized job recommendations, and career insights.
+                        </p>
                     </div>
 
                     {isSubmitting && (
